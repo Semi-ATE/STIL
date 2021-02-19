@@ -1,2 +1,2 @@
-def test_base:
+def test_base():
   assert True

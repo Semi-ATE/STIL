@@ -18,7 +18,7 @@ jobs:
           pip install -r requirements/run.txt
           pip install -r requirements/test.txt
     - name: tag to version
-      run: echo "__version__='${GITHUB_REF#refs/*/}'" >> Semi_ATE/TnD/__init__.py
+      run: echo "__version__='${GITHUB_REF#refs/*/}'" >> Semi_ATE/STIL/__init__.py
     - name: Run tests
       run: pytest --cov=Semi_ATE
     - name: Upload coverage to Codecov

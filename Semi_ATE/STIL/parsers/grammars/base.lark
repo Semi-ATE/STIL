@@ -1,0 +1,78 @@
+%import common.ESCAPED_STRING
+
+
+WFC_LIST : /[A-Za-z0-9]+/
+IDENTIFICATOR : /[A-Za-z_][A-Za-z0-9_]+/
+LETTER : /[A-Za-z]/ 
+IDENTIFIER : (LETTER|DIGIT|"_")+
+ALPHA_NUM : (LETTER|DIGIT)+ 
+NUMBER : ("+"|"-")? (FLOAT|INT)
+INT : /\d+/
+FLOAT : /\d+\.\d+/
+DIGIT : /\d/
+SPECIAL_CHAR     : /[!@#$%^&*()\-+=|\`~\{\[\}\]:;\',<.>\/?\\]/
+// Skip * for annotation due problem with parsing {* *}
+ANN_SPECIAL_CHAR : /[!@#$%^&()\-+=|\`~\{\[\}\]:;\',<.>\/?\\]/
+
+USER_DEFINED_NAME : IDENTIFICATOR | ESCAPED_STRING
+
+// SIGNAL_BUS_NAME is "signal name"[0..X] or signal_name[0..X] or 
+//                    "signal name"[X]    or signal_name[X]
+SIGNAL_BUS_NAME : /(\".*?\"|[A-Za-z_][A-Za-z0-9_]+)(\[\d+(\.\.\d+)?\])/
+SIGNAL_NAME_TERMINAL : SIGNAL_BUS_NAME | IDENTIFICATOR | ESCAPED_STRING
+
+
+// =============================================================================
+// ========================== DATE and TIME ====================================
+
+DATE_STRING : "\"" DAY_OF_WEEK MONTH DAY TIME [TIME_ZONE] YEAR "\"" 
+
+DAY_OF_WEEK : ("Mon"|"Tue"|"Wed"|"Thu"|"Fri"|"Sat"|"Sun") 
+
+MONTH : ("Jan"|"Feb"|"Mar"|"Apr"|"May"|"Jun"|"Jul"|"Aug"|"Sep"|"Oct"|"Nov"|"Dec") 
+
+//   1 - 31
+DAY : /[1-2]\d|3[0-1]|0?[1-9]/ 
+
+//  12:23:43 or 23:59:59
+TIME : /([01]\d|2[0-3]):([0-5]\d):([0-5]\d)/ 
+
+TIME_ZONE : /[A-Z]{1,4}/ 
+
+//  19xx-9999
+YEAR : /(19|[2-9][0-9])[0-9]{2}/ 
+
+// ======================== End of DATE and TIME ===============================
+// =============================================================================
+
+// =============================================================================
+// ============================= TIME ==========================================
+
+TIME_EXPR : "'"  NUMBER TIME_UNIT "'" 
+
+TIME_UNIT :  ("as"|"fs"|"ps"|"ns"|"us"|"ms"|"s"|"ks"|"Ms"|"Gs"|"Ts"|"Ps"|"Es") 
+
+// ========================= End of TIME =======================================
+// =============================================================================
+
+annotation: KEYWORD_ANN OPEN_ANN_BLOCK (ANN_TEXT)* CLOSE_ANN_BLOCK
+KEYWORD_ANN: "Ann"
+
+    OPEN_ANN_BLOCK  : "{*"
+    ANN_TEXT        : IDENTIFIER|ESCAPED_STRING|ANN_SPECIAL_CHAR
+    CLOSE_ANN_BLOCK : "*}"
+
+scan_type : OPEN_SCAN_TYPE_BLOCK (KEYWORD_SCANOUT | KEYWORD_SCANIN) ";" CLOSE_SCAN_TYPE_BLOCK
+    OPEN_SCAN_TYPE_BLOCK  : "{"
+        KEYWORD_SCANOUT : "ScanOut"
+        KEYWORD_SCANIN  : "ScanIn"
+    CLOSE_SCAN_TYPE_BLOCK : "}"
+
+MIN : "Min"
+TYP : "Typ"
+MAX : "Max"
+MEAS : "Meas"
+
+user_keyword_stmt : (user_keyword_value)* (";" | user_keyword_block)
+user_keyword_value : USER_DEFINED_NAME | (USER_DEFINED_NAME ALPHA_NUM) | (USER_DEFINED_NAME "=" USER_DEFINED_NAME)
+user_keyword_block : "{" (user_keyword_stmt)* "}"

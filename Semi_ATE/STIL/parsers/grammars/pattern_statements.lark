@@ -1,0 +1,106 @@
+%import common.ESCAPED_STRING
+%import base.IDENTIFIER
+%import base.ANN_TEXT
+%import base.USER_DEFINED_NAME
+%import base.INT
+
+pattern_statement : (v_stmt | label | c_stmt | f_stmt | w_stmt | call_stmt | macro_stmt | l_stmt | ml_stmt | g_stmt | b_stmt | i_stmt | s_stmt | sc_stmt | user_keyword | annotation)*
+
+user_keyword : (IDENTIFIER | ESCAPED_STRING)* ";"
+
+label : USER_DEFINED_NAME ":"
+
+//v_stmt : ("V"         | "Vector")         vec_block
+  v_stmt : (KEYWORD_V   | KEYWORD_VECTOR)   vec_block
+  KEYWORD_V: "V"
+  KEYWORD_VECTOR: "Vector"
+    
+//c_stmt : ("C"      | "Condition")         vec_block
+  c_stmt : (KEYWORD_C| KEYWORD_CONDITION)   vec_block
+  KEYWORD_C: "C"
+  KEYWORD_CONDITION: "Condition"
+  
+//f_stmt : ("F"      | "Force")             vec_block
+  f_stmt : (KEYWORD_F| KEYWORD_FORCE)       vec_block
+  KEYWORD_F: "F"
+  KEYWORD_FORCE: "Force"
+
+//vec_block : "{"               (vec_data_block ";")* "}" 
+  vec_block : OPEN_VECTOR_BLOCK (vec_data_block ";")* CLOSE_VECTOR_BLOCK
+
+OPEN_VECTOR_BLOCK  : "{"
+CLOSE_VECTOR_BLOCK : "}"
+
+    vec_data_block: sigref_expr "=" vec_data_string
+    sigref_expr : USER_DEFINED_NAME
+    vec_data_string : /[A-Za-z0-9%#\\r\n ]+/
+
+
+//w_stmt : ("W"       | "WaveformTable")        USER_DEFINED_NAME ";"
+  w_stmt : (KEYWORD_W | KEYWORD_WAVEFORM_TABLE) USER_DEFINED_NAME ";"
+  KEYWORD_W: "W"
+  KEYWORD_WAVEFORM_TABLE: "WaveformTable"
+
+//macro_stmt : "Macro"       USER_DEFINED_NAME (";" | vec_block)
+  macro_stmt : KEYWORD_MACRO USER_DEFINED_NAME (";" | vec_block)
+  KEYWORD_MACRO: "Macro"
+
+//call_stmt : "Call"        USER_DEFINED_NAME (";" | vec_block)
+  call_stmt : KEYWORD_CALL  USER_DEFINED_NAME (";" | vec_block)
+  KEYWORD_CALL: "Call"
+
+//l_stmt : "Loop"       INT "{"             (pattern_statement)* "}"
+  l_stmt : KEYWORD_LOOP INT OPEN_LOOP_BLOCK (pattern_statement)* "}"
+  KEYWORD_LOOP: "Loop"
+  
+  OPEN_LOOP_BLOCK : "{"
+  CLOSE_LOOP_BLOCK: "}"
+
+//ml_stmt : "MatchLoop"         (INT | "Infinite") "{" (pattern_statement)* "}"
+  ml_stmt : KEYWORD_MATCH_LOOP  (INT | "Infinite") OPEN_MATCH_LOOP_BLOCK (pattern_statement)* "}"
+  KEYWORD_MATCH_LOOP: "MatchLoop"
+
+  OPEN_MATCH_LOOP_BLOCK : "{"
+  CLOSE_MATCH_LOOP_BLOCK: "}"
+
+//g_stmt : "GoTo" USER_DEFINED_NAME ";"
+  g_stmt : KEYWORD_GOTO USER_DEFINED_NAME ";"
+  KEYWORD_GOTO: "GoTo"
+
+//b_stmt : "BreakPoint"         (";" | break_point_block)
+  b_stmt : KEYWORD_BREAKPOINT   (";" | break_point_block)
+  KEYWORD_BREAKPOINT: "BreakPoint"
+
+//break_point_block : "{"                   (pattern_statement)* "}"
+  break_point_block : OPEN_BREAKPOINT (pattern_statement)* "}"
+
+  OPEN_BREAKPOINT : "{"
+  CLOSE_BREAKPOINT: "}"
+
+
+//i_stmt : "IddqTestPoint" ";"
+  i_stmt : KEYWORD_IDDQ_TEST_POINT ";"
+  KEYWORD_IDDQ_TEST_POINT: "IddqTestPoint"
+
+//s_stmt : "Stop" ";"
+  s_stmt : KEYWORD_STOP ";"
+  KEYWORD_STOP : "Stop"
+
+//sc_stmt : "ScanChain" USER_DEFINED_NAME ";"
+  sc_stmt : KEYWORD_SCAN_CHAIN USER_DEFINED_NAME ";"
+  KEYWORD_SCAN_CHAIN : "ScanChain"
+
+//shift_statement : "Shift"       "{"               (pattern_statement)* "}"
+  shift_statement : KEYWORD_SHIFT OPEN_SHIFT_BLOCK  (pattern_statement)* "}"
+  KEYWORD_SHIFT : "Shift"
+                    
+  OPEN_SHIFT_BLOCK : "{"
+  CLOSE_SHIFT_BLOCK: "}" 
+
+annotation: KEYWORD_ANN OPEN_ANN_BLOCK (ANN_TEXT)* CLOSE_ANN_BLOCK
+KEYWORD_ANN: "Ann"
+    
+OPEN_ANN_BLOCK  : "{*"
+ANNO_TEXT        : ANN_TEXT
+CLOSE_ANN_BLOCK : "*}"
+

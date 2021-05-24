@@ -1,0 +1,74 @@
+%import base.SIGNAL_NAME_TERMINAL
+%import base.WFC_LIST
+%import base.INT
+%import base.ANN_TEXT
+%import base.scan_type
+
+//signals_block : "Signals"       "{"               (signals_list | annotation)+ "}"
+  signals_block : KEYWORD_SIGNALS OPEN_SIGNAL_BLOCK (signals_list | annotation)+ CLOSE_SIGNAL_BLOCK
+
+KEYWORD_SIGNALS: "Signals"
+
+OPEN_SIGNAL_BLOCK : "{"
+
+    signals_list : SIGNAL_NAME SIGNAL_TYPE ( ";" | signal_attributes)
+    
+    SIGNAL_NAME: SIGNAL_NAME_TERMINAL
+    
+    SIGNAL_TYPE : KEYWORD_ST_INOUT | KEYWORD_ST_OUT | KEYWORD_ST_IN | KEYWORD_ST_SUPPLY | KEYWORD_ST_PSEUDO
+
+    KEYWORD_ST_INOUT    : "InOut"
+    KEYWORD_ST_OUT      : "Out"
+    KEYWORD_ST_IN       : "In"
+    KEYWORD_ST_SUPPLY   : "Supply"
+    KEYWORD_ST_PSEUDO   : "Pseudo"
+    
+//  signal_attributes : "{"                    (termination | default_state | base | alignment | scan_in | scan_out | data_bit_count)* "}"
+    signal_attributes : OPEN_SIGNAL_ATTR_BLOCK (termination | default_state | base | alignment | scan_in | scan_out | data_bit_count)* CLOSE_SIGNAL_ATTR_BLOCK
+
+    OPEN_SIGNAL_ATTR_BLOCK : "{"
+
+//      termination     : "Termination"       ("TerminateHigh" | "TerminateLow" | "TerminateOff" | "TerminateUnknown") ";" 
+        termination     : KEYWORD_TERMINATION ("TerminateHigh" | "TerminateLow" | "TerminateOff" | "TerminateUnknown") ";" 
+        KEYWORD_TERMINATION : "Termination"
+    
+//      default_state   : "DefaultState"        ("U" | "D" | "Z" | "ForceUp" | "ForceDown" | "ForceOff") ";" 
+        default_state   : KEYWORD_DEFAULT_STATE ("U" | "D" | "Z" | "ForceUp" | "ForceDown" | "ForceOff") ";" 
+        KEYWORD_DEFAULT_STATE : "DefaultState"
+    
+//      base            : "Base"       ("Hex" | "Dec") WFC_LIST ";" 
+        base            : KEYWORD_BASE ("Hex" | "Dec") WFC_LIST ";" 
+        KEYWORD_BASE : "Base"
+    
+//      alignment       : "Alignment"       ("MSB" | "LSB") ";" 
+        alignment       : KEYWORD_ALIGNMENT ("MSB" | "LSB") ";" 
+        KEYWORD_ALIGNMENT : "Alignment"
+    
+//      scan_in         : "ScanIn"       [INT] ";" 
+        scan_in         : KEYWORD_SCANIN [INT] ";" 
+        KEYWORD_SCANIN : "ScanIn"
+    
+//      scan_out        : "ScanOut"       [INT] ";" 
+        scan_out        : KEYWORD_SCANOUT [INT] ";" 
+        KEYWORD_SCANOUT : "ScanOut"
+    
+//      data_bit_count  : "DataBitCount"       INT ";" 
+        data_bit_count  : KEYWORD_DATABITCOUNT INT ";" 
+        KEYWORD_DATABITCOUNT : "DataBitCount"
+
+    CLOSE_SIGNAL_ATTR_BLOCK : "}"
+    
+    
+    annotation: KEYWORD_ANN OPEN_ANN_BLOCK (ANN_TEXT)* CLOSE_ANN_BLOCK
+    KEYWORD_ANN: "Ann"
+        
+    OPEN_ANN_BLOCK  : "{*"
+    ANNO_TEXT        : ANN_TEXT
+    CLOSE_ANN_BLOCK : "*}"
+
+
+CLOSE_SIGNAL_BLOCK : "}"
+
+
+
+

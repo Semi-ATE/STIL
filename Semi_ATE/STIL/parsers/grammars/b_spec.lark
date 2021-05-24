@@ -1,0 +1,44 @@
+%import base.USER_DEFINED_NAME
+%import base.TIME_EXPR
+%import base.MIN
+%import base.TYP
+%import base.MAX
+
+spec_block : (category_spec | variable_spec)
+
+//category_spec: "Spec"         USER_DEFINED_NAME "{"             (category)* "}"
+  category_spec: KEYWORD_SPEC   USER_DEFINED_NAME open_spec_block (category)* close_spec_block
+KEYWORD_SPEC : "Spec"
+
+open_spec_block : "{"
+
+//  category: "Category"        USER_DEFINED_NAME "{"                 (cat_typ | cat_all)* "}"
+    category : KEYWORD_CATEGORY USER_DEFINED_NAME open_category_block (cat_typ | cat_all)* close_category_block
+    KEYWORD_CATEGORY : "Category"
+
+    open_category_block : "{"
+    
+        cat_typ : USER_DEFINED_NAME "=" TIME_EXPR ";"
+
+//      cat_all : USER_DEFINED_NAME "{"                     ((MIN|TYP|MAX) TIME_EXPR ";")* "}"
+        cat_all : USER_DEFINED_NAME open_category_all_block ((MIN|TYP|MAX) TIME_EXPR ";")* close_category_all_block
+
+        open_category_all_block : "{"
+        close_category_all_block : "}"
+        
+    close_category_block : "}"
+
+close_spec_block : "}"
+
+//variable_spec: "Spec"         USER_DEFINED_NAME "{"                 variable "}"
+  variable_spec: KEYWORD_SPEC   USER_DEFINED_NAME open_spec_var_block variable close_spec_var_block
+
+open_spec_var_block : "{"
+
+    variable : KEYWORD_VARIABLE USER_DEFINED_NAME open_var_block (USER_DEFINED_NAME (MIN|TYP|MAX)* ";")* close_var_block 
+    KEYWORD_VARIABLE : "Variable"
+    open_var_block : "{"
+    close_var_block : "}"
+    
+close_spec_var_block : "}"
+

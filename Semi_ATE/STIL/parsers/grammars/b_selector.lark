@@ -1,0 +1,15 @@
+%import base.USER_DEFINED_NAME
+%import base.MIN
+%import base.TYP
+%import base.MAX
+%import base.MEAS
+
+//selector_block : "Selector"       USER_DEFINED_NAME "{"                 (var_selector)* "}" 
+  selector_block : KEYWORD_SELECTOR USER_DEFINED_NAME OPEN_SELECTOR_BLOCK (var_selector)* CLOSE_SELECTOR_BLOCK
+KEYWORD_SELECTOR : "Selector"
+
+OPEN_SELECTOR_BLOCK : "{"
+
+    var_selector: USER_DEFINED_NAME (MIN|TYP|MAX|MEAS) ";"
+
+CLOSE_SELECTOR_BLOCK : "}"

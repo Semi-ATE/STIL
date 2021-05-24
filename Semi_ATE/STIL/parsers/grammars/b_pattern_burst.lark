@@ -1,0 +1,68 @@
+%import base.USER_DEFINED_NAME
+%import base.annotation
+
+//pattern_burst_block : "PatternBurst"     pattern_burst_block_name "{"                pattern_burst_list_statements "}"
+  pattern_burst_block : KEYWORD_PATT_BURST pattern_burst_block_name OPEN_PATTERN_BURST_BLOCK pattern_burst_list_statements CLOSE_PATTERN_BURST_BLOCK
+
+KEYWORD_PATT_BURST  : "PatternBurst"
+                        
+pattern_burst_block_name : USER_DEFINED_NAME
+
+OPEN_PATTERN_BURST_BLOCK : "{"
+
+    pattern_burst_list_statements: pbls pbs_patt_list
+    
+    pbls                : (pbs_signal_groups | pbs_macro | pbs_proc | pbs_scan | pbs_start | pbs_stop | annotation)*
+
+//  pbs_signal_groups   : "SignalGroups"            signal_group_domain ";"
+    pbs_signal_groups   : KEYWORD_SIGNAL_GROUPS     signal_group_domain ";"
+    KEYWORD_SIGNAL_GROUPS: "SignalGroups"
+    
+//  pbs_macro           : "MacroDefs"               macros_domain       ";"
+    pbs_macro           : KEYWORD_MACRO_DEFS        macros_domain       ";"
+    KEYWORD_MACRO_DEFS: "MacroDefs"
+
+//  pbs_proc            : "Procedures"              procedures_domain   ";"
+    pbs_proc            : KEYWORD_PROCEDURES        procedures_domain   ";"
+    KEYWORD_PROCEDURES: "Procedures"
+
+//  pbs_scan            : "ScanStructures"          scan_name           ";"
+    pbs_scan            : KEYWORD_SCAN_STRUCTURES   scan_name           ";"
+    KEYWORD_SCAN_STRUCTURES : "ScanStructures"
+
+//  pbs_start           : "Start"                   start_label         ";"
+    pbs_start           : KEYWORD_START             start_label         ";"
+    KEYWORD_START : "Start"
+  
+//  pbs_stop            : "Stop"                    stop_label          ";"
+    pbs_stop            : KEYWORD_STOP              stop_label          ";"
+    KEYWORD_STOP : "Stop"
+
+//  pbs_patt_list       : "PatList"         "{"               (single_patt_or_burst | block_patt_or_burst)* "}"
+    pbs_patt_list       : KEYWORD_PAT_LIST  OPEN_PATTERN_LIST (single_patt_or_burst | block_patt_or_burst)* CLOSE_PATTERN_LIST
+    KEYWORD_PAT_LIST : "PatList"
+
+    signal_group_domain : USER_DEFINED_NAME
+    macros_domain       : USER_DEFINED_NAME
+    procedures_domain   : USER_DEFINED_NAME
+    scan_name           : USER_DEFINED_NAME
+    start_label         : USER_DEFINED_NAME
+    stop_label          : USER_DEFINED_NAME
+
+
+    OPEN_PATTERN_LIST  : "{"
+
+        single_patt_or_burst : patt_or_burst_name ";"
+        
+//      block_patt_or_burst : patt_or_burst_name "{"                 pbls "}"
+        block_patt_or_burst : patt_or_burst_name OPEN_PATT_OR_BURST pbls CLOSE_PATT_OR_BURST
+
+        patt_or_burst_name  : USER_DEFINED_NAME
+    
+        OPEN_PATT_OR_BURST : "{"
+        CLOSE_PATT_OR_BURST : "}"
+
+    CLOSE_PATTERN_LIST  : "}"
+
+CLOSE_PATTERN_BURST_BLOCK : "}"
+

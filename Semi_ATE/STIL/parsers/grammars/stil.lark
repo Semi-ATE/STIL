@@ -1,0 +1,85 @@
+%import common.ESCAPED_STRING
+
+%import base.USER_DEFINED_NAME
+%import base.SPECIAL_CHAR
+//%import base.IDENTIFICATOR
+%import base.annotation
+%import base.user_keyword_stmt
+
+// Including stil blocks grammar files:
+%import b_stil.stil_block
+%import b_header.header_block
+%import b_signals.signals_block
+%import b_signal_groups.signal_groups_block
+%import b_scan_structures.scan_structures_block
+%import b_spec.spec_block
+%import b_timing.timing_block
+%import b_selector.selector_block
+%import b_pattern_burst.pattern_burst_block
+%import b_pattern_exec.pattern_exec_block
+%import b_procedures.procedures_block
+%import b_macrodefs.macrodefs_block
+%import b_pattern.pattern_block
+
+// Here is the entry point for STIL syntax
+start : stil_block [header_block] blocks
+
+blocks : (  annotation      
+           | include
+           | user_keywords
+           | user_functions 
+           | user_keyword_stmt
+           | signals_block           
+           | signal_groups_block     
+           | scan_structures_block   
+           | spec_block              
+           | timing_block            
+           | selector_block          
+           | pattern_burst_block      
+           | pattern_exec_block       
+           | procedures_block        
+           | macrodefs_block         
+           | pattern_block)*
+
+//include : "Include"       ESCAPED_STRING ["IfNeed"         block ] ";"
+  include : KEYWORD_INCLUDE ESCAPED_STRING [KEYWORD_IFNEEDED block ] ";"
+KEYWORD_INCLUDE : "Include"
+KEYWORD_IFNEEDED: "IfNeed"
+
+block : (KEYWORD_BLOCK_HEADER | KEYWORD_BLOCK_SIGNALS | KEYWORD_BLOCK_SIGNAL_GROUPS | KEYWORD_BLOCK_SCAN_STRUCTURES | KEYWORD_BLOCK_SPEC | KEYWORD_BLOCK_TIMING | KEYWORD_BLOCK_SELECTOR | KEYWORD_BLOCK_PATTERN_BURST | KEYWORD_BLOCK_PATERN_EXEC | KEYWORD_BLOCK_PROCEDURES | KEYWORD_BLOCK_MACRO_DEFS | KEYWORD_BLOCK_PATTERN | KEYWORD_BLOCK_USER_KEYWORDS | KEYWORD_BLOCK_USER_FUNCTIONS | KEYWORD_BLOCK_ANN)
+
+KEYWORD_BLOCK_HEADER            : "Header"
+KEYWORD_BLOCK_SIGNALS           : "Signals"
+KEYWORD_BLOCK_SIGNAL_GROUPS     : "SignalGroups"
+KEYWORD_BLOCK_SCAN_STRUCTURES   : "ScanStructures"
+KEYWORD_BLOCK_SPEC              : "Spec"
+KEYWORD_BLOCK_TIMING            : "Timing"
+KEYWORD_BLOCK_SELECTOR          : "Selector"
+KEYWORD_BLOCK_PATTERN_BURST     : "PatternBurst"
+KEYWORD_BLOCK_PATERN_EXEC       : "PatternExec"
+KEYWORD_BLOCK_PROCEDURES        : "Procedures"
+KEYWORD_BLOCK_MACRO_DEFS        : "MacroDefs"
+KEYWORD_BLOCK_PATTERN           : "Pattern"
+KEYWORD_BLOCK_USER_KEYWORDS     : "UserKeywords"
+KEYWORD_BLOCK_USER_FUNCTIONS    : "UserFunctions"
+KEYWORD_BLOCK_ANN               : "Ann"
+
+//user_keywords : "UserKeywords"              (USER_DEFINED_NAME)* ";"
+  user_keywords : KEYWORD_BLOCK_USER_KEYWORDS (USER_DEFINED_NAME)* ";"
+
+//user_functions : "UserFunctions"              (USER_DEFINED_NAME)* ";"
+  user_functions : KEYWORD_BLOCK_USER_FUNCTIONS (USER_DEFINED_NAME)* ";"
+
+
+// Comments, whitespace and new line are ignored:
+%import common.C_COMMENT
+%ignore C_COMMENT
+
+%import common.CPP_COMMENT
+%ignore CPP_COMMENT
+
+%import common.WS
+%ignore WS
+
+%import common.NEWLINE
+%ignore NEWLINE

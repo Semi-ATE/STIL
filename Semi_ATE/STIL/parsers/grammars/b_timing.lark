@@ -1,0 +1,78 @@
+%import base.annotation
+%import base.USER_DEFINED_NAME
+%import base.TIME_EXPR
+%import base.ALPHA_NUM
+%import base.SIGNAL_NAME_TERMINAL
+
+//timing_block : "Timing"       [timing_domain] "{"               (waveform_table | annotation)+ "}"
+  timing_block : KEYWORD_TIMING [timing_domain] OPEN_TIMING_BLOCK (waveform_table | annotation)+ CLOSE_TIMING_BLOCK 
+KEYWORD_TIMING : "Timing"
+
+timing_domain : USER_DEFINED_NAME 
+
+OPEN_TIMING_BLOCK : "{" 
+
+//  waveform_table : "WaveformTable" wft_name "{"                       period waveforms "}"
+    waveform_table : "WaveformTable" wft_name OPEN_WAVEFORM_TABLE_BLOCK period waveforms CLOSE_WAVEFORM_TABLE_BLOCK
+    KEYWORD_WAVEFORM_TABLE : "WaveformTable"
+    
+    OPEN_WAVEFORM_TABLE_BLOCK : "{" 
+    
+        wft_name : USER_DEFINED_NAME 
+        
+//      period : "Period"       TIME_EXPR ";" 
+        period : KEYWORD_PERIOD TIME_EXPR ";" 
+        KEYWORD_PERIOD : "Period"
+        
+//      waveforms : "Waveforms"       "{"                  (waveforms_list)+ "}"
+        waveforms : KEYWORD_WAVEFORMS OPEN_WAVEFORMS_BLOCK (waveforms_list)+ CLOSE_WAVEFORMS_BLOCK
+        KEYWORD_WAVEFORMS : "Waveforms"
+        
+            OPEN_WAVEFORMS_BLOCK : "{" 
+            
+//              waveforms_list : wf_sigref_expr "{"            wfc_def_list "{"              (wfcs_definition)+  "}"              "}"
+                waveforms_list : wf_sigref_expr OPEN_WFC_BLOCK wfc_def_list OPEN_WFCS_BLOCK  (wfcs_definition)+  CLOSE_WFCS_BLOCK CLOSE_WFC_BLOCK
+
+                wf_sigref_expr : SIGNAL_NAME_TERMINAL 
+
+                OPEN_WFC_BLOCK : "{"
+
+                    wfc_def_list   : ALPHA_NUM 
+
+                        OPEN_WFCS_BLOCK : "{"
+
+                            wfcs_definition: TIME_EXPR events ";" 
+                            events : (event)+ 
+                            event  : (  "/"                 
+                                      | "ForceDown"         | "D" 
+                                      | "ForceUp"           | "U" 
+                                      | "ForceOff"          | "Z" 
+                                      | "ForcePrior"        | "P" 
+                                      | "CompareLow"        | "L" 
+                                      | "CompareHigh"       | "H" 
+                                      | "CompareUnknown"    | "X" | "x" 
+                                      | "CompareOff"        | "T"   
+                                      | "CompareValid"      | "V" 
+                                      | "CompareLowWindow"  | "l" 
+                                      | "CompareHighWindow" | "h" 
+                                      | "CompareOffWindow"  | "t" 
+                                      | "CompareValidWindow"| "v" 
+                                      | "ExpectLow"         | "R" 
+                                      | "ExpectHigh"        | "G" 
+                                      | "ExpectOff"         | "Q"  
+                                      | "Marker"            | "M" 
+                                      | "ForceUnknown"      | "N" 
+                                      | "LogicLow"          | "A"         
+                                      | "LogicHigh"         | "B" 
+                                      | "LogicZ"            | "F" 
+                                      | "Unknown"           | "?")
+
+                        CLOSE_WFCS_BLOCK : "}"
+
+                CLOSE_WFC_BLOCK : "}"
+            
+            CLOSE_WAVEFORMS_BLOCK: "}" 
+    
+    CLOSE_WAVEFORM_TABLE_BLOCK : "}" 
+
+CLOSE_TIMING_BLOCK : "}" 

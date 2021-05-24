@@ -1,0 +1,51 @@
+# -*- coding: utf-8 -*-
+import inspect
+
+class HeaderBlockParser:
+    def __init__(self, debug=True):
+        self.debug = debug
+
+    def trace(self, func_name, t):
+        print(
+            f'{__name__}:{func_name} token value "{t}" at line {t.line} column {t.column}'
+        )
+
+    def b_header__OPEN_HEADER_BLOCK(self, t):
+        if self.debug:
+            func_name = inspect.stack()[0][3]
+            self.trace(func_name, t)
+
+    def b_header__TITLE_STRING(self, t):
+        if self.debug:
+            func_name = inspect.stack()[0][3]
+            self.trace(func_name, t)
+
+    def b_header__HEADER_DATE_STRING(self, t):
+        if self.debug:
+            func_name = inspect.stack()[0][3]
+            self.trace(func_name, t)
+
+    def b_header__SOURCE_STRING(self, t):
+        if self.debug:
+            func_name = inspect.stack()[0][3]
+            self.trace(func_name, t)
+
+    def b_header__OPEN_ANN_BLOCK(self, t):
+        if self.debug:
+            func_name = inspect.stack()[0][3]
+            self.trace(func_name, t)
+
+    def b_header__ANN_TEXT(self, t):
+        if self.debug:
+            func_name = inspect.stack()[0][3]
+            self.trace(func_name, t)
+
+    def b_header__CLOSE_ANN_BLOCK(self, t):
+        if self.debug:
+            func_name = inspect.stack()[0][3]
+            self.trace(func_name, t)
+
+    def b_header__CLOSE_HEADER_BLOCK(self, t):
+        if self.debug:
+            func_name = inspect.stack()[0][3]
+            self.trace(func_name, t)

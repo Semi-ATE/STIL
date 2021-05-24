@@ -6,5 +6,3 @@ from .HeaderBlockParser import HeaderBlockParser
 from .SignalsBlockParser import SignalsBlockParser
 from .SyntaxParserExceptions import SyntaxParserExceptions
 from .utils import get_line, get_col_error_pos
-
-__version__ = '0.0.0'

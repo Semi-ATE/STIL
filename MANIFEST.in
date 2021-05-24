@@ -5,3 +5,4 @@ recursive-include requirements *.txt
 recursive-exclude tests *.py
 recursive-include Semi_ATE *.py
 recursive-include Semi_ATE *.lark
+recursive-exclude tests *.stil

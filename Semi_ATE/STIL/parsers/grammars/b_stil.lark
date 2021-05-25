@@ -1,0 +1,21 @@
+%import base.FLOAT
+
+stil_block : KEYWORD_STIL STIL_VERSION (";" | stil_extension)
+
+KEYWORD_STIL : "STIL"
+
+STIL_VERSION : FLOAT
+
+stil_extension : OPEN_STIL_EXTENSION stil_extension_list CLOSE_STIL_EXTENSION
+
+OPEN_STIL_EXTENSION : "{"
+
+    stil_extension_list : ( STIL_EXTENSION_NAME  STIL_EXTENSION_YEAR ";" )*
+    
+    STIL_EXTENSION_NAME : "DCLevels" | "Design"
+    
+    STIL_EXTENSION_YEAR : "2002" | "2005"
+
+CLOSE_STIL_EXTENSION : "}"
+
+

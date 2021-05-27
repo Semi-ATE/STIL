@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 import inspect
 
+
 class HeaderBlockParser:
     def __init__(self, debug=True):
         self.debug = debug
 
     def trace(self, func_name, t):
-        print(
-            f'{__name__}:{func_name} token value "{t}" at line {t.line} column {t.column}'
-        )
+        head = f"{__name__}:{func_name}"
+
+        if isinstance(t, list):
+            print(f"{head} rule value {t}")
+        else:
+            print(f'{head} token value "{t}" at line {t.line} column {t.column}')
 
     def b_header__OPEN_HEADER_BLOCK(self, t):
         if self.debug:

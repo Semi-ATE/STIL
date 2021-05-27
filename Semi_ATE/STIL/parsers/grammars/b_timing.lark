@@ -4,11 +4,11 @@
 %import base.ALPHA_NUM
 %import base.SIGNAL_NAME_TERMINAL
 
-//timing_block : "Timing"       [timing_domain] "{"               (waveform_table | annotation)+ "}"
-  timing_block : KEYWORD_TIMING [timing_domain] OPEN_TIMING_BLOCK (waveform_table | annotation)+ CLOSE_TIMING_BLOCK 
+//timing_block : "Timing"       [TIMING_DOMAIN_NAME] "{"               (waveform_table | annotation)+ "}"
+  timing_block : KEYWORD_TIMING [TIMING_DOMAIN_NAME] OPEN_TIMING_BLOCK (waveform_table | annotation)+ CLOSE_TIMING_BLOCK 
 KEYWORD_TIMING : "Timing"
 
-timing_domain : USER_DEFINED_NAME 
+TIMING_DOMAIN_NAME : USER_DEFINED_NAME 
 
 OPEN_TIMING_BLOCK : "{" 
 

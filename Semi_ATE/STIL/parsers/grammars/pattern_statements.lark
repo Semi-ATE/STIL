@@ -8,7 +8,9 @@ pattern_statement : (v_stmt | label | c_stmt | f_stmt | w_stmt | call_stmt | mac
 
 user_keyword : (IDENTIFIER | ESCAPED_STRING)* ";"
 
-label : USER_DEFINED_NAME ":"
+label : LABEL_NAME ":"
+
+LABEL_NAME : USER_DEFINED_NAME
 
 //v_stmt : ("V"         | "Vector")         vec_block
   v_stmt : (KEYWORD_V   | KEYWORD_VECTOR)   vec_block
@@ -31,9 +33,9 @@ label : USER_DEFINED_NAME ":"
 OPEN_VECTOR_BLOCK  : "{"
 CLOSE_VECTOR_BLOCK : "}"
 
-    vec_data_block: sigref_expr "=" vec_data_string
-    sigref_expr : USER_DEFINED_NAME
-    vec_data_string : /[A-Za-z0-9%#\\r\n ]+/
+    vec_data_block: SIGREF_EXPR "=" VEC_DATA_STRING
+    SIGREF_EXPR : USER_DEFINED_NAME
+    VEC_DATA_STRING : /[A-Za-z0-9%#\\r\n ]+/
 
 
 //w_stmt : ("W"       | "WaveformTable")        USER_DEFINED_NAME ";"
@@ -41,13 +43,31 @@ CLOSE_VECTOR_BLOCK : "}"
   KEYWORD_W: "W"
   KEYWORD_WAVEFORM_TABLE: "WaveformTable"
 
-//macro_stmt : "Macro"       USER_DEFINED_NAME (";" | vec_block)
-  macro_stmt : KEYWORD_MACRO USER_DEFINED_NAME (";" | vec_block)
+//macro_stmt : "Macro"       USER_DEFINED_NAME (";" | macro_vec_block)
+  macro_stmt : KEYWORD_MACRO USER_DEFINED_NAME (CLOSE_MACRO_CALL | macro_vec_block)
   KEYWORD_MACRO: "Macro"
+  
+  CLOSE_MACRO_CALL : ";"
 
-//call_stmt : "Call"        USER_DEFINED_NAME (";" | vec_block)
-  call_stmt : KEYWORD_CALL  USER_DEFINED_NAME (";" | vec_block)
+  macro_vec_block : OPEN_MACRO_VECTOR_BLOCK (macro_vec_data_block ";")* CLOSE_MACRO_VECTOR_BLOCK
+    OPEN_MACRO_VECTOR_BLOCK  : "{"
+      macro_vec_data_block: MACRO_SIGREF_EXPR "=" MACRO_VEC_DATA_STRING
+      MACRO_SIGREF_EXPR : USER_DEFINED_NAME
+      MACRO_VEC_DATA_STRING : /[A-Za-z0-9%#\\r\n ]+/
+    CLOSE_MACRO_VECTOR_BLOCK : "}"
+
+//call_stmt : "Call"        USER_DEFINED_NAME (";" | call_vec_block)
+  call_stmt : KEYWORD_CALL  USER_DEFINED_NAME (CLOSE_PROC_CALL | call_vec_block)
   KEYWORD_CALL: "Call"
+
+  CLOSE_PROC_CALL : ";"
+  
+  call_vec_block : OPEN_CALL_VECTOR_BLOCK (call_vec_data_block ";")* CLOSE_CALL_VECTOR_BLOCK
+    OPEN_CALL_VECTOR_BLOCK  : "{"
+      call_vec_data_block: CALL_SIGREF_EXPR "=" CALL_VEC_DATA_STRING
+      CALL_SIGREF_EXPR : USER_DEFINED_NAME
+      CALL_VEC_DATA_STRING : /[A-Za-z0-9%#\\r\n ]+/
+    CLOSE_CALL_VECTOR_BLOCK : "}"
 
 //l_stmt : "Loop"       INT "{"             (pattern_statement)* "}"
   l_stmt : KEYWORD_LOOP INT OPEN_LOOP_BLOCK (pattern_statement)* "}"

@@ -6,11 +6,13 @@
 
 spec_block : (category_spec | variable_spec)
 
-//category_spec: "Spec"         USER_DEFINED_NAME "{"             (category)* "}"
-  category_spec: KEYWORD_SPEC   USER_DEFINED_NAME open_spec_block (category)* close_spec_block
+//category_spec: "Spec"         [SPEC_DOMAIN_NAME] "{"             (category)* "}"
+  category_spec: KEYWORD_SPEC   [SPEC_DOMAIN_NAME] OPEN_SPEC_BLOCK (category)* CLOSE_SPEC_BLOCK
 KEYWORD_SPEC : "Spec"
 
-open_spec_block : "{"
+SPEC_DOMAIN_NAME : USER_DEFINED_NAME
+ 
+OPEN_SPEC_BLOCK : "{"
 
 //  category: "Category"        USER_DEFINED_NAME "{"                 (cat_typ | cat_all)* "}"
     category : KEYWORD_CATEGORY USER_DEFINED_NAME open_category_block (cat_typ | cat_all)* close_category_block
@@ -28,7 +30,7 @@ open_spec_block : "{"
         
     close_category_block : "}"
 
-close_spec_block : "}"
+CLOSE_SPEC_BLOCK : "}"
 
 //variable_spec: "Spec"         USER_DEFINED_NAME "{"                 variable "}"
   variable_spec: KEYWORD_SPEC   USER_DEFINED_NAME open_spec_var_block variable close_spec_var_block

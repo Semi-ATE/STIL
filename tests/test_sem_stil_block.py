@@ -15,7 +15,7 @@ def test_sem_err_stil_block_1():
 
     parser = STILParser(debug = True)
     tree = parser.parse_syntax(stil_file)
-    parser.parse_semantic(tree, stil_file, debug = False)
+    parser.parse_semantic(tree, stil_file, debug = True)
     assert parser.err_line == 1
     assert parser.err_col == 6
 

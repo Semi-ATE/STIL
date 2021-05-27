@@ -1,11 +1,11 @@
 %import base.USER_DEFINED_NAME
 %import base.ANN_TEXT
 
-//pattern_exec_block :  "PatternExec"     pattern_exec_name? "{"               patt_exec_statements "}"
-  pattern_exec_block :  KEYWORD_PATT_EXEC pattern_exec_name? OPEN_PATTERN_EXEC_BLOCK patt_exec_statements CLOSE_PATTERN_EXEC_BLOCK
+//pattern_exec_block :  "PatternExec"     PATTERN_EXEC_BLOCK_NAME? "{"               patt_exec_statements "}"
+  pattern_exec_block :  KEYWORD_PATT_EXEC PATTERN_EXEC_BLOCK_NAME? OPEN_PATTERN_EXEC_BLOCK patt_exec_statements CLOSE_PATTERN_EXEC_BLOCK
   KEYWORD_PATT_EXEC   : "PatternExec"                        
 
-pattern_exec_name :  USER_DEFINED_NAME 
+PATTERN_EXEC_BLOCK_NAME :  USER_DEFINED_NAME 
 
 OPEN_PATTERN_EXEC_BLOCK :  "{" 
 

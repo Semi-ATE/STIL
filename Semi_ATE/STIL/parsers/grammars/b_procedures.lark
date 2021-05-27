@@ -2,19 +2,19 @@
 %import pattern_statements.pattern_statement
 %import pattern_statements.shift_statement
 
-//procedures_block : "Procedures"       [procedures_domain_name] "{"                   (procedure_def)* "}" 
-  procedures_block : KEYWORD_PROCEDURES [procedures_domain_name] OPEN_PROCEDURES_BLOCK (procedure_def)* CLOSE_PROCEDURES_BLOCK
+//procedures_block : "Procedures"       [PROCEDURES_DOMAIN_NAME] "{"                   (procedure_def)* "}" 
+  procedures_block : KEYWORD_PROCEDURES [PROCEDURES_DOMAIN_NAME] OPEN_PROCEDURES_BLOCK (procedure_def)* CLOSE_PROCEDURES_BLOCK
   KEYWORD_PROCEDURES : "Procedures"
   
-procedures_domain_name : USER_DEFINED_NAME 
+PROCEDURES_DOMAIN_NAME : USER_DEFINED_NAME 
 
 OPEN_PROCEDURES_BLOCK   : "{"
 CLOSE_PROCEDURES_BLOCK  : "}"
 
-//procedure_def : procedure_name "{"            (pattern_statement | shift_statement )* "}"
-  procedure_def : procedure_name OPEN_PROCEDURE (pattern_statement | shift_statement)* "}"
+//procedure_def : procedure_name "{"            (pattern_statement | shift_statement)* "}"
+  procedure_def : PROCEDURE_NAME open_proc (pattern_statement | shift_statement)* close_proc
 
-    procedure_name  : USER_DEFINED_NAME 
+    PROCEDURE_NAME  : USER_DEFINED_NAME 
 
-    OPEN_PROCEDURE  : "{" 
-    CLOSE_PROCEDURE : "}" 
+    open_proc  : "{" 
+    close_proc : "}" 

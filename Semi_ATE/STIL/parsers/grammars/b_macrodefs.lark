@@ -2,20 +2,20 @@
 %import pattern_statements.pattern_statement
 %import pattern_statements.shift_statement
 
-//macrodefs_block : "MacroDefs"       [macrodefs_domain_name] "{"                   (macrodefs_def)* "}"
-  macrodefs_block : KEYWORD_MACRODEFS [macrodefs_domain_name] OPEN_MACRO_DEFS_BLOCK (macrodefs_def)* CLOSE_MACRO_DEFS_BLOCK 
+//macrodefs_block : "MacroDefs"       [MACRODEFS_DOMAIN_NAME] "{"                   (macrodefs_def)* "}"
+  macrodefs_block : KEYWORD_MACRODEFS [MACRODEFS_DOMAIN_NAME] OPEN_MACRO_DEFS_BLOCK (macrodefs_def)* CLOSE_MACRO_DEFS_BLOCK 
   KEYWORD_MACRODEFS : "MacroDefs"
 
-macrodefs_domain_name : USER_DEFINED_NAME 
+MACRODEFS_DOMAIN_NAME : USER_DEFINED_NAME 
 
 OPEN_MACRO_DEFS_BLOCK   : "{"
 CLOSE_MACRO_DEFS_BLOCK  : "}"
 
-//macrodefs_def : macro_name "{"        (pattern_statement | shift_statement)* "}"
-  macrodefs_def : macro_name OPEN_MACRO (pattern_statement | shift_statement)* "}"
+//macrodefs_def : MACRO_NAME "{"        (pattern_statement | shift_statement)* "}"
+  macrodefs_def : MACRO_NAME open_macro (pattern_statement | shift_statement)* close_macro
 
-    macro_name      : USER_DEFINED_NAME 
+    MACRO_NAME      : USER_DEFINED_NAME 
     
-    OPEN_MACRO      : "{" 
-    CLOSE_MACRO     : "}" 
+    open_macro  : "{" 
+    close_macro : "}" 
 

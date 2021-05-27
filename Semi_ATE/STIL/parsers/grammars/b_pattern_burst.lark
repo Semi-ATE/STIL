@@ -1,12 +1,12 @@
 %import base.USER_DEFINED_NAME
 %import base.annotation
 
-//pattern_burst_block : "PatternBurst"     pattern_burst_block_name "{"                pattern_burst_list_statements "}"
-  pattern_burst_block : KEYWORD_PATT_BURST pattern_burst_block_name OPEN_PATTERN_BURST_BLOCK pattern_burst_list_statements CLOSE_PATTERN_BURST_BLOCK
+//pattern_burst_block : "PatternBurst"     PATTERN_BURST_BLOCK_NAME "{"                pattern_burst_list_statements "}"
+  pattern_burst_block : KEYWORD_PATT_BURST PATTERN_BURST_BLOCK_NAME OPEN_PATTERN_BURST_BLOCK pattern_burst_list_statements CLOSE_PATTERN_BURST_BLOCK
 
 KEYWORD_PATT_BURST  : "PatternBurst"
                         
-pattern_burst_block_name : USER_DEFINED_NAME
+PATTERN_BURST_BLOCK_NAME : USER_DEFINED_NAME
 
 OPEN_PATTERN_BURST_BLOCK : "{"
 

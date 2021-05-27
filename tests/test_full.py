@@ -11,6 +11,6 @@ def test_ok_stil_1():
     stil_file = get_stil_file("test_full.stil")
 
     parser = STILParser()
-    tree = parser.parse_syntax(stil_file, debug = False)
+    tree = parser.parse_syntax(stil_file, debug = True)
     if tree == None:
         assert False

@@ -4,14 +4,14 @@
 %import base.annotation
 %import base.user_keyword_stmt
 
-//scan_structures_block : "ScanStructures"    [scan_structures_name] "{"                        (scan_chains | scan_chain_groups)*  "}"
-  scan_structures_block : KEYWORD_SCAN_STRUCT [scan_structures_name] OPEN_SCAN_STRUCTURES_BLOCK (scan_chains | scan_chain_groups)*  CLOSE_SCAN_STRUCTURES_BLOCK
+//scan_structures_block : "ScanStructures"    [SCAN_STRUCTURES_DOMAIN_NAME] "{"                        (scan_chains | scan_chain_groups)*  "}"
+  scan_structures_block : KEYWORD_SCAN_STRUCT [SCAN_STRUCTURES_DOMAIN_NAME] OPEN_SCAN_STRUCTURES_BLOCK (scan_chains | scan_chain_groups)*  CLOSE_SCAN_STRUCTURES_BLOCK
 
 KEYWORD_SCAN_STRUCT : "ScanStructures" 
 
 OPEN_SCAN_STRUCTURES_BLOCK: "{" 
 
-scan_structures_name : USER_DEFINED_NAME 
+SCAN_STRUCTURES_DOMAIN_NAME : USER_DEFINED_NAME 
 
 //  scan_chains : "ScanChain"       scan_chain_name "{"                   (scan_chain_items)+ "}"
     scan_chains : KEYWORD_SCANCHAIN scan_chain_name OPEN_SCAN_CHAIN_BLOCK (scan_chain_items)+ "}"

@@ -3,19 +3,19 @@
 %import base.scan_type
 %import base.annotation
 
-//signal_groups_block :  "SignalGroups"       (signal_groups_domain)? "{"                      (signal_groups_list | annotation)+ "}"
-  signal_groups_block :  KEYWORD_SIGNALGROUPS (signal_groups_domain)? OPEN_SIGNAL_GROUPS_BLOCK (signal_groups_list | annotation)+ CLOSE_SIGNAL_GROUPS_BLOCK
+//signal_groups_block :  "SignalGroups"       [SIGNAL_GROUPS_DOMAIN_NAME] "{"                      (signal_groups_list | annotation)+ "}"
+  signal_groups_block :  KEYWORD_SIGNALGROUPS [SIGNAL_GROUPS_DOMAIN_NAME] OPEN_SIGNAL_GROUPS_BLOCK (signal_groups_list | annotation)+ CLOSE_SIGNAL_GROUPS_BLOCK
 
 KEYWORD_SIGNALGROUPS : "SignalGroups"
 
-signal_groups_domain : USER_DEFINED_NAME 
+SIGNAL_GROUPS_DOMAIN_NAME : USER_DEFINED_NAME 
 
 OPEN_SIGNAL_GROUPS_BLOCK : "{" 
 
     // scan_type is common rule which can be find in the common.grammar file
-    signal_groups_list : signal_group_name "=" "'" sigref_name (sigref_expr)* "'" (scan_type | ";") 
+    signal_groups_list : SIGNAL_GROUP_NAME "=" "'" sigref_name (sigref_expr)* "'" (scan_type | ";") 
     
-    signal_group_name : USER_DEFINED_NAME 
+    SIGNAL_GROUP_NAME : USER_DEFINED_NAME 
     
     sigref_expr :  ("+" | "-") sigref_name
     

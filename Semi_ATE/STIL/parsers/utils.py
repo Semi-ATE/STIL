@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
 
+
 def get_line(file, line_number):
-    '''
+    """
     Return line content for the given line number
 
     Parameters
@@ -17,7 +18,7 @@ def get_line(file, line_number):
     line
         The line content for the given line number.
 
-    '''
+    """
     line_count = 0
     if len(file) < 255 and os.path.exists(file):
         with open(file) as f:
@@ -37,11 +38,11 @@ def get_line(file, line_number):
                 break
             line_count += 1
 
-        
     return None
 
+
 def get_col_error_pos(col):
-    '''
+    """
     Return string which points the error in a line
 
     Parameters
@@ -54,11 +55,11 @@ def get_col_error_pos(col):
     line : str
         Line with arrow up point to the error location.
 
-    '''
-    line = '\t'
+    """
+    line = "\t"
     i = 1
     while i < col:
-        line += ' '
+        line += " "
         i += 1
-    line += '↑'
-    return line   
+    line += "↑"
+    return line

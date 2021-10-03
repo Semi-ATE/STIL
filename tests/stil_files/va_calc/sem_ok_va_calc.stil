@@ -1,0 +1,295 @@
+STIL 1.0;
+
+Signals {
+
+    sig1 In;
+    sig2 In;
+    sig3 InOut;
+    sig4 Out;
+    sig5 Out;
+
+}
+
+
+SignalGroups {
+    sig12 = 'sig1+sig2';
+    all = 'sig12+sig3+sig4+sig5';
+    all_in = 'sig1+sig2+sig3';
+    all_out = 'sig3+sig4+sig5';
+}
+
+SignalGroups sig_group_domain{
+    all = 'sig5+sig4+sig3+sig2+sig1';
+    all_in = 'sig1+sig2+sig3';
+    all_out = 'sig3+sig4+sig5';
+}
+
+Timing {
+    WaveformTable wft_slow{
+        Period '100ns';
+             Waveforms {
+                 all_in  { 01Z { '0ns' ForceDown/ForceUp/Z; '25ns' U/D/Z; }}
+                 all_out { LHX { '0ns' L/H/X; '25ns' H; }}
+                 all_in  { P { '0ns' P; }}
+                 all_out { P { '0ns' L; }}
+                 all_in  { p { '0ns' P; }}
+                 all_out { p { '0ns' L; }}
+                 all_in  { M { '0ns' P;}}
+                 all_out { M { '0ns' X; }}
+                 all_in  { m { '0ns' P;}}
+                 all_out { m { '0ns' X; }}
+                 all_in  { S { '0ns' P;}}
+                 all_out { s { '0ns' X; }}
+             }
+    }
+    WaveformTable wft_fast{
+        Period '500ns';
+             Waveforms {
+                 all_in  { 01Z { '0ns' ForceDown/ForceUp/Z; '250ns' U/D/Z; }}
+                 all_out { LHX { '0ns' L/H/X; '250ns' H; }}
+                 all_in  { P { '0ns' P; }}
+                 all_out { P { '0ns' L; }}
+                 all_in  { p { '0ns' P; }}
+                 all_out { p { '0ns' L; }}
+                 all_in  { M { '0ns' P;}}
+                 all_out { M { '0ns' X; }}
+                 all_in  { m { '0ns' P;}}
+                 all_out { m { '0ns' X; }}
+                 all_in  { S { '0ns' P;}}
+                 all_out { s { '0ns' X; }}
+             }
+    }
+}
+
+Timing timing_domain{
+
+    SignalGroups sig_group_domain;
+
+    WaveformTable "wft_slow"{
+        Period '100ns';
+             Waveforms {
+                 all_in  { 01Z { '0ns' ForceDown/ForceUp/Z; '25ns' U/D/Z; }}
+                 all_out { LHX { '0ns' L/H/X; '25ns' H; }}
+                 all_in  { P { '0ns' P; }}
+                 all_out { P { '0ns' L; }}
+                 all_in  { p { '0ns' P; }}
+                 all_out { p { '0ns' L; }}
+                 all_in  { M { '0ns' P;}}
+                 all_out { M { '0ns' X; }}
+                 all_in  { m { '0ns' P;}}
+                 all_out { m { '0ns' X; }}
+             }
+    }
+
+    WaveformTable "wft_fast"{
+        Period '500ns';
+             Waveforms {
+                 all_in  { 01Z { '0ns' ForceDown/ForceUp/Z; '0.25e-9s' U/D/Z; }}
+                 all_out { LHX { '0ns' L/H/X; '250ns' H; }}
+                 all_in  { P { '0ns' P; }}
+                 all_out { P { '0ns' L; }}
+                 all_in  { p { '0ns' P; }}
+                 all_out { p { '0ns' L; }}
+                 all_in  { M { '0ns' P;}}
+                 all_out { M { '0ns' X; }}
+                 all_in  { m { '0ns' P;}}
+                 all_out { m { '0ns' X; }}
+             }
+    }
+}
+
+
+PatternBurst patt_burst_domain{
+    SignalGroups sig_group_domain;
+    MacroDefs macro_domain;
+    Procedures proc_domain;
+    Start start_label;
+    Stop  stop_label;
+    Termination {all_in TerminateUnknown;}
+    PatList { patt_w_domain; }
+}
+
+PatternBurst patt_burst_global{
+    PatList { patt_wo_domain;}
+//    PatList { patt_wo_domain; patt_wo_domain_1;}
+//    PatList { patt_wo_domain_1; }
+}
+
+PatternExec patt_exec{
+    Timing timing_domain;
+    PatternBurst patt_burst_domain;
+}
+
+
+PatternExec {
+    PatternBurst patt_burst_global;
+}
+
+
+Procedures {
+
+    proc_wo_shift_3VA{
+                W wft_slow;
+                V {all = PPPPP;}
+                IddqTestPoint;
+                V {all = 000Pp;}
+                V {all = ppppp;}
+    }
+
+    proc_w_shift_5VA{
+                W wft_fast;
+                C {sig1 = 1; sig5 = H;}
+//                V {all = #PPP#;}
+                V {all = 01%LH;}
+                
+                Shift {V {all = #00X#;}}
+                
+                V {all = 01%LH;}
+//                V {all = #ppp#;}
+                V {all = 011HH;}
+    }
+
+}
+
+Procedures proc_domain{
+
+    proc_wo_shift_6VA{
+                W "wft_slow";
+                 V {all = PPPPP;}
+Loop 3{               
+                V {all = XXX00;}
+      }          V {all = LLL11;}
+                V {all = XXX00;}
+                V {all = LLL00;}
+                V {all = ppppp;}
+    }
+
+    proc_w_shift_9VA{
+                W "wft_fast";
+                V {all = PPPPP;}
+                V {all = LLL00;}
+                V {all = XXX00;}
+                V {all = LLL00;}
+                
+                Shift {V {all = LL#11;}}
+                
+                V {all = LLL11;}
+                V {all = LLL11;}
+                V {all = LLL11;}
+                V {all = ppppp;}
+    }
+}
+
+MacroDefs {
+
+    macro_wo_shift_3VA{
+                W wft_slow;
+                V {all = MMMMM;}
+Loop 3{
+                V {all = 000Mm;}
+                V {all = 000Mm;}
+}              
+                V {all = mmmmm;}
+    }
+
+    macro_w_shift_5VA{
+                W wft_fast;
+                V {all = 000LL;}
+//                V {all = #00X#;}
+                V {all = 000LL;}
+                
+                Shift {V {all = #00X#;}}
+                
+                V {all = 111HH;}
+//                V {all = #11HH;} 
+    }
+
+
+}
+
+
+MacroDefs macro_domain{
+
+    macro_wo_shift_6VA{
+                W "wft_slow";
+                V {all = MMMMM;}
+                V {sig1 = 1;}
+                V {all = LLL00;}
+                V {all = LLL11;}
+                V {all = LLL00;}
+                V {all = MMMMM;}
+    }
+
+    macro_w_shift_9VA{
+                W "wft_fast";
+                V {all = XXX00;}
+                V {all = LLL00;}
+                V {all = XXX00;}
+                V {all = LLL00;}
+                
+                Shift {V {all = LL#11;}}
+                
+                V {all = LLL11;}
+                V {all = LLL11;}
+                V {all = LLL11;}
+                V {all = LL#11;}
+    }
+
+}
+
+Pattern patt_wo_domain_1{
+    W wft_slow;
+    V {all = 111XX;}
+}
+
+Pattern patt_wo_domain{
+start:
+    W wft_slow;
+    C {sig1 = 0;}
+    V {sig2 = 0; sig3 = 0; sig4 = X; sig5 = X;}
+//   Macro macro_wo_shift_3VA;
+    V {all = 000XX;}
+    Call proc_w_shift_5VA{sig3 = P; sig5 = SssssssS\r3 s; sig1 = sSSSSSSs\r3 sss;}
+//    Call proc_w_shift_5VA{sig5 = SssssssS\r3 s;};
+//    Call proc_w_shift_5VA{sig3 = SssssssS\r3 s; };
+    V {all = 000XX;}
+Loop 4{
+    V {all = 000XX;}
+    V {sig1 = 1; sig2 = 1;}
+} 
+    V {all = 000LL;}
+//    Call proc_w_shift_5VA;
+    V {sig1 = 1; sig2 = 1;}
+    V {all = 000LL;}
+    
+    Call proc_wo_shift_3VA;
+//    Call proc_w_shift_5VA{sig1 = LLLLHHHH\r3 X;}
+    
+    Macro macro_wo_shift_3VA;
+    Macro macro_w_shift_5VA{sig1 = XLLLHHHH\r3 X; sig5 = 0Z001111\r3 X; }
+//    Macro macro_w_shift_5VA{sig1 = LLLLHHHH\r4 X;}
+
+    W wft_fast;
+    V {all = 000XX;}
+    V {all = 000LL;}
+}
+
+Pattern patt_w_domain{
+    W "wft_slow";
+    V {all = PXX00;}
+    V {sig1 = 1;}
+    V {all = LLL00;}
+    V {all = XXXZZ;}
+    
+    
+    Call proc_wo_shift_6VA;
+//    Call proc_w_shift_9VA{sig1 = LLLLHHHH\r3 X;}
+    V {all = XXX00;}
+    
+ //   Macro macro_wo_shift_6VA;
+//    Macro macro_w_shift_9VA{sig1 = LLLLHHHH\r3 X;}
+
+    W "wft_fast";
+    V {all = XXX00;}
+    V {all = LLL00;}
+}

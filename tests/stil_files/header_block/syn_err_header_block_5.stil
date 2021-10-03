@@ -1,0 +1,4 @@
+STIL 1.0;
+
+Header { Title none_quoted_string ; }
+// ERROR expecting due missing double quoted string

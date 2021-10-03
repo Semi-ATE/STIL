@@ -1,0 +1,19 @@
+STIL 1.0;
+
+Signals {
+    Signal1 In;
+    "Signal2" Out;
+    Signal4 InOut;
+    Signal3 Pseudo;
+    Signal4 Supply;
+    
+    Signal In { Termination TerminateHigh; 
+                DefaultState U;
+                Base Hex ABC;
+                Alignment MSB;
+                ScanIn 1111;
+                ScanOut 2222;
+                DataBitCount 3333; 
+                }
+}
+// PASS

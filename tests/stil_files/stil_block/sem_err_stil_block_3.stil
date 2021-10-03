@@ -1,0 +1,38 @@
+STIL 1.0 { 
+    DCLevels 2005; 
+   }
+// ERROR in the DCLevels extension year
+Signals {
+
+    signal InOut;
+
+}
+
+
+SignalGroups {
+    ALL = 'signal';
+}
+
+Timing {
+
+    WaveformTable "wft"{
+        Period '100ns';
+             Waveforms {
+                 signal { 01 { '0ns' D; '250ns' U; }}
+             }
+    }
+}
+
+PatternBurst patt_burst{
+    PatList { PATT_START; }
+}
+
+PatternExec {
+    PatternBurst patt_burst;
+}
+
+Pattern PATT_START{
+
+                W wft;
+                V {ALL = 0;}
+}

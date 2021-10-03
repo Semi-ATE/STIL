@@ -1,0 +1,4 @@
+STIL 1.0;
+
+Header {
+// ERROR Header is a block and must end with closed curly bracket '}'

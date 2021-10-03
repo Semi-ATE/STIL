@@ -3,7 +3,7 @@ import inspect
 
 
 class SelectorBlockParser:
-    def __init__(self, debug=True):
+    def __init__(self, debug=False):
         self.debug = debug
 
     def trace(self, func_name, t):

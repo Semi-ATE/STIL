@@ -1,0 +1,6 @@
+STIL 1.0;
+
+Signals {
+    Signal In { ScanIn number; }
+}
+// ERROR: Missing ScanIn number value

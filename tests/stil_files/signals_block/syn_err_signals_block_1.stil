@@ -1,0 +1,4 @@
+STIL 1.0;
+
+Signals ;
+// ERROR : Signals is a block and must start with open curly bracket '{'

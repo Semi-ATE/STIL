@@ -15,4 +15,11 @@ from .PatternBurstBlockParser import PatternBurstBlockParser
 from .PatternExecBlockParser import PatternExecBlockParser
 from .PatternBlockParser import PatternBlockParser
 from .SyntaxParserExceptions import SyntaxParserExceptions
+from .STILSemanticException import STILSemanticException
+from .STILDumpCompilerExceptions import STILDumpCompilerException
+from .STILDumpCompilerExceptions import STILDumpCompilerInternalException
+from .DomainUtils import DomainUtils
+from .WFCUtils import WFCUtils
+from .HashInfo import HashInfo
+from .PattVecCmd import PattVecCmd
 from .utils import get_line, get_col_error_pos

@@ -11,7 +11,7 @@ KEYWORD_SIGNALS: "Signals"
 
 OPEN_SIGNAL_BLOCK : "{"
 
-    signals_list : SIGNAL_NAME SIGNAL_TYPE ( ";" | signal_attributes)
+    signals_list : SIGNAL_NAME SIGNAL_TYPE ( SIGNAL_END_STMT | signal_attributes)
     
     SIGNAL_NAME: SIGNAL_NAME_TERMINAL
     
@@ -23,6 +23,8 @@ OPEN_SIGNAL_BLOCK : "{"
     KEYWORD_ST_SUPPLY   : "Supply"
     KEYWORD_ST_PSEUDO   : "Pseudo"
     
+    SIGNAL_END_STMT : ";"
+    
 //  signal_attributes : "{"                    (termination | default_state | base | alignment | scan_in | scan_out | data_bit_count)* "}"
     signal_attributes : OPEN_SIGNAL_ATTR_BLOCK (termination | default_state | base | alignment | scan_in | scan_out | data_bit_count)* CLOSE_SIGNAL_ATTR_BLOCK
 
@@ -33,8 +35,11 @@ OPEN_SIGNAL_BLOCK : "{"
         KEYWORD_TERMINATION : "Termination"
     
 //      default_state   : "DefaultState"        ("U" | "D" | "Z" | "ForceUp" | "ForceDown" | "ForceOff") ";" 
-        default_state   : KEYWORD_DEFAULT_STATE ("U" | "D" | "Z" | "ForceUp" | "ForceDown" | "ForceOff") ";" 
+        default_state   : KEYWORD_DEFAULT_STATE (SIG_DEF_STATE_UP | SIG_DEF_STATE_DOWN | SIG_DEF_STATE_OFF) ";" 
         KEYWORD_DEFAULT_STATE : "DefaultState"
+        SIG_DEF_STATE_UP   : "U" | "ForceUp"
+        SIG_DEF_STATE_DOWN : "D" | "ForceDown"
+        SIG_DEF_STATE_OFF  : "Z" | "ForceOff"
     
 //      base            : "Base"       ("Hex" | "Dec") WFC_LIST ";" 
         base            : KEYWORD_BASE ("Hex" | "Dec") WFC_LIST ";" 

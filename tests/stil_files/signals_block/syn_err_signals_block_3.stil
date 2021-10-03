@@ -1,0 +1,6 @@
+STIL 1.0;
+
+Signals {
+    Signal ;
+}
+// ERROR: Missing signal type

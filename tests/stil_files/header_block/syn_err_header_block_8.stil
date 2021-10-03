@@ -1,0 +1,4 @@
+STIL 1.0;
+
+Header { NoneExistingKeyword ; }
+// ERROR expecting one of keywords : Date, source, History, Title or Ann

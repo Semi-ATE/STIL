@@ -1,0 +1,4 @@
+STIL 1.0;
+
+Header { Date "Tue Apr 28 12:23:48 EST 1996" }
+// ERROR Date keyword must end with ';'

@@ -1,0 +1,14 @@
+STIL 1.0;
+
+Signals {
+    sig1 In;
+    sig2 Out;
+    sig3 InOut;
+}
+
+SignalGroups { 
+    all = 'sig1 + sig2 + sig3';
+    s3 = 'all - sig2 - sig1 + sig3';
+}
+
+// ERROR : two references of sig3 exists in s3 group

@@ -1,0 +1,50 @@
+STIL 1.0 { 
+    Design 2005; 
+   }
+
+Header {
+   Title "STIL output";
+   Date "Thu Feb 25 21:18:51 2021";
+   Source "Minimal STIL for design 'IC'";
+   Ann {* test " Annotation " !@#$%^&()\-+=|\`~\{\[\}\]:;\',<.>\/?\\ *}
+   History {
+      Ann {* separate data "Tue July 21 10:11:57 2020"  *}
+      Ann {* date "Tue July 21 10:11:57 2021"  *}
+    }
+}
+
+Signals {
+
+    Signal InOut;
+    "Signal" InOut;
+// PASS: Signal CLOCK is not duplicated, because have ""
+}
+
+
+SignalGroups {
+    ALL = 'Signal';
+}
+
+Timing {
+
+    WaveformTable wft{
+        Period '100ns';
+             Waveforms {
+                 Signal { 01 { '0ns' D; '250ns' U; }}
+             }
+    }
+}
+
+PatternBurst patt_burst{
+    PatList { PATT_START; }
+}
+
+PatternExec {
+    PatternBurst patt_burst;
+}
+
+Pattern PATT_START{
+
+                W wft;
+                V {ALL = 0;}
+}

@@ -1,0 +1,6 @@
+STIL 1.0;
+
+Signals {
+    Signal In { Base Hex; }
+}
+// ERROR: Missing list of WFC

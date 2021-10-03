@@ -40,6 +40,7 @@ blocks : (  annotation
            | procedures_block        
            | macrodefs_block         
            | pattern_block)*
+           
 
 //include : "Include"       ESCAPED_STRING ["IfNeed"         block ] ";"
   include : KEYWORD_INCLUDE ESCAPED_STRING [KEYWORD_IFNEEDED block ] ";"

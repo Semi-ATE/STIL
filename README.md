@@ -13,7 +13,7 @@ Standard Tester Interface Language [IEEE1450]
 [![GitHub issues](https://img.shields.io/github/issues/Semi-ATE/STIL)](https://github.com/Semi-ATE/STIL/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/Semi-ATE/STIL)](https://github.com/Semi-ATE/STIL/pulls)
 
-This repository contains STIL parser written in Python using Lark parser library and Language Server Protocol (LSP) for integration into IDE.
+This repository contains STIL parser and dump compiler written in Python using Lark parser library and Language Server Protocol (LSP) for integration into IDE.
 The work is in progress and the parser is not yet ready to be used in production environment.
 
 
@@ -26,13 +26,30 @@ The work is in progress and the parser is not yet ready to be used in production
 from Semi_ATE.STIL.parsers.STILParser import STILParser
 
 stil_file = "PATH_TO_STIL_FILE"
-parser = STILParser()
-tree = parser.parse_syntax(stil_file)
-if tree != None:
-  parser.parse_semantic(tree, stil_file)
+parser = STILParser(stil_file)
+parser.parse_syntax()
+parser.parse_semantic()
 if parser.err_msg == None:
   print("No errors are found during STIL file parsing")
 else:
   print("Found error during STIL file parsing")
+```
+
+## Use a dump compiler to understand how to make a own compiler.
+The dump compiler will save content of the STIL file into one or more text files.
+The files contain WFC data for signals, commands etc.
+The compiler can expand the procedures and shift statements if needed.
+For detail information, read the intro text of the Semi_ATE.STIL.parsers.STILDumpCompiler
+
+```python
+from Semi_ATE.STIL.parsers.STILDumpCompiler import STILDumpCompiler
+
+stil_file = "PATH_TO_STIL_FILE"
+out_folder = "PATH_TO_OUTPUT_FOLDER"
+
+compiler = STILDumpCompiler(
+    stil_file, expanding_procs=True, is_scan_mem_available=True, out_folder = out_folder
+)
+compiler.compile()
 
 ```

@@ -5,20 +5,23 @@
 %import base.SIGNAL_NAME_TERMINAL
 
 //timing_block : "Timing"       [TIMING_DOMAIN_NAME] "{"               (waveform_table | annotation)+ "}"
-  timing_block : KEYWORD_TIMING [TIMING_DOMAIN_NAME] OPEN_TIMING_BLOCK (waveform_table | annotation)+ CLOSE_TIMING_BLOCK 
+  timing_block : KEYWORD_TIMING [TIMING_DOMAIN_NAME] OPEN_TIMING_BLOCK (signal_groups | waveform_table | annotation)+ CLOSE_TIMING_BLOCK 
 KEYWORD_TIMING : "Timing"
 
 TIMING_DOMAIN_NAME : USER_DEFINED_NAME 
 
 OPEN_TIMING_BLOCK : "{" 
 
-//  waveform_table : "WaveformTable" wft_name "{"                       period waveforms "}"
-    waveform_table : "WaveformTable" wft_name OPEN_WAVEFORM_TABLE_BLOCK period waveforms CLOSE_WAVEFORM_TABLE_BLOCK
+    signal_groups : "SignalGroups" SIGNAL_GROUPS_DOMAIN ";"
+    SIGNAL_GROUPS_DOMAIN : USER_DEFINED_NAME
+
+//  waveform_table : "WaveformTable" WFT_NAME "{"                       period waveforms "}"
+    waveform_table : "WaveformTable" WFT_NAME OPEN_WAVEFORM_TABLE_BLOCK period waveforms CLOSE_WAVEFORM_TABLE_BLOCK
     KEYWORD_WAVEFORM_TABLE : "WaveformTable"
     
     OPEN_WAVEFORM_TABLE_BLOCK : "{" 
     
-        wft_name : USER_DEFINED_NAME 
+        WFT_NAME : USER_DEFINED_NAME 
         
 //      period : "Period"       TIME_EXPR ";" 
         period : KEYWORD_PERIOD TIME_EXPR ";" 
@@ -30,21 +33,20 @@ OPEN_TIMING_BLOCK : "{"
         
             OPEN_WAVEFORMS_BLOCK : "{" 
             
-//              waveforms_list : wf_sigref_expr "{"            wfc_def_list "{"              (wfcs_definition)+  "}"              "}"
-                waveforms_list : wf_sigref_expr OPEN_WFC_BLOCK wfc_def_list OPEN_WFCS_BLOCK  (wfcs_definition)+  CLOSE_WFCS_BLOCK CLOSE_WFC_BLOCK
+//              waveforms_list : WF_SIGREF_EXPR "{"            WFC_LIST "{"              (wfcs_definition)+  "}"              "}"
+                waveforms_list : WF_SIGREF_EXPR OPEN_WFC_BLOCK WFC_LIST OPEN_WFCS_BLOCK  (wfcs_definition)+  CLOSE_WFCS_BLOCK CLOSE_WFC_BLOCK
 
-                wf_sigref_expr : SIGNAL_NAME_TERMINAL 
+                WF_SIGREF_EXPR : SIGNAL_NAME_TERMINAL 
 
                 OPEN_WFC_BLOCK : "{"
 
-                    wfc_def_list   : ALPHA_NUM 
+                    WFC_LIST   : ALPHA_NUM 
 
                         OPEN_WFCS_BLOCK : "{"
 
-                            wfcs_definition: TIME_EXPR events ";" 
-                            events : (event)+ 
-                            event  : (  "/"                 
-                                      | "ForceDown"         | "D" 
+                            wfcs_definition: TIME_EXPR (EVENT | events) ";" 
+                            events : EVENT ("/" EVENT)+
+                            EVENT  : (  "ForceDown"         | "D" 
                                       | "ForceUp"           | "U" 
                                       | "ForceOff"          | "Z" 
                                       | "ForcePrior"        | "P" 

@@ -3,78 +3,31 @@
 import os
 
 from lark import Lark
-from lark import Transformer
 from lark.exceptions import UnexpectedToken
 from lark.exceptions import UnexpectedCharacters
 from lark.exceptions import VisitError
 
-from . import STILBlockParser
-from . import HeaderBlockParser
-from . import SignalsBlockParser
-from . import SignalGroupsBlockParser
-from . import TimingBlockParser
-from . import ScanStructBlockParser
-from . import SelectorBlockParser
-from . import SpecBlockParser
-from . import MacroDefsBlockParser
-from . import ProceduresBlockParser
-from . import PatternBurstBlockParser
-from . import PatternBlockParser
-from . import PatternExecBlockParser
+from .STILLark import STILLark
+
 from . import SyntaxParserExceptions
+from . import STILSemanticException
 from . import utils
 
-# import inspect
+class STILParser(STILLark):
+    def __init__(self, stil_file, propagate_positions=True, expanding_procs = False, debug=False):
 
-# ToDo : add all semantic parsers here
-class STIL(
-    Transformer,
-    STILBlockParser,
-    HeaderBlockParser,
-    SignalsBlockParser,
-    SignalGroupsBlockParser,
-    TimingBlockParser,
-    ScanStructBlockParser,
-    SpecBlockParser,
-    SelectorBlockParser,
-    MacroDefsBlockParser,
-    ProceduresBlockParser,
-    PatternBurstBlockParser,
-    PatternExecBlockParser,
-    PatternBlockParser,
-):
-    def __init__(self, debug=False):
-        self.debug = debug
-
-        STILBlockParser.__init__(self, debug)
-        HeaderBlockParser.__init__(self, debug)
-        SignalsBlockParser.__init__(self, debug)
-        SignalGroupsBlockParser.__init__(self, debug)
-        TimingBlockParser.__init__(self, debug)
-        ScanStructBlockParser.__init__(self, debug)
-        SelectorBlockParser.__init__(self, debug)
-        SpecBlockParser.__init__(self, debug)
-        MacroDefsBlockParser.__init__(self, debug)
-        ProceduresBlockParser.__init__(self, debug)
-        PatternBurstBlockParser.__init__(self, debug)
-        PatternExecBlockParser.__init__(self, debug)
-        PatternBlockParser.__init__(self, debug)
-
-    def trace(self, func_name, t):
-        head = f"{__name__}:{func_name}"
-
-        if isinstance(t, list):
-            print(f"{head} rule value {t}")
-        else:
-            print(f'{head} token value "{t}" at line {t.line} column {t.column}')
-
-
-class STILParser:
-    def __init__(self, propagate_positions=True, debug=False):
+        STILLark.__init__(self, stil_file, debug)
 
         self.err_line = -1
         self.err_col = -1
         self.err_msg = ""
+
+        self.tree = None
+
+        self.is_parsing_done = False
+        # Depends on ATE pattern engine capabilities, procedures can be expanded or not.
+        # This choice impacts calculation of the total VA
+        self.expanding_procs = expanding_procs
 
         grammar_base_file = os.path.dirname(__file__)
         # Adding main lark grammar file
@@ -92,10 +45,8 @@ class STILParser:
                 import_paths=ip,
             )
 
-    def parse_syntax(self, stil, debug=False):
+    def parse_syntax(self, debug=False):
         """
-
-
         Parameters
         ----------
         stil : str
@@ -114,23 +65,26 @@ class STILParser:
             print("Start of syntax parsing :\n")
 
         try:
-            if len(stil) < 1024 and os.path.exists(stil):
-                with open(stil) as data:
-                    tree = self.parser.parse(data.read())
+            if len(self.stil_file) < 1024 and os.path.exists(self.stil_file):
+                with open(self.stil_file) as data:
+                    self.tree = self.parser.parse(data.read())
                     if debug == True:
-                        print(tree.pretty())
+                        print(self.tree.pretty())
             else:
-                tree = self.parser.parse(stil)
+                self.tree = self.parser.parse(self.stil_file)
                 if debug == True:
-                    print(tree.pretty())
+                    print(self.tree.pretty())
 
             if debug:
                 print("\nEnd of syntax parsing")
                 print("===========================\n")
 
-            return tree
+            return self.tree
 
         except UnexpectedToken as e:
+
+#            raise Exception()
+#            print(f"UnexpectedToken Exception:\n {e.token.type}")
 
             if debug:
                 print(f"UnexpectedToken Exception:\n {e}")
@@ -140,24 +94,40 @@ class STILParser:
 
             col = e.column
             self.err_col = col
+            
+            line_with_error = utils.get_line(self.stil_file, e.line)
+
+            self.err_msg = f"\nERROR:\tIn the line number {line}, column {col}:\n"
+            self.err_msg += f"\t{line_with_error}\n"
+            self.err_msg += utils.get_col_error_pos(col) + "\n"
 
             if str(e).startswith("Unexpected token Token('$END'"):
-                print("\nEnd of the file reached, but expected one of the tokens:")
                 s = str(e).split("\n")
                 i = 0
                 for s1 in s:
                     i += 1
                     if i == 3:
-                        print(s1)
-                return
-
-            line_with_error = utils.get_line(stil, e.line)
-
-            self.err_msg = f"\nERROR:\tIn the line number {line}, column {col}:\n"
-            self.err_msg += f"\t{line_with_error}\n"
-            self.err_msg += utils.get_col_error_pos(col) + "\n"
-            self.err_msg += f"\tUnexpected token : {e.token}\n"
-            self.err_msg += f"\t{SyntaxParserExceptions(debug).transform(e.expected)}\n"
+                        strim = s1.strip()
+                        if strim == "*":
+                            lines = line_with_error.strip()
+                            exp_token = "';' or '}'"
+                            if (lines.endswith(";")):
+                                exp_token = "'}'"
+                            self.err_msg += f"\tEnd of the file reached, but expected {exp_token}"
+                        else:
+                            if strim.startswith("* "):
+                                self.err_msg += "\tUnexpected end of the file or block is not closed (including nested ones) \n"
+#                                expected = strim[2:]
+#                                self.err_msg += f"\t{SyntaxParserExceptions(debug).transform([expected])}\n"
+                            else:
+                                self.err_msg += s1 + "\n"
+            else:
+                self.err_msg += f"\tUnexpected token : {e.token}\n"
+                token = e.token.type
+                if token == "b_pattern_burst__CLOSE_PATT_OR_BURST":
+                    self.err_msg += "\tDid you miss to write the mandatory PatList block ? \n"
+                else:
+                    self.err_msg += f"\t{SyntaxParserExceptions(debug).transform(e.expected)}\n"
 
             print(self.err_msg)
 
@@ -172,7 +142,7 @@ class STILParser:
             col = e.column
             self.err_col = col
 
-            line_with_error = utils.get_line(stil, line)
+            line_with_error = utils.get_line(self.stil_file, line)
 
             self.err_msg = f"\nERROR:\tIn the line number {line}, column {col}:\n"
             self.err_msg += f"\t{line_with_error}\n"
@@ -184,35 +154,52 @@ class STILParser:
 
         return None
 
-    def parse_semantic(self, tree, stil, debug=False):
+    def parse_semantic(
+        self,
+        # stil,
+        debug=False,
+    ):
 
         # if tree is None, syntax parsing is already failed
-        if tree != None:
-            print("\nStart of semantic parsing :\n")
+        if self.tree != None:
             if debug:
                 print("\n===========================")
                 print("Start of semantic parsing :\n")
-
-            t = STIL(debug)
             try:
-
-                t.transform(tree)
+                self.transform(self.tree)
+                self.eof()
+                self.is_parsing_done = True
 
                 if debug:
                     print("\nEnd of semantic parsing")
                     print("===========================\n")
-
+                                    
             except VisitError as e:
 
+                #raise Exception()
+                #if debug:
+                #    raise Exception()
+                
                 line = e.obj.line
                 self.err_line = line
                 col = e.obj.column
                 self.err_col = col
+                err_msg = e.orig_exc
+                
+                if isinstance(e.orig_exc, STILSemanticException):
+                    line = e.orig_exc.line
+                    self.err_line = line
+                    col = e.orig_exc.col
+                    self.err_col = col
+                    err_msg = e.orig_exc.msg
 
-                line_with_error = utils.get_line(stil, line)
+                line_with_error = utils.get_line(self.stil_file, line)
                 self.err_msg = f"\nERROR:\tIn the line number {line}, column {col} [{line},{col}]:\n"
                 self.err_msg += f"\t{line_with_error}\n"
-                self.err_msg += utils.get_col_error_pos(e.obj.column) + "\n"
-                self.err_msg += f"\t{e.orig_exc}\n"
+                self.err_msg += utils.get_col_error_pos(col) + "\n"
+                self.err_msg += f"\t{err_msg}\n"
 
                 print(self.err_msg)
+
+        else:
+            print("ERROR : syntax parse must be performed before semantic parsing b")

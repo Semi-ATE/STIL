@@ -1,0 +1,18 @@
+STIL 1.0;
+
+Signals {
+    "sig1" In;
+    sig1 In;
+    sig2 Out;
+    sig3 InOut;
+}
+
+SignalGroups { 
+    all = '"sig1" + sig1 + sig2 + sig3';
+}
+
+SignalGroups named{ 
+    all = 'sig1 + sig2 + sig3';
+}
+
+// PASS : signals with same names, but one with "" are different signals

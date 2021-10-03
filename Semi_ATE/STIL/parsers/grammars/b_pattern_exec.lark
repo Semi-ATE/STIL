@@ -13,23 +13,23 @@ OPEN_PATTERN_EXEC_BLOCK :  "{"
     
 //  pes_category        : "Category"        category_name ";"
     pes_category        : KEYWORD_CATEGORY  category_name ";"
-    KEYWORD_CATEGORY : "Category"
+    KEYWORD_CATEGORY    : "Category"
     category_name       :  USER_DEFINED_NAME 
 
 //  pes_selelector      : "Selector"        selector_name ";"
     pes_selelector      : KEYWORD_SELECTOR  selector_name ";"
-    KEYWORD_SELECTOR : "Selector"
+    KEYWORD_SELECTOR    : "Selector"
     selector_name       :  USER_DEFINED_NAME 
 
-//  pes_timing          : "Timing"          timing_name ";"
-    pes_timing          : KEYWORD_TIMING    timing_name ";"
-    KEYWORD_TIMING : "Timing"
-    timing_name         :  USER_DEFINED_NAME 
+//  pes_timing          : "Timing"          TIMING_DOMAIN ";"
+    pes_timing          : KEYWORD_TIMING    TIMING_DOMAIN ";"
+    KEYWORD_TIMING      : "Timing"
+    TIMING_DOMAIN       :  USER_DEFINED_NAME 
 
 //  pes_patt_burst      : "PatternBurst"        pattern_burst_name ";"
-    pes_patt_burst      : KEYWORD_PATTREN_BURST pattern_burst_name ";"
+    pes_patt_burst      : KEYWORD_PATTREN_BURST PATTERN_BURST_NAME ";"
     KEYWORD_PATTREN_BURST : "PatternBurst"
-    pattern_burst_name  :  USER_DEFINED_NAME 
+    PATTERN_BURST_NAME  :  USER_DEFINED_NAME 
 
 CLOSE_PATTERN_EXEC_BLOCK :  "}" 
 

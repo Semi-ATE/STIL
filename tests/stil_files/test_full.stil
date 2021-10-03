@@ -267,7 +267,7 @@ PatternExec patt_EXEC_12345{
 Procedures proc_domain1{
 
     proc21{
-             lab :   W wft1;
+             lab:   W wft1;
                 V {ALL = 00LX; S1 = 00LX;}
               l2 :  Vector {ALL = 00LX;}
                 C {ALL = 00LX;}
@@ -278,7 +278,7 @@ Procedures proc_domain1{
 Procedures proc_domain2{
 
     proc1{
-             lab :   W wft1;
+             lab:   W wft1;
                 V {ALL = 00LX; S1 = 00LX;}
               l2 :  Vector {ALL = 00LX;}
             
@@ -323,7 +323,7 @@ Procedures proc_domain2{
                             V {ALL = 00LX; S1 = 00LX;}
                     }
                     
-                GoTo hell;
+                Goto hell;
                 
                 BreakPoint;
                 BreakPoint {
@@ -399,7 +399,7 @@ Pattern PATT_START{
 
                 Macro macro2{ DATA1 = 010011001LLHLLL;}
                 
-                GoTo start_label;
+                Goto start_label;
 
                 Stop;
 

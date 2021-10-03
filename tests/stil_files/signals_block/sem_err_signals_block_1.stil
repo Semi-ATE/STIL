@@ -15,22 +15,22 @@ Header {
 
 Signals {
 
-    CLOCK InOut;
-    CLOCK InOut;
-
+    Signal InOut;
+    Signal InOut;
+// ERROR: Signal duplication
 }
 
 
 SignalGroups {
-    ALL = 'signal';
+    ALL = 'Signal';
 }
 
 Timing {
 
-    WaveformTable "wft"{
+    WaveformTable wft{
         Period '100ns';
              Waveforms {
-                 signal { 01 { '0ns' D; '250ns' U; }}
+                 Signal { 01 { '0ns' D; '250ns' U; }}
              }
     }
 }

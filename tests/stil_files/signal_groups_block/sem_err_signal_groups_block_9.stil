@@ -1,0 +1,14 @@
+STIL 1.0;
+
+Signals {
+    sig1 In;
+    sig2 Out;
+    sig3 InOut;
+}
+
+SignalGroups { 
+    s12 = 'sig1 + sig2';
+    all = 's12 - sig3';
+}
+
+// ERROR : removing none existing signal in the signal group all

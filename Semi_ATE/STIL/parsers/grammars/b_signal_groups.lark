@@ -1,4 +1,6 @@
 %import base.SIGNAL_NAME_TERMINAL
+%import base.WFC_LIST
+%import base.INT
 %import base.USER_DEFINED_NAME
 %import base.scan_type
 %import base.annotation
@@ -13,12 +15,55 @@ SIGNAL_GROUPS_DOMAIN_NAME : USER_DEFINED_NAME
 OPEN_SIGNAL_GROUPS_BLOCK : "{" 
 
     // scan_type is common rule which can be find in the common.grammar file
-    signal_groups_list : SIGNAL_GROUP_NAME "=" "'" sigref_name (sigref_expr)* "'" (scan_type | ";") 
+    signal_groups_list : SIGNAL_GROUP_NAME "=" "'" SIGREF_NAME (sigref_expr)* "'" (scan_type | SIGNAL_LIST_END_STMT | signal_attributes) 
     
     SIGNAL_GROUP_NAME : USER_DEFINED_NAME 
     
-    sigref_expr :  ("+" | "-") sigref_name
+    sigref_expr :  (SIG_ADD | SIG_SUB) SIGREF_NAME
     
-    sigref_name : SIGNAL_NAME_TERMINAL 
+    SIG_ADD : "+"
+    SIG_SUB : "-"
+    
+    SIGREF_NAME : SIGNAL_NAME_TERMINAL 
+
+    SIGNAL_LIST_END_STMT : ";"
 
 CLOSE_SIGNAL_GROUPS_BLOCK : "}"
+
+//  signal_attributes : "{"                    (termination | default_state | base | alignment | scan_in | scan_out | data_bit_count)* "}"
+    signal_attributes : OPEN_SIGNAL_ATTR_BLOCK (termination | default_state | base | alignment | scan_in | scan_out | data_bit_count)* CLOSE_SIGNAL_ATTR_BLOCK
+
+    OPEN_SIGNAL_ATTR_BLOCK : "{"
+
+//      termination     : "Termination"       ("TerminateHigh" | "TerminateLow" | "TerminateOff" | "TerminateUnknown") ";" 
+        termination     : KEYWORD_TERMINATION ("TerminateHigh" | "TerminateLow" | "TerminateOff" | "TerminateUnknown") ";" 
+        KEYWORD_TERMINATION : "Termination"
+    
+//      default_state   : "DefaultState"        ("U" | "D" | "Z" | "ForceUp" | "ForceDown" | "ForceOff") ";" 
+        default_state   : KEYWORD_DEFAULT_STATE (SIG_DEF_STATE_UP | SIG_DEF_STATE_DOWN | SIG_DEF_STATE_OFF) ";" 
+        KEYWORD_DEFAULT_STATE : "DefaultState"
+        SIG_DEF_STATE_UP   : "U" | "ForceUp"
+        SIG_DEF_STATE_DOWN : "D" | "ForceDown"
+        SIG_DEF_STATE_OFF  : "Z" | "ForceOff"
+    
+//      base            : "Base"       ("Hex" | "Dec") WFC_LIST ";" 
+        base            : KEYWORD_BASE ("Hex" | "Dec") WFC_LIST ";" 
+        KEYWORD_BASE : "Base"
+    
+//      alignment       : "Alignment"       ("MSB" | "LSB") ";" 
+        alignment       : KEYWORD_ALIGNMENT ("MSB" | "LSB") ";" 
+        KEYWORD_ALIGNMENT : "Alignment"
+    
+//      scan_in         : "ScanIn"       [INT] ";" 
+        scan_in         : KEYWORD_SCANIN [INT] ";" 
+        KEYWORD_SCANIN : "ScanIn"
+    
+//      scan_out        : "ScanOut"       [INT] ";" 
+        scan_out        : KEYWORD_SCANOUT [INT] ";" 
+        KEYWORD_SCANOUT : "ScanOut"
+    
+//      data_bit_count  : "DataBitCount"       INT ";" 
+        data_bit_count  : KEYWORD_DATABITCOUNT INT ";" 
+        KEYWORD_DATABITCOUNT : "DataBitCount"
+
+    CLOSE_SIGNAL_ATTR_BLOCK : "}"

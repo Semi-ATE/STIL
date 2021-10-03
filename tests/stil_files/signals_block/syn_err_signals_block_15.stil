@@ -1,0 +1,6 @@
+STIL 1.0;
+
+Signals {
+    Signal In { DataBitCount 123 321; }
+}
+// ERROR: Missing DataBitCount number value

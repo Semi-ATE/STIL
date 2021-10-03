@@ -1,0 +1,11 @@
+STIL 1.0;
+
+Header {
+    Title " Test syntax parsing OK !@#$%^&*()_+=-[]{}:";
+    Date "Sun Sep 19 18:34:11 EST 2021";
+    Source "Verolog simulation rev. 01ABCD";
+    History {
+            Ann {* rev1 - 19/09/21 - Initial version *}
+            Ann {* rev2 - 20/09/21 - Alpha version*}
+        }
+}

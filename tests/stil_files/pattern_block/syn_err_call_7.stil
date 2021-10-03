@@ -1,0 +1,53 @@
+STIL 1.0;
+
+Signals {
+    si1 In;
+    si2 In;
+    so1 Out;
+    so2 Out;
+    sio1 InOut;
+    sio2 InOut;
+}
+
+SignalGroups { 
+    all = 'si1 + si2 + so1 + so2 + sio1 + sio2';
+}
+
+SignalGroups sg { 
+    si = 'si1 + si2';
+    so = 'so1 + so2';
+    sio = 'sio1 + sio2';
+    all = 'si + so + sio';
+}
+
+Timing { 
+  WaveformTable wft 
+  { Period '100ns';
+      Waveforms 
+      {
+        si1 {P {'10ns' D; '25ns' U; '50ns' D;}}
+        si2 {P {'10ns' D; '25ns' U; '50ns' D;}}
+        so1 {LHX {'10ns' L/H/x;}}
+        so2 {LHX {'10ns' L/H/x;}}
+        sio1 {P {'10ns' D; '25ns' U; '50ns' D;}}
+        sio1 {LHX {'10ns' L/H/x;}}
+        sio2 {P {'10ns' D; '25ns' U; '50ns' D;}}
+        sio2 {LHX {'10ns' L/H/x;}}
+      }
+  }
+}
+
+PatternBurst patt_burst{
+ PatList {pattern;}
+}
+
+PatternExec patt_exec {
+    PatternBurst patt_burst;
+}
+
+Pattern pattern{
+        W wft;
+        Vector { all  = PPLLPL;}
+        Call proc { all 
+}
+// ERROR : Mssing equal sign

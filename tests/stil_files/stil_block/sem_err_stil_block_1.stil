@@ -1,7 +1,7 @@
 STIL 2.0 { 
     Design 2005; 
    }
-
+// ERROR in the STIL version. Only 1.0 is supported
 Signals {
 
     signal InOut;

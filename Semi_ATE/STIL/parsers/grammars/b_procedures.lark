@@ -11,7 +11,7 @@ PROCEDURES_DOMAIN_NAME : USER_DEFINED_NAME
 OPEN_PROCEDURES_BLOCK   : "{"
 CLOSE_PROCEDURES_BLOCK  : "}"
 
-//procedure_def : procedure_name "{"            (pattern_statement | shift_statement)* "}"
+//procedure_def : procedure_name "{"       (pattern_statement | shift_statement)* "}"
   procedure_def : PROCEDURE_NAME open_proc (pattern_statement | shift_statement)* close_proc
 
     PROCEDURE_NAME  : USER_DEFINED_NAME 

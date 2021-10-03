@@ -1,3 +1,4 @@
 STIL 1.0;
 
-HEADER {}
+Header ;
+// ERROR Header is a block and must start with open curly bracket '{'

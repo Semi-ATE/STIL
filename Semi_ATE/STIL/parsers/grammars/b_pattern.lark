@@ -3,8 +3,8 @@
 %import pattern_statements.pattern_statement
 %import pattern_statements.label
 
-//pattern_block : "Pattern"         [PATTERN_NAME] "{"                (pattern_statement | time_unit_stmt)* "}" 
-  pattern_block : KEYWORD_PATTERN   [PATTERN_NAME] OPEN_PATTERN_BLOCK (pattern_statement | time_unit_stmt)* CLOSE_PATTERN_BLOCK 
+//pattern_block : "Pattern"         PATTERN_NAME "{"                (pattern_statement | time_unit_stmt)* "}" 
+  pattern_block : KEYWORD_PATTERN   PATTERN_NAME OPEN_PATTERN_BLOCK (pattern_statement | time_unit_stmt)* CLOSE_PATTERN_BLOCK 
   KEYWORD_PATTERN : "Pattern" 
 
 PATTERN_NAME : USER_DEFINED_NAME 

@@ -1,0 +1,6 @@
+STIL 1.0;
+
+Signals {
+    Signal UniDir;
+}
+// ERROR: Wrong signal type

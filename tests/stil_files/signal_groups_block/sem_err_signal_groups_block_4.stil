@@ -1,0 +1,13 @@
+STIL 1.0;
+
+Signals {
+    sig1 In;
+    sig2 Out;
+    sig3 InOut;
+}
+
+SignalGroups { 
+    sig1 = 'sig1 + sig2 + sig3';
+}
+
+// ERROR : Signal group name is existing signal name

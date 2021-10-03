@@ -1,0 +1,127 @@
+STIL 1.0;
+
+Signals {
+
+    sig1 In;
+    sig2 In;
+    sig3 In;
+    sig4 In;
+
+}
+
+
+SignalGroups {
+    all = 'sig1+sig2+sig3';
+    sig12 = 'sig1+sig2';
+}
+
+SignalGroups sig_group_opposite{
+    all = 'sig3+sig2+sig1';
+    sig12 = 'sig1+sig2';
+}
+
+SignalGroups sig_group_random{
+    all = 'sig2+sig1+sig3';
+    sig12 = 'sig1+sig2';
+}
+
+Timing {
+    WaveformTable wft{
+        Period '100ns';
+             Waveforms {
+                 all  { 012 { '0ns' ForceDown/ForceUp/ForcePrior; '25ns' U/D/P; }}
+             }
+    }
+}
+
+
+PatternBurst burst_wo_domain{
+    PatList { patt_wo_domain; }
+}
+
+PatternBurst burst_opposite{
+    SignalGroups sig_group_opposite;
+    PatList { patt_w_domain; }
+}
+
+PatternBurst burst_random{
+    SignalGroups sig_group_random;
+    PatList { patt_w_domain; }
+}
+
+PatternExec pe_wo_domain{
+    PatternBurst burst_wo_domain;
+}
+
+PatternExec pe_opposite{
+    PatternBurst burst_opposite;
+}
+
+PatternExec pe_random{
+    PatternBurst burst_random;
+}
+
+Procedures {
+
+    proc_wo_shift{
+                W wft;
+                V {all = 000;}
+                V {all = 000;}
+                V {all = 000;}
+    }
+}
+
+MacroDefs {
+
+    macro_wo_shift{
+                W wft;
+                V {all = 000;}
+                V {all = 000;}
+                V {all = 000;}
+    }
+}
+
+Pattern patt_wo_domain{
+    W wft;
+    V {all = 012;}
+label1:    V {sig3 = 2; sig2 = 1; sig1 = 0;}
+    V {sig12 = 12;}
+    V {all = 012;}
+Loop 5 {    V {all = 012;}
+    V {all = 012;}
+    V {all = 012;}
+    }
+    V {all = 012;}
+    V {all = 012;}
+MatchLoop 5 {    V {all = 012;}
+    V {all = 012;}
+    V {all = 012;}
+    V {all = 012;}
+}    
+MatchLoop Infinite {    V {all = 012;}
+    V {all = 012;}
+    V {all = 012;}
+}    V {all = 012;}
+label1:    V {all = 012;}
+    Call proc_wo_shift {sig1=123;}
+    V {all = 012;}
+    Macro macro_wo_shift;
+    V {all = 012;}
+}
+
+//SignalGroups sig_group_opposite{
+//    all = 'sig3+sig2+sig1';
+//SignalGroups sig_group_random{
+//    all = 'sig2+sig1+sig3';
+
+Pattern patt_w_domain{
+    W wft;
+    V {all = 012;}
+
+    V {sig2 = 1; sig1 = 0;}
+    V {all = 012;}
+    V {all = 012;}
+    V {all = 012;}
+    V {all = 012;}
+
+}

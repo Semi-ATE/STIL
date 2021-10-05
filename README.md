@@ -13,6 +13,9 @@ Standard Tester Interface Language [IEEE1450]
 [![GitHub issues](https://img.shields.io/github/issues/Semi-ATE/STIL)](https://github.com/Semi-ATE/STIL/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/Semi-ATE/STIL)](https://github.com/Semi-ATE/STIL/pulls)
 
+[![codecov](https://codecov.io/gh/Semi-ATE/STIL/branch/main/graph/badge.svg?token=BAP0H9OMED)](https://codecov.io/gh/Semi-ATE/STIL)
+
+
 This repository contains STIL parser and dump compiler written in Python using Lark parser library and Language Server Protocol (LSP) for integration into IDE.
 The work is in progress and the parser is not yet ready to be used in production environment.
 

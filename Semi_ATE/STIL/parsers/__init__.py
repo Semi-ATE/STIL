@@ -16,6 +16,7 @@ from .PatternExecBlockParser import PatternExecBlockParser
 from .PatternBlockParser import PatternBlockParser
 from .SyntaxParserExceptions import SyntaxParserExceptions
 from .STILSemanticException import STILSemanticException
+from .STILDumpCompiler import STILDumpCompiler
 from .STILDumpCompilerExceptions import STILDumpCompilerException
 from .STILDumpCompilerExceptions import STILDumpCompilerInternalException
 from .DomainUtils import DomainUtils

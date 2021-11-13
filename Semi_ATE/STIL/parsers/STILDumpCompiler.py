@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from .STILParser import STILParser
 
-from . import WFCUtils
-from . import DomainUtils
-from . import PattVecCmd
-from . import HashInfo
-from . import STILDumpCompilerException
+from .WFCUtils import WFCUtils
+from .DomainUtils import DomainUtils
+from .PattVecCmd import PattVecCmd
+from .HashInfo import HashInfo
+from .STILDumpCompilerExceptions import STILDumpCompilerException
 
 import os
 
@@ -192,8 +192,7 @@ class STILDumpCompiler(STILParser):
         #    key - signal name
         #    value is a list with WFC for this signal
         self.sgd_patt2sig2WFCs = {}
-        # WFC order from the last vector. Used for delta vectors (vectors without full WFC data)
-        self.last_wfc_order = ""
+
         # Number of wfc for the first vector address for each pattern block
         #    key - pattern block name
         #    value - number of wfcs
@@ -392,6 +391,16 @@ class STILDumpCompiler(STILParser):
     def b_procedures__pattern_statements__WAVEFORM_TABLE_NAME(self, t):
         super().b_procedures__pattern_statements__WAVEFORM_TABLE_NAME(t)
         self.add_cmd_proc(PattVecCmd.CMD_WFT, self.curr_wft)
+
+    def b_pattern__pattern_statements__CALL_VEC_DATA_STRING(self, t):
+        ewfc = WFCUtils.expand_wfcs(t.value)
+        self.add_prop_cmd_patt(PattVecCmd.CMD_CALL, self.curr_sig_ref, ewfc)
+        super().b_pattern__pattern_statements__CALL_VEC_DATA_STRING(t)
+
+    def b_pattern__pattern_statements__MACRO_VEC_DATA_STRING(self, t):
+        ewfc = WFCUtils.expand_wfcs(t.value)
+        self.add_prop_cmd_patt(PattVecCmd.CMD_MACRO, self.curr_sig_ref, ewfc)
+        super().b_pattern__pattern_statements__MACRO_VEC_DATA_STRING(t)
 
     def b_pattern__pattern_statements__KEYWORD_C(self, t):
         self.is_condition_stmt = True
@@ -897,8 +906,6 @@ class STILDumpCompiler(STILParser):
                     if sig not in self.signals_order:
                         self.signals_order.append(sig)
         
-        self.last_wfc_order = ""
-
         super().b_pattern__pattern_statements__CLOSE_VECTOR_BLOCK(t)
         self.is_fixed_stmt = False
         self.is_condition_stmt = False
@@ -985,7 +992,7 @@ class STILDumpCompiler(STILParser):
         prepad_sig = []
         # List with output type signals which have to be post padded
         postpad_sig = []
-    
+           
         for sig in signals:
             if sig in arg_sig2wfc:
                 wfcs = arg_sig2wfc[sig]
@@ -1119,6 +1126,10 @@ class STILDumpCompiler(STILParser):
                         
         # Pre-padding
         for sig in prepad_sig:
+            
+            if sig not in sig2wfcs:
+                continue
+            
             wfcs = sig2wfcs[sig]
             # Get the last defined WFC before the #
             indx = -1;
@@ -1146,6 +1157,10 @@ class STILDumpCompiler(STILParser):
 
         # Post-padding
         for sig in postpad_sig:
+            
+            if sig not in sig2wfcs:
+                continue
+            
             wfcs = sig2wfcs[sig]
             # Get the last defined WFC before the #
             indx = -1;
@@ -1183,6 +1198,10 @@ class STILDumpCompiler(STILParser):
 
         # Processing signals which have # in shift block        
         for sig in signals:
+            
+            if sig not in sig2wfcs:
+                continue
+            
             wfcs = sig2wfcs[sig]
             
             if sig in arg_sig2wfc and sig in signals_with_shift_hash:
@@ -1227,6 +1246,10 @@ class STILDumpCompiler(STILParser):
 
         # Processing signals which have #, but not in the shift block        
         for sig in signals:
+            
+            if sig not in sig2wfcs:
+                continue
+            
             wfcs = sig2wfcs[sig]
             
             if sig in arg_sig2wfc and \
@@ -1241,11 +1264,10 @@ class STILDumpCompiler(STILParser):
                 if sig in post_shift:
                     post = post_shift[sig]
                 arg_indx = 0
+                
                 for i in range(len(wfcs)):
                     if wfcs[i] == '#':
                         if pre > 0:
-                            #w = arg_sig2wfc[sig]
-                            #c = w[arg_indx]
                             new_sig2wfcs[sig].append(arg_sig2wfc[sig][arg_indx])
                             arg_indx += 1
                             pre -= 1
@@ -1257,13 +1279,32 @@ class STILDumpCompiler(STILParser):
                         for ii in range(max_scan_shift):
                             new_sig2wfcs[sig].append(wfcs[i])
                     else:
-                        new_sig2wfcs[sig].append(wfcs[i])
+                        if wfcs[i] == '?':
+                            if self.expanding_procs == False:
+                                # Issue #13
+                                err_msg = "COMPILER ERROR: Delta vector after # is not supported in none expanding procedure mode"
+                                raise STILDumpCompilerException(-1, -1, err_msg)
+                            else:
+                                w = new_sig2wfcs[sig]
+                                new_sig2wfcs[sig].append(w[-1])
+                        else:
+                            new_sig2wfcs[sig].append(wfcs[i])
+                        
+        max_wfc_len = 0
                         
         # Processing signal without #
         for sig in signals:
+            
+            if sig not in sig2wfcs:
+                continue
+            
             wfcs = sig2wfcs[sig]
             
             if sig not in signals_with_hash:
+
+                if len(wfcs) > max_wfc_len:
+                    max_wfc_len = len(wfcs)
+
                 new_sig2wfcs[sig] = []
                 for i in range(len(wfcs)):
                     if i == shift_pos:
@@ -1278,6 +1319,10 @@ class STILDumpCompiler(STILParser):
 
         # Processing signals which have % 
         for sig in signals:
+            
+            if sig not in sig2wfcs:
+                continue
+            
             wfcs = new_sig2wfcs[sig]
             if "%" in wfcs:
                 subs_wfc = arg_sig2wfc[sig]
@@ -1287,7 +1332,7 @@ class STILDumpCompiler(STILParser):
                 else:
                     err_msg = "COMPILER ERROR: Only 1 WFC expected for % substitution of the signal {sig} "
                     raise STILDumpCompilerException(-1, -1, err_msg)
-
+        
         return new_sig2wfcs, scan_mem
 
     def dump_patt_stmt_block(
@@ -1446,7 +1491,7 @@ class STILDumpCompiler(STILParser):
                     # WFC data substitution
                     if fmn in self.macro_for_subs:
                         arg_sig2wfc = vec_cmds.get_props(PattVecCmd.CMD_MACRO)
-                            # TODO : to check STIL standard what should be done
+                        # TODO : to check STIL standard what should be done
                         if arg_sig2wfc != None:
                             hash_info = self.hashinfo[fmn]
                             cond_sig2wfc = None
@@ -1482,7 +1527,11 @@ class STILDumpCompiler(STILParser):
                                     if is_first:
                                         exp += macro_va_length
                                         is_first = False
-                                    sig_index += 1
+                                else:
+                                    # For signal not in the expansion, takes the latest WFC (issue #13)
+                                    last_wfc = data[sig_index][-1]
+                                    data[sig_index][exp_va:exp_va] = last_wfc
+                                sig_index += 1
                             exp_va += exp
                             exp_shift_count = macro_va_length - len_wo_shift
                     else:
@@ -1499,7 +1548,7 @@ class STILDumpCompiler(STILParser):
                                 if is_first:
                                     exp += macro_va_length
                                     is_first = False
-                                sig_index += 1
+                            sig_index += 1
                         exp_va += exp
 
                     for i in range(macro_va_length):
@@ -1610,7 +1659,12 @@ class STILDumpCompiler(STILParser):
                                         if is_first:
                                             exp += proc_va_length
                                             is_first = False
-                                        sig_index += 1
+                                    else:
+                                        # For signal not in the expansion, takes the latest WFC (issue #13)
+                                        last_wfc = data[sig_index][-1]
+                                        data[sig_index][exp_va:exp_va] = last_wfc
+                                    sig_index += 1
+
                                 exp_va += exp
                                 exp_shift_count = proc_va_length - len_wo_shift
                                                                 
@@ -1628,7 +1682,7 @@ class STILDumpCompiler(STILParser):
                                     if is_first:
                                         exp += proc_va_length
                                         is_first = False
-                                    sig_index += 1
+                                sig_index += 1
                             exp_va += exp
 
                         for i in range(proc_va_length):
@@ -1774,15 +1828,20 @@ class STILDumpCompiler(STILParser):
         f.write("SIGNALS_ORDER|")
         s = ""
         si = 0
+        err_msg = ""
+        raise_int_err = False
         for signal in signals:
             s += signal + "+"
             wfc_len = len(data[si+6])
             if wfc_len != exp_va:
-                err_msg = f"INTERNAL COMPILER ERROR : total vector addresses ({exp_va}) does not match WFC length ({wfc_len}) of the signal {signal}"
-                raise STILDumpCompilerException(-1, -1, err_msg)
+                err_msg += f"INTERNAL COMPILER ERROR : total vector addresses ({exp_va}) does not match WFC length ({wfc_len}) of the signal {signal}\n"
+                raise_int_err = True
             si += 1
         f.write(f"{s[:-1]}")
         f.write("|\n")
+        
+        if raise_int_err:
+            raise STILDumpCompilerException(-1, -1, err_msg)
 
         """
          Finally dump all data like in text version of "memory map"
@@ -1980,8 +2039,6 @@ class STILDumpCompiler(STILParser):
                                      self.curr_macro_wfc_order
                                      )
 
-        self.last_wfc_order = ""
-
         super().b_macrodefs__pattern_statements__CLOSE_VECTOR_BLOCK(t)
 
     def b_procedures__pattern_statements__CLOSE_VECTOR_BLOCK(self, t):
@@ -1998,8 +2055,7 @@ class STILDumpCompiler(STILParser):
                                      self.curr_proc_wfc_order
                                      )
 
-        self.last_wfc_order = ""
-
+        
         super().b_procedures__pattern_statements__CLOSE_VECTOR_BLOCK(t)
 
     def assamble_all(self):

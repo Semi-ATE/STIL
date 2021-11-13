@@ -426,10 +426,6 @@ class PatternBlockParser:
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
-        ewfc = WFCUtils.expand_wfcs(t.value)
-
-        self.add_prop_cmd_patt(PattVecCmd.CMD_CALL, self.curr_sig_ref, ewfc)
-
         self.curr_sig_ref = ""
 
     def b_pattern__pattern_statements__MACRO_SIGREF_EXPR(self, t):
@@ -442,9 +438,6 @@ class PatternBlockParser:
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
-        ewfc = WFCUtils.expand_wfcs(t.value)
-
-        self.add_prop_cmd_patt(PattVecCmd.CMD_MACRO, self.curr_sig_ref, ewfc)
         self.curr_sig_ref = ""
 
     def b_pattern__pattern_statements__LOOP_COUNT(self, t):

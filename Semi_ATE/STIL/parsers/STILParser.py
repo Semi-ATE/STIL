@@ -44,7 +44,9 @@ class STILParser(STILLark):
                 propagate_positions=propagate_positions,
                 import_paths=ip,
             )
-
+        
+        self.is_compressed = utils.check_for_compression(stil_file)
+    
     def parse_syntax(self, debug=False):
         """
         Parameters
@@ -65,15 +67,17 @@ class STILParser(STILLark):
             print("Start of syntax parsing :\n")
 
         try:
-            if len(self.stil_file) < 1024 and os.path.exists(self.stil_file):
-                with open(self.stil_file) as data:
-                    self.tree = self.parser.parse(data.read())
+            if os.path.exists(self.stil_file):
+                if self.is_compressed:
+                    data = utils.get_uncompressed_data(self.stil_file)
+                    self.tree = self.parser.parse(data)
                     if debug == True:
                         print(self.tree.pretty())
-            else:
-                self.tree = self.parser.parse(self.stil_file)
-                if debug == True:
-                    print(self.tree.pretty())
+                else:
+                    with open(self.stil_file) as data:
+                        self.tree = self.parser.parse(data.read())
+                        if debug == True:
+                            print(self.tree.pretty())
 
             if debug:
                 print("\nEnd of syntax parsing")

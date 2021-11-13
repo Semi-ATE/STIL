@@ -165,7 +165,14 @@ class WFCUtils:
                             err = f"For signal {sig}, there is no defined WFC before first '#' or '%'"
                             raise Exception(err)
                         else:
-                            sig2wfc[sig] = [sig2wfc_before_subs[sig]]
+                            if sig in sig2wfc_before_subs:
+                                sig2wfc[sig] = [sig2wfc_before_subs[sig]]
+                            else:
+                                # Issue #13
+                                # At this time is unknown which WFC should be placed
+                                # When Macro/Proc call arguments are known, the '?' 
+                                # should be replaced with the last used WFC in '#'
+                                sig2wfc[sig] = '?'
                     else:
                         sig2wfc[sig] = [last_sig2wfc[sig][0]]
                 

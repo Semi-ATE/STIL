@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import os
-from Semi_ATE.STIL.parsers.STILDumpCompiler import STILDumpCompiler
+import sys
 
+try:
+    from Semi_ATE.STIL.parsers.STILDumpCompiler import STILDumpCompiler
+except:
+    cwd = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    sys.path.insert(0, cwd)
+    from Semi_ATE.STIL.parsers.STILDumpCompiler import STILDumpCompiler
 
 def get_stil_file(file_name):
     folder = os.path.dirname(__file__)

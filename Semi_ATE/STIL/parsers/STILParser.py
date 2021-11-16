@@ -183,19 +183,25 @@ class STILParser(STILLark):
                 #raise Exception()
                 #if debug:
                 #    raise Exception()
-                
-                line = e.obj.line
-                self.err_line = line
-                col = e.obj.column
-                self.err_col = col
-                err_msg = e.orig_exc
-                
+                                
                 if isinstance(e.orig_exc, STILSemanticException):
                     line = e.orig_exc.line
-                    self.err_line = line
                     col = e.orig_exc.col
-                    self.err_col = col
                     err_msg = e.orig_exc.msg
+                else:
+
+                    err_msg = e.orig_exc
+                    try:
+                        #Lark version < 1.0.0 
+                        line = e.obj.line
+                        col = e.obj.column
+                    except:
+                        #Lark version >= 1.0.0 
+                        line = e.obj.meta.line
+                        col = e.obj.meta.column
+                
+                self.err_line = line
+                self.err_col = col
 
                 line_with_error = utils.get_line(self.stil_file, line)
                 self.err_msg = f"\nERROR:\tIn the line number {line}, column {col} [{line},{col}]:\n"

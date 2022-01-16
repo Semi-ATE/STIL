@@ -1,0 +1,28 @@
+STIL 1.0;
+
+Signals {
+    si1 In;
+    si2 In;
+    so1 Out;
+    so2 Out;
+    sio1 InOut;
+    sio2 InOut;
+}
+
+SignalGroups { 
+    all = 'si1 + si2 + so1 + so2 + sio1 + sio2';
+}
+
+SignalGroups sg { 
+    si = 'si1 + si2';
+    so = 'so1 + so2';
+    sio = 'sio1 + sio2';
+    all = 'si + so + sio';
+}
+
+Spec domain_name { 
+  Category name {
+      var {MinX '1.23MHz';}
+  }
+}
+// ERROR : not valid keyword - Min 

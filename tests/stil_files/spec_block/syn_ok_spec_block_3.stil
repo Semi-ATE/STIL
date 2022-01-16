@@ -1,0 +1,57 @@
+STIL 1.0;
+
+Signals {
+    si1 In;
+    si2 In;
+    so1 Out;
+    so2 Out;
+    sio1 InOut;
+    sio2 InOut;
+}
+
+SignalGroups { 
+    all = 'si1 + si2 + so1 + so2 + sio1 + sio2';
+}
+
+SignalGroups sg { 
+    si = 'si1 + si2';
+    so = 'so1 + so2';
+    sio = 'sio1 + sio2';
+    all = 'si + so + sio';
+}
+
+Spec domain_name { 
+  
+  Category name {
+  
+      time_add_1 = '1.0us+2.0us';
+      time_add_2 = '1.0us + 2us+3us';
+      time_sub_1 = '1.0us-2us';
+      time_sub_2 = '1.0us - 2us-3us';
+      time_mul_1 = '1.0us*2us';
+      time_mul_2 = '1.0us * 2us*3us';
+      time_div_1 = '1.0us/2';
+      time_div_2 = '1.0us * 2/3';
+
+      time_mix_1 = '1.0us+2us-(3us*1.5)/2.0';
+      time_mix_2 = '(1.0us*2)+5us';
+      time_mix_3 = '(1.0us*2) + offset';
+
+  }
+  Variable name {
+
+      time_add_1 = '1.0us+2.0us';
+      time_add_2 = '1.0us + 2us+3us';
+      time_sub_1 = '1.0us-2us';
+      time_sub_2 = '1.0us - 2us-3us';
+      time_mul_1 = '1.0us*2us';
+      time_mul_2 = '1.0us * 2us*3us';
+      time_div_1 = '1.0us/2';
+      time_div_2 = '1.0us * 2/3';
+
+      time_mix_1 = '1.0us+2us-(3us*1.5)/2.0';
+      time_mix_2 = '(1.0us*2)+5us';
+      time_mix_3 = '(1.0us*2) + offset';
+  }
+}
+// PASS : Different types of time expressions

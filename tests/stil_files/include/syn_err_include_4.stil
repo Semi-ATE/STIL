@@ -1,0 +1,5 @@
+STIL 1.0;
+
+Include "signals.stil" WRONG_KEYWORD
+
+// ERROR : Wrong IfNeed keyword

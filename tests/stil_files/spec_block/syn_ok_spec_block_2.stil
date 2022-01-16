@@ -1,0 +1,93 @@
+STIL 1.0;
+
+Signals {
+    si1 In;
+    si2 In;
+    so1 Out;
+    so2 Out;
+    sio1 InOut;
+    sio2 InOut;
+}
+
+SignalGroups { 
+    all = 'si1 + si2 + so1 + so2 + sio1 + sio2';
+}
+
+SignalGroups sg { 
+    si = 'si1 + si2';
+    so = 'so1 + so2';
+    sio = 'sio1 + sio2';
+    all = 'si + so + sio';
+}
+
+Spec domain_name { 
+  Category name {
+
+      time = '1us';
+
+      time_a {Min '1as'; Typ '1.5as'; Max '2e-1as' ;}
+      time_f {Min '1fs'; Typ '1.5fs'; Max '2e-1fs' ;}
+      time_p {Min '1ps'; Typ '1.5ps'; Max '2e-1ps' ;}
+      time_n {Min '1ns'; Typ '1.5ns'; Max '2e-1ns' ;}
+      time_u {Min '1us'; Typ '1.5us'; Max '2e-1us' ;}
+      time_m {Min '1ms'; Typ '1.5ms'; Max '2e-1ms' ;}
+      time_s {Min '1s'; Typ '1.5s'; Max '2e-1s' ;}
+      time_k {Min '1ks'; Typ '1.5ks'; Max '2e-1ks' ;}
+      time_M {Min '1Ms'; Typ '1.5Ms'; Max '2e-1Ms' ;}
+      time_G {Min '1Gs'; Typ '1.5Gs'; Max '2e-1Gs' ;}
+      time_T {Min '1Ts'; Typ '1.5Ts'; Max '2e-1Ts' ;}
+      time_P {Min '1Ps'; Typ '1.5Ps'; Max '2e-1Ps' ;}
+      time_E {Min '1Es'; Typ '1.5Es'; Max '2e-1Es' ;}
+
+      freq = '1MHz';
+      
+      freq_a {Min '1aHz'; Typ '1.5aHz'; Max '2e-1aHz' ;}
+      freq_f {Min '1fHz'; Typ '1.5fHz'; Max '2e-1fHz' ;}
+      freq_p {Min '1pHz'; Typ '1.5pHz'; Max '2e-1pHz' ;}
+      freq_n {Min '1nHz'; Typ '1.5nHz'; Max '2e-1nHz' ;}
+      freq_u {Min '1uHz'; Typ '1.5uHz'; Max '2e-1uHz' ;}
+      freq_m {Min '1mHz'; Typ '1.5mHz'; Max '2e-1mHz' ;}
+      freq_h {Min '1Hz'; Typ '1.5Hz'; Max '2e-1Hz' ;}
+      freq_k {Min '1kHz'; Typ '1.5kHz'; Max '2e-1kHz' ;}
+      freq_M {Min '1MHz'; Typ '1.5MHz'; Max '2e-1MHz' ;}
+      freq_G {Min '1GHz'; Typ '1.5GHz'; Max '2e-1GHz' ;}
+      freq_T {Min '1THz'; Typ '1.5THz'; Max '2e-1THz' ;}
+      freq_P {Min '1PHz'; Typ '1.5PHz'; Max '2e-1PHz' ;}
+      freq_E {Min '1EHz'; Typ '1.5EHz'; Max '2e-1EHz' ;}
+  }
+  Variable name {
+
+      time = '1us';
+
+      time_a {Min '1as'; Typ '1.5as'; Max '2e-1as' ;}
+      time_f {Min '1fs'; Typ '1.5fs'; Max '2e-1fs' ;}
+      time_p {Min '1ps'; Typ '1.5ps'; Max '2e-1ps' ;}
+      time_n {Min '1ns'; Typ '1.5ns'; Max '2e-1ns' ;}
+      time_u {Min '1us'; Typ '1.5us'; Max '2e-1us' ;}
+      time_m {Min '1ms'; Typ '1.5ms'; Max '2e-1ms' ;}
+      time_s {Min '1s'; Typ '1.5s'; Max '2e-1s' ;}
+      time_k {Min '1ks'; Typ '1.5ks'; Max '2e-1ks' ;}
+      time_M {Min '1Ms'; Typ '1.5Ms'; Max '2e-1Ms' ;}
+      time_G {Min '1Gs'; Typ '1.5Gs'; Max '2e-1Gs' ;}
+      time_T {Min '1Ts'; Typ '1.5Ts'; Max '2e-1Ts' ;}
+      time_P {Min '1Ps'; Typ '1.5Ps'; Max '2e-1Ps' ;}
+      time_E {Min '1Es'; Typ '1.5Es'; Max '2e-1Es' ;}
+
+      freq = '1MHz';
+      
+      freq_a {Min '1aHz'; Typ '1.5aHz'; Max '2e-1aHz' ;}
+      freq_f {Min '1fHz'; Typ '1.5fHz'; Max '2e-1fHz' ;}
+      freq_p {Min '1pHz'; Typ '1.5pHz'; Max '2e-1pHz' ;}
+      freq_n {Min '1nHz'; Typ '1.5nHz'; Max '2e-1nHz' ;}
+      freq_u {Min '1uHz'; Typ '1.5uHz'; Max '2e-1uHz' ;}
+      freq_m {Min '1mHz'; Typ '1.5mHz'; Max '2e-1mHz' ;}
+      freq_h {Min '1Hz'; Typ '1.5Hz'; Max '2e-1Hz' ;}
+      freq_k {Min '1kHz'; Typ '1.5kHz'; Max '2e-1kHz' ;}
+      freq_M {Min '1MHz'; Typ '1.5MHz'; Max '2e-1MHz' ;}
+      freq_G {Min '1GHz'; Typ '1.5GHz'; Max '2e-1GHz' ;}
+      freq_T {Min '1THz'; Typ '1.5THz'; Max '2e-1THz' ;}
+      freq_P {Min '1PHz'; Typ '1.5PHz'; Max '2e-1PHz' ;}
+      freq_E {Min '1EHz'; Typ '1.5EHz'; Max '2e-1EHz' ;}
+  }
+}
+// PASS : test time and frequency units

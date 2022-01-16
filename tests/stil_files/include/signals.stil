@@ -1,0 +1,11 @@
+STIL 1.0;
+
+Signals {
+
+    sig1 In;
+    sig2 Out;
+    sig3 InOut;
+
+}
+
+// PASS

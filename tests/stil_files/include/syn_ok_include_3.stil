@@ -1,0 +1,17 @@
+STIL 1.0;
+
+Include "header_none_exists.stil" IfNeed Header;
+Include "ann_none_exists.stil" IfNeed Ann;
+Include "signals_none_exists.stil" IfNeed Signals;
+Include "signal_groups_none_exists.stil" IfNeed SignalGroups;
+Include "timing_none_exists.stil" IfNeed Timing;
+Include "signal_groups_none_exists.stil" IfNeed Signals;
+Include "spec_none_exists.stil" IfNeed Spec;
+Include "selector_none_exists.stil" IfNeed Selector;
+Include "procedures_none_exists.stil" IfNeed Procedures;
+Include "macros_none_exists.stil" IfNeed MacroDefs;
+Include "pattern_burst_none_exists.stil" IfNeed PatternBurst;
+Include "pattern_exec_none_exists.stil" IfNeed PatternExec;
+Include "pattern_none_exists.stil" IfNeed Pattern;
+
+// PASS

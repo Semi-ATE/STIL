@@ -4,7 +4,6 @@
 
 
 error_map = {
-    "USER_DEFINED_NAME" : "User defined name",
     "base__KEYWORD_ANN": "Ann",
     "b_stil__KEYWORD_STIL": "STIL",
     "b_stil__STIL_VERSION": "version of the STIL = 1.0",
@@ -20,11 +19,10 @@ error_map = {
     "b_header__SOURCE_STRING": "Source information in double quoted string",
     "b_signals__SIGNAL_TYPE": "signal type : In, Out, InOut, Pseudo or Supply",
     "b_timing__WFT_NAME": "Name of the WaveformTable",
-    "b_timing__TIME_EXPR": "Time value in format 'NUMBER UNIT' without whitespace between them,\n\t\t   Where:\n\t\t   - NUMBER can be integer, real or exponential number\n\t\t   - UNIT SI Time unit with engineering prefixes (ns, us, ms, s ...) \n\t\t   Example: '5ns' '1.234ms' '10E-3s' ",
     "b_pattern_burst__PATTERN_BURST_BLOCK_NAME" : "Name of the PatternBurst block",
     "b_pattern_exec__PATTERN_EXEC_BLOCK_NAME" : "Name of the PatternExec block",
     "b_macrodefs__MACRO_NAME" : "Name of the MacroDefs block",
-    
+    "ESCAPED_STRING" : "String in double quotes"    
 }
 
 
@@ -59,7 +57,11 @@ class SyntaxParserExceptions:
             v = error_map.get(err)
             # If the error can not be found in the error map:
             if v == None:
-                if err.endswith("SEMICOLON"):
+                if err.endswith("USER_DEFINED_NAME"):
+                    return_value += "User defined name"
+                elif err.endswith("TIME_EXPR"):
+                    return_value += "Time expression in format 'NUMBER UNIT' without whitespace between them or 'NUMBER MATH_OPERATOR NUMBER UNIT' or 'NUMBER' \n\t\t   Where:\n\t\t   - Mandatory single quotes 'xxx' for the value\n\t\t   - NUMBER can be integer, real or exponential number\n\t\t   - UNIT SI Time/Frequency unit with engineering prefixes (ns, us, ms, s, Hz, MHz ...)\n\t\t   - MATH_OPERATOR can be *,/,+.- \n\t\t   Example: '5ns' '1.234ms' '10E-3s' '1MHz' '2/1MHz' "
+                elif err.endswith("SEMICOLON"):
                     return_value += ";"
                 elif err.find("QUOTE") > -1:
                     return_value += "'"
@@ -125,6 +127,36 @@ class SyntaxParserExceptions:
                     return_value += "Name of the MacroDefs domain"
                 elif err.endswith("KEYWORD_SIGNAL_GROUPS"):
                     return_value += "SignalGroups"
+                elif err.endswith("KEYWORD_IFNEEDED"):
+                    return_value += "IfNeed"
+                elif err.endswith("KEYWORD_BLOCK_SCAN_STRUCTURES"):
+                    return_value += "ScanStructures"
+                elif err.endswith("KEYWORD_BLOCK_ANN"):
+                    return_value += "Ann"
+                elif err.endswith("KEYWORD_BLOCK_USER_KEYWORDS"):
+                    return_value += "UserKeywords"
+                elif err.endswith("KEYWORD_BLOCK_USER_FUNCTIONS"):
+                    return_value += "UserFunctions"
+                elif err.endswith("KEYWORD_BLOCK_PATTERN"):
+                    return_value += "Pattern"
+                elif err.endswith("KEYWORD_BLOCK_SELECTOR"):
+                    return_value += "Selector"
+                elif err.endswith("KEYWORD_BLOCK_PATERN_EXEC"):
+                    return_value += "PatternExec"
+                elif err.endswith("KEYWORD_BLOCK_SPEC"):
+                    return_value += "Spec"
+                elif err.endswith("KEYWORD_BLOCK_SIGNALS"):
+                    return_value += "Signals"
+                elif err.endswith("KEYWORD_BLOCK_HEADER"):
+                    return_value += "Header"
+                elif err.endswith("KEYWORD_BLOCK_PROCEDURES"):
+                    return_value += "Procedures"
+                elif err.endswith("KEYWORD_BLOCK_TIMING"):
+                    return_value += "Timing"
+                elif err.endswith("KEYWORD_BLOCK_PATTERN_BURST"):
+                    return_value += "PatternBurst"
+                elif err.endswith("KEYWORD_BLOCK_MACRO_DEFS"):
+                    return_value += "MacroDefs"
                 elif err.endswith("KEYWORD_PAT_LIST"):
                     return_value += "PatList"
                 elif err.endswith("KEYWORD_CALL"):

@@ -28,6 +28,16 @@ class WFCUtils:
             print("WFCUtils::expand_wfcs")
 
         wfcs = ""
+        
+        # Check if the WFCs list contain "\j" join command
+        join_pos = wfc_list.find("\\j")
+        if join_pos != -1:
+            wfc_list = wfc_list[join_pos+2:]
+
+        # Check if the WFCs list contain "\m" map command
+        map_pos = wfc_list.find("\\m")
+        if map_pos != -1:
+            wfc_list = wfc_list[map_pos+2:]
 
         # Check if the WFCs list contain "\r" repeat command
         repeat_pos = wfc_list.find("\\r")

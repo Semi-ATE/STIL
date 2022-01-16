@@ -1,5 +1,6 @@
 %import base.SIGNAL_NAME_TERMINAL
 %import base.WFC_LIST
+%import base.WFC
 %import base.INT
 %import base.ANN_TEXT
 %import base.scan_type
@@ -25,8 +26,8 @@ OPEN_SIGNAL_BLOCK : "{"
     
     SIGNAL_END_STMT : ";"
     
-//  signal_attributes : "{"                    (termination | default_state | base | alignment | scan_in | scan_out | data_bit_count)* "}"
-    signal_attributes : OPEN_SIGNAL_ATTR_BLOCK (termination | default_state | base | alignment | scan_in | scan_out | data_bit_count)* CLOSE_SIGNAL_ATTR_BLOCK
+//  signal_attributes : "{"                    (termination | default_state | base | alignment | scan_in | scan_out | data_bit_count | wfcmap)* "}"
+    signal_attributes : OPEN_SIGNAL_ATTR_BLOCK (termination | default_state | base | alignment | scan_in | scan_out | data_bit_count | wfcmap)* CLOSE_SIGNAL_ATTR_BLOCK
 
     OPEN_SIGNAL_ATTR_BLOCK : "{"
 
@@ -60,6 +61,17 @@ OPEN_SIGNAL_BLOCK : "{"
 //      data_bit_count  : "DataBitCount"       INT ";" 
         data_bit_count  : KEYWORD_DATABITCOUNT INT ";" 
         KEYWORD_DATABITCOUNT : "DataBitCount"
+        
+//      wfcmap from IEEE 1450.1 Design
+        wfcmap  : KEYWORD_WFCMAP OPEN_WFCMAP_BLOCK (one2many | two2one)* CLOSE_WFCMAP_BLOCK 
+        KEYWORD_WFCMAP: "WFCMap"
+    
+        one2many : WFC "->" WFC_LIST ";"
+        two2one : WFC (WFC) "->" WFC ";"
+    
+        OPEN_WFCMAP_BLOCK : "{"
+        CLOSE_WFCMAP_BLOCK : "}"
+
 
     CLOSE_SIGNAL_ATTR_BLOCK : "}"
     

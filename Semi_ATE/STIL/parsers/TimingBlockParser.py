@@ -203,7 +203,7 @@ class TimingBlockParser:
                     err_msg = f"Force Waveform event '{t.value}' is used for 'Out' type of signal !"
                     raise Exception(err_msg)
 
-    def b_timing__wfcs_definition(self, t):
+    def b_timing__time_offset(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)

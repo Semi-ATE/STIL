@@ -1,0 +1,5 @@
+STIL 1.0;
+
+Include "signals_w_err.stil" ;
+
+// ERROR : error in the included file

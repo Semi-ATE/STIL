@@ -20,13 +20,9 @@ SignalGroups sg {
     all = 'si + so + sio';
 }
 
-Timing { 
-  WaveformTable wft 
-  { Period '' ;
-      Waveforms 
-      {
-        si1 {A {'0ns'  D;}}
-      }
+Spec domain_name { 
+  Variable name {
+      cat = 1.23;
   }
 }
-// ERROR : WaveformTable does not have a Period
+// ERROR : missing single quotes for time expression value for the category 

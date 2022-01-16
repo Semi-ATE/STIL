@@ -184,7 +184,6 @@ def test_syn_err_timing_block_21():
     assert parser.err_line == 28
     assert parser.err_col == 14
 
-
 def test_syn_ok_timing_block_1():
     stil_file = get_stil_file("syn_ok_timing_block_1.stil")
 

@@ -207,10 +207,13 @@ class MacroDefsBlockParser:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
 
-        label_str = t.value
+        if t.value[-1] == ':':
+            label_str = t.value[0:-1]
+        else:
+            label_str = t.value
         label_strip = label_str.strip()
         label_split = label_strip.split(" ")
-        label = label_split[0]
+        label = label_split[0].strip()
 
         labels = self.macro_labels[self.curr_macro_name]
         if label in labels:
@@ -280,6 +283,8 @@ class MacroDefsBlockParser:
                 for d in tds:
                     indx = 0
                     fstn = DomainUtils.get_full_name(d, sig)
+                    if fstn not in self.sig2wfc:
+                        continue
                     wfc_list = self.sig2wfc[fstn]
                     wfc = vec_data[indx : indx + 1]
                     if wfc == "%":
@@ -443,7 +448,7 @@ class MacroDefsBlockParser:
         if int(t.value) < 1:
             err_msg = "Loop value must be positive!"
             raise Exception(err_msg)
-
+        
         self.start_loop_va = self.macro2va[self.curr_macro_name]
         self.loop_count = int(t.value)
 

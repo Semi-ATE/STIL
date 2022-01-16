@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os
+import re
 
 from lark import Lark
 from lark.exceptions import UnexpectedToken
@@ -47,7 +48,68 @@ class STILParser(STILLark):
         
         self.is_compressed = utils.check_for_compression(stil_file)
     
-    def parse_syntax(self, debug=False):
+    def preprocess_include(self, file):
+        
+        out_file = file + ".wo_include"
+
+        f = open(out_file, 'wb')
+        if f == None:
+            print(f"ERROR: Can not create output file {out_file}.\n")
+            return "ERROR"
+        else:
+            f.close()
+            os.remove(out_file)
+        
+        with open(file) as data, open(out_file, "w") as out:
+            inc_cnt = 0
+            line_cnt = 0
+            line = data.readline()
+            out.write(line)
+            err_inc_msg = "Not correct 'Include' syntax at line "
+            err_file_not_found_msg = "Can not find include flie "
+            while line:
+                line = data.readline()
+                line_cnt += 1
+                strip_line = line.strip()
+                if strip_line.startswith("Include"):
+                    l = re.split(r'\s+', strip_line)
+                    if len(l) > 1:
+                        l = l[1].split('"')
+                        inc_cnt += 1
+                        if len(l) > 1:
+                            inc_file = l[1]
+                            folder = os.path.dirname(file)
+                            f = os.path.join(folder, inc_file)
+                            if os.path.exists(f):
+                                with open(f) as inc_data:
+                                    inc_line = inc_data.readline()
+                                    sl = inc_line.strip()
+                                    if sl.startswith("STIL") == False:
+                                        out.write(inc_line)
+                                    while inc_line:
+                                        inc_line = inc_data.readline()
+                                        sl = inc_line.strip()
+                                        if sl.startswith("STIL") == False:
+                                            out.write(inc_line)
+                            else:
+                                print(f"ERROR: {err_file_not_found_msg} '{inc_file}' at line {line_cnt}")
+                                return "ERROR"
+                        else:
+                            print(f"ERROR: {err_inc_msg} {line_cnt}")
+                            return "ERROR"
+                    else:
+                            print(f"ERROR: {err_inc_msg} {line_cnt}")
+                            return "ERROR"
+                else:
+                    out.write(line)
+        
+        if inc_cnt > 0:
+            return out_file
+        else:
+            os.remove(out_file)
+            return None
+
+    def parse_syntax(self, debug=False, preprocess_include = True):
         """
         Parameters
         ----------
@@ -67,6 +129,7 @@ class STILParser(STILLark):
             print("Start of syntax parsing :\n")
 
         try:
+            
             if os.path.exists(self.stil_file):
                 if self.is_compressed:
                     data = utils.get_uncompressed_data(self.stil_file)
@@ -74,7 +137,23 @@ class STILParser(STILLark):
                     if debug == True:
                         print(self.tree.pretty())
                 else:
-                    with open(self.stil_file) as data:
+                    
+                    file = self.stil_file
+                    
+                    if preprocess_include:
+                        # Initial support for 'Include'.
+                        # Does not support syntax error highlighting yet.
+                        full_file = self.preprocess_include(self.stil_file)
+                        
+                        if full_file != None:
+                            if full_file == "ERROR":
+                                return
+                            else:
+                                file = full_file
+                        else:
+                            file = self.stil_file
+
+                    with open(file) as data:
                         self.tree = self.parser.parse(data.read())
                         if debug == True:
                             print(self.tree.pretty())

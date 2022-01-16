@@ -1,0 +1,9 @@
+STIL 1.0;
+
+Signals {
+
+    sig1 UnkwownType;
+
+}
+
+// Fail due signal type error.

@@ -20,13 +20,5 @@ SignalGroups sg {
     all = 'si + so + sio';
 }
 
-Timing { 
-  WaveformTable wft 
-  { Period '' ;
-      Waveforms 
-      {
-        si1 {A {'0ns'  D;}}
-      }
-  }
-}
-// ERROR : WaveformTable does not have a Period
+Spec { 
+// ERROR : Spec is a block and must end with closed curly bracket '}'

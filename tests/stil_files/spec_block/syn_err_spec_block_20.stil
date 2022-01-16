@@ -20,13 +20,9 @@ SignalGroups sg {
     all = 'si + so + sio';
 }
 
-Timing { 
-  WaveformTable wft 
-  { Period '' ;
-      Waveforms 
-      {
-        si1 {A {'0ns'  D;}}
-      }
+Spec domain_name { 
+  Category name {
+      var {Max '10MHz'; Typ '5MHz'; Min '1MHz'}
   }
 }
-// ERROR : WaveformTable does not have a Period
+// ERROR : missing semi-colon termination after the time expression

@@ -31,3 +31,20 @@ def test_sem_err_signal_groups_block_1():
     assert compiler.err_line == -1
     assert compiler.err_col == -1
 
+
+
+def test_multi_pattern_block():
+
+    fn = "multi_pattern_block.stil"
+    stil_file = get_stil_file(fn)
+    
+    out_folder = "compliler_output_"+fn
+
+    compiler = STILDumpCompiler(
+        stil_file, expanding_procs=True, is_scan_mem_available=True, out_folder = out_folder
+    )
+    compiler.compile()
+    compiler.calculate_test_cycles()
+    assert compiler.err_line == -1
+    assert compiler.err_col == -1
+

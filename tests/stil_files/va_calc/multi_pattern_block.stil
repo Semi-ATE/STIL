@@ -1,0 +1,49 @@
+STIL 1.0;
+
+Signals {
+
+    sig1 In;
+    sig2 Out;
+
+}
+
+
+SignalGroups {
+    all = 'sig1+sig2';
+}
+
+Timing {
+    WaveformTable wft{
+        Period '100ns';
+             Waveforms {
+                 sig1  { 1 { '0ns' D; }}
+                 sig1  { 2 { '0ns' U; }}
+                 sig1  { Z { '0ns' Z; }}
+                 sig2  { X { '0ns' X; }}
+             }
+    }
+}
+
+PatternBurst burst{
+    PatList { patt1; }
+    PatList { patt2; }
+}
+
+
+PatternExec {
+    PatternBurst burst;
+}
+
+Pattern patt1{
+    W wft;
+    V {sig1 = 1; sig2 = X;}
+    V {sig1 = Z; sig2 = X;}
+}
+
+Pattern patt2{
+    W wft;
+    V {sig1 = 2; sig2 = X;}
+    V {sig1 = Z; sig2 = X;}
+    V {sig1 = Z; sig2 = X;}
+    V {sig1 = Z; sig2 = X;}
+}

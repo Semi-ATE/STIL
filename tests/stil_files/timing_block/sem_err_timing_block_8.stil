@@ -1,0 +1,30 @@
+STIL 1.0;
+
+Signals {
+    si1 In;
+    si2 In;
+    so1 Out;
+    so2 Out;
+    sio1 InOut;
+    sio2 InOut;
+}
+
+SignalGroups { 
+    all = 'si1 + si2 + so1 + so2 + sio1 + sio2';
+}
+
+
+Timing { 
+  WaveformTable wft 
+  { Period '100ns';
+      Waveforms 
+      {
+        si1 {1 {'10ns' U;}}
+        si1 {1 {'10ns' D;}}
+      }
+  }
+
+}
+
+
+// ERROR : Duplication of WFC

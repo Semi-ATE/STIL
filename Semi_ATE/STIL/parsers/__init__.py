@@ -23,4 +23,5 @@ from .DomainUtils import DomainUtils
 from .WFCUtils import WFCUtils
 from .HashInfo import HashInfo
 from .PattVecCmd import PattVecCmd
+from .SigTimingInfo import SigTimingInfo
 from .utils import get_line, get_col_error_pos

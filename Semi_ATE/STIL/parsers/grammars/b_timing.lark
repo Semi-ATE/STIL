@@ -33,8 +33,8 @@ OPEN_TIMING_BLOCK : "{"
         
             OPEN_WAVEFORMS_BLOCK : "{" 
             
-//              waveforms_list : WF_SIGREF_EXPR "{"            WFC_LIST "{"              (wfcs_definition)+  "}"              "}"
-                waveforms_list : WF_SIGREF_EXPR OPEN_WFC_BLOCK WFC_LIST OPEN_WFCS_BLOCK  (wfcs_definition)+  CLOSE_WFCS_BLOCK CLOSE_WFC_BLOCK
+//              waveforms_list : WF_SIGREF_EXPR "{"            WFC_LIST "{"              (time_offset)+  "}"              "}"
+                waveforms_list : WF_SIGREF_EXPR OPEN_WFC_BLOCK WFC_LIST OPEN_WFCS_BLOCK  (time_offset)+  CLOSE_WFCS_BLOCK CLOSE_WFC_BLOCK
 
                 WF_SIGREF_EXPR : SIGNAL_NAME_TERMINAL 
 
@@ -44,7 +44,7 @@ OPEN_TIMING_BLOCK : "{"
 
                         OPEN_WFCS_BLOCK : "{"
 
-                            wfcs_definition: TIME_EXPR (EVENT | events) ";" 
+                            time_offset: TIME_EXPR (EVENT | events) ";" 
                             events : EVENT ("/" EVENT)+
                             EVENT  : (  "ForceDown"         | "D" 
                                       | "ForceUp"           | "U" 

@@ -14,14 +14,14 @@ Signals {
 SignalGroups {
     sig12 = 'sig1+sig2';
     all = 'sig12+sig3+sig4+sig5';
-    all_in = 'sig1+sig2+sig3';
-    all_out = 'sig3+sig4+sig5';
+    all_in = 'sig1+sig2';
+    all_out = 'sig4+sig5';
 }
 
 SignalGroups sig_group_domain{
     all = 'sig5+sig4+sig3+sig2+sig1';
-    all_in = 'sig1+sig2+sig3';
-    all_out = 'sig3+sig4+sig5';
+    all_in = 'sig1+sig2';
+    all_out = 'sig4+sig5';
 }
 
 Timing {
@@ -30,16 +30,23 @@ Timing {
              Waveforms {
                  all_in  { 01Z { '0ns' ForceDown/ForceUp/Z; '25ns' U/D/Z; }}
                  all_out { LHX { '0ns' L/H/X; '25ns' H; }}
+                 sig3    { 01Z { '0ns' ForceDown/ForceUp/Z; '25ns' U/D/Z; }}
+                 sig3    { LHX { '0ns' L/H/X; '25ns' H; }}
                  all_in  { P { '0ns' P; }}
                  all_out { P { '0ns' L; }}
+                 sig3    { P { '0ns' P; }}
                  all_in  { p { '0ns' P; }}
                  all_out { p { '0ns' L; }}
+                 sig3    { p { '0ns' P; }}
                  all_in  { M { '0ns' P;}}
                  all_out { M { '0ns' X; }}
+                 sig3    { M { '0ns' P; }}
                  all_in  { m { '0ns' P;}}
                  all_out { m { '0ns' X; }}
+                 sig3    { m { '0ns' P; }}
                  all_in  { S { '0ns' P;}}
                  all_out { s { '0ns' X; }}
+                 sig3    { s { '0ns' P; }}
              }
     }
     WaveformTable wft_fast{
@@ -47,16 +54,23 @@ Timing {
              Waveforms {
                  all_in  { 01Z { '0ns' ForceDown/ForceUp/Z; '250ns' U/D/Z; }}
                  all_out { LHX { '0ns' L/H/X; '250ns' H; }}
+                 sig3    { 01Z { '0ns' ForceDown/ForceUp/Z; '250ns' U/D/Z; }}
+                 sig3    { LHX { '0ns' L/H/X; '250ns' H; }}
                  all_in  { P { '0ns' P; }}
                  all_out { P { '0ns' L; }}
+                 sig3    { P { '0ns' P; }}
                  all_in  { p { '0ns' P; }}
                  all_out { p { '0ns' L; }}
+                 sig3    { p { '0ns' P; }}
                  all_in  { M { '0ns' P;}}
                  all_out { M { '0ns' X; }}
+                 sig3    { M { '0ns' P; }}
                  all_in  { m { '0ns' P;}}
                  all_out { m { '0ns' X; }}
+                 sig3    { m { '0ns' P; }}
                  all_in  { S { '0ns' P;}}
                  all_out { s { '0ns' X; }}
+                 sig3    { s { '0ns' P; }}
              }
     }
 }
@@ -70,30 +84,48 @@ Timing timing_domain{
              Waveforms {
                  all_in  { 01Z { '0ns' ForceDown/ForceUp/Z; '25ns' U/D/Z; }}
                  all_out { LHX { '0ns' L/H/X; '25ns' H; }}
+                 sig3    { 01Z { '0ns' ForceDown/ForceUp/Z; '25ns' U/D/Z; }}
+                 sig3    { LHX { '0ns' L/H/X; '25ns' H; }}
                  all_in  { P { '0ns' P; }}
                  all_out { P { '0ns' L; }}
+                 sig3    { P { '0ns' P; }}
                  all_in  { p { '0ns' P; }}
                  all_out { p { '0ns' L; }}
+                 sig3    { p { '0ns' P; }}
                  all_in  { M { '0ns' P;}}
                  all_out { M { '0ns' X; }}
+                 sig3    { M { '0ns' P; }}
                  all_in  { m { '0ns' P;}}
                  all_out { m { '0ns' X; }}
+                 sig3    { m { '0ns' P; }}
+                 all_in  { S { '0ns' P;}}
+                 all_out { s { '0ns' X; }}
+                 sig3    { s { '0ns' P; }}
              }
     }
 
     WaveformTable "wft_fast"{
         Period '500ns';
              Waveforms {
-                 all_in  { 01Z { '0ns' ForceDown/ForceUp/Z; '0.25e-9s' U/D/Z; }}
+                 all_in  { 01Z { '0ns' ForceDown/ForceUp/Z; '250ns' U/D/Z; }}
                  all_out { LHX { '0ns' L/H/X; '250ns' H; }}
+                 sig3    { 01Z { '0ns' ForceDown/ForceUp/Z; '250ns' U/D/Z; }}
+                 sig3    { LHX { '0ns' L/H/X; '250ns' H; }}
                  all_in  { P { '0ns' P; }}
                  all_out { P { '0ns' L; }}
+                 sig3    { P { '0ns' P; }}
                  all_in  { p { '0ns' P; }}
                  all_out { p { '0ns' L; }}
+                 sig3    { p { '0ns' P; }}
                  all_in  { M { '0ns' P;}}
                  all_out { M { '0ns' X; }}
+                 sig3    { M { '0ns' P; }}
                  all_in  { m { '0ns' P;}}
                  all_out { m { '0ns' X; }}
+                 sig3    { m { '0ns' P; }}
+                 all_in  { S { '0ns' P;}}
+                 all_out { s { '0ns' X; }}
+                 sig3    { s { '0ns' P; }}
              }
     }
 }

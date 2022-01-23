@@ -64,6 +64,12 @@ class PattVecCmd:
         if value is not None:
             self.set_value(cmd, value)
 
+    def del_cmd(self, cmd):
+
+        if cmd in self.cmd_value:
+            self.cmd_value[cmd] = None
+        self.cmd &= ~(1 << cmd)
+
     def get_cmd_name(cmd_id):
         return PattVecCmd.cmds[cmd_id]
 
@@ -71,7 +77,7 @@ class PattVecCmd:
         found = False
         cmds = []
         for bit in range(len(PattVecCmd.cmds)):
-            if (self.cmd >> bit & 0x1) == 0x1:
+            if ((self.cmd >> bit) & 0x1) == 0x1:
                 if cmd_id == bit:
                     found = True
                     break
@@ -80,7 +86,7 @@ class PattVecCmd:
     def get_cmd_ids(self):
         cmds = []
         for bit in range(len(PattVecCmd.cmds)):
-            if (self.cmd >> bit & 0x1) == 0x1:
+            if ((self.cmd >> bit) & 0x1) == 0x1:
                 cmds.append(bit)
         return cmds
 
@@ -112,8 +118,10 @@ class PattVecCmd:
         
     def __str__(self):
         msg = ""
+        new_line = "\n"
         cmds = self.get_cmd_ids()
         for cmd in cmds:
             value = self.get_value(cmd)
-            msg += f"cmd {PattVecCmd.get_cmd_name(cmd)} value {value}\n"
+            msg += f"cmd {PattVecCmd.get_cmd_name(cmd)} value {value} "
+            msg += new_line
         return msg

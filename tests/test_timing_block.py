@@ -256,6 +256,15 @@ def test_sem_err_timing_block_7():
     assert parser.err_line == 22
     assert parser.err_col == 24
 
+def test_sem_err_timing_block_8():
+    stil_file = get_stil_file("sem_err_timing_block_8.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 23
+    assert parser.err_col == 14
+
 def test_sem_ok_timing_block_1():
     stil_file = get_stil_file("sem_ok_timing_block_1.stil")
 

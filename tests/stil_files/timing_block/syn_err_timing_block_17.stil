@@ -25,8 +25,8 @@ Timing {
   { Period '10ms';
       Waveforms 
       {
-        si1 {A {'10kg' D;}}
+        si1 {A {'' D;}}
       }
   }
 }
-// ERROR : wrong time unit for the Waveform event
+// ERROR : missing time expression for the Waveform event

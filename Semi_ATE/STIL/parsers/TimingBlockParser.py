@@ -3,6 +3,7 @@ import inspect
 
 from .DomainUtils import DomainUtils
 from .WFCUtils import WFCUtils
+from .SigTimingInfo import SigTimingInfo
 
 
 class TimingBlockParser:
@@ -34,9 +35,12 @@ class TimingBlockParser:
         "CompareOff",
         "h",
         "CompareHighWindow",
+        "h",
+        "CompareOffWindow",
         "t",
         "CompareValidWindow",
         "v",
+        
     ]
 
     def __init__(self, debug=False):
@@ -55,6 +59,10 @@ class TimingBlockParser:
         # dict value is a list with all WFC defined for this signal/domain
         self.sig2wfc = {}
 
+        # dict key   is the timing_domain::wft::signal_name
+        # dict value is a SigTimingInfo object with timing information 
+        self.sig_wft2timing = {}
+
         # dict key   is the timing domain name
         # dict value is a list with all waveform tables (WFT)
         self.time_domain2wft = {}
@@ -66,6 +74,12 @@ class TimingBlockParser:
         self.curr_wfe_count = 0
 
         self.curr_sig_type = ""
+
+        self.curr_events = []
+
+        # dict key   is the timing_domain::wft
+        # dict value is the wft's period 
+        self.wft2period = {}
 
         self.is_timing_block_defined = False
 
@@ -119,6 +133,14 @@ class TimingBlockParser:
         else:
             self.time_domain2wft[self.curr_timing_domain] = [self.curr_wft]
 
+    def b_timing__period(self, t):
+        if self.debug:
+            func_name = inspect.stack()[0][3]
+            self.trace(func_name, t)
+            
+        key = self.curr_timing_domain + "::" + self.curr_wft
+        self.wft2period[key] = t[1].value
+        
     def b_timing__SIGNAL_GROUPS_DOMAIN(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
@@ -169,6 +191,20 @@ class TimingBlockParser:
                 err_msg = f"Signal {sig_ref} from '{domain}' domain is not defined"
                 raise Exception(err_msg)
 
+    def check_if_wfc_defined(self, sigref, wfc):
+
+        sig = DomainUtils.get_name(sigref)
+        full_sig_name = self.curr_timing_domain + '::' + self.curr_wft + '::' + sig
+        
+        if full_sig_name in self.sig_wft2timing:
+            sig_time_info = self.sig_wft2timing[full_sig_name]
+            if sig_time_info is not None:
+                timing = sig_time_info.get_timing_for_wfc(wfc)
+                if timing is not None:
+                    err_msg = f"WFC {wfc} is already defined for signal {sig}"
+                    raise Exception(err_msg)
+            
+
     def b_timing__WFC_LIST(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
@@ -180,8 +216,10 @@ class TimingBlockParser:
             wfcs = WFCUtils.trim_wfcs(self.curr_wfc_list)
             if sigref in self.sig2wfc:
                 for wfc in wfcs:
+
+                    self.check_if_wfc_defined(sigref, wfc)
+                    
                     stored_wfc = self.sig2wfc[sigref]
-                    # check if WFC is alrady stored
                     if wfc not in stored_wfc:
                         self.sig2wfc[sigref] += wfc
             else:
@@ -191,19 +229,22 @@ class TimingBlockParser:
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
+            
+        wfe = t.value
 
-        if t.value != "/":
+        if wfe != "/":
             self.curr_wfe_count += 1
             if self.curr_sig_type == "In":
-                if t.value not in TimingBlockParser.force_events:
-                    err_msg = f"Compare Waveform event '{t.value}' is used for 'In' type of signal !"
+                if wfe not in TimingBlockParser.force_events:
+                    err_msg = f"Compare Waveform event '{wfe}' is used for 'In' type of signal !"
                     raise Exception(err_msg)
             elif self.curr_sig_type == "Out":
-                if t.value not in TimingBlockParser.compare_events:
-                    err_msg = f"Force Waveform event '{t.value}' is used for 'Out' type of signal !"
+                if wfe not in TimingBlockParser.compare_events:
+                    err_msg = f"Force Waveform event '{wfe}' is used for 'Out' type of signal !"
                     raise Exception(err_msg)
+        self.curr_events.append(wfe)
 
-    def b_timing__wfcs_definition(self, t):
+    def b_timing__time_offset(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
@@ -213,7 +254,29 @@ class TimingBlockParser:
         if wfe_count > 1 and wfe_count != wfc_count:
             err_msg = f"Number of Waveform Events ({wfe_count}) does not match with number of Waveform Chars ({wfc_count})"
             raise Exception(err_msg)
+            
+        for domain_sig in self.curr_sigref:
+            
+            sig = DomainUtils.get_name(domain_sig)
+            
+            full_sig_name = self.curr_timing_domain + '::' + self.curr_wft + '::' + sig
+            
+            if full_sig_name not in self.sig_wft2timing:
+                sig_time_info = SigTimingInfo(sig)
+                self.sig_wft2timing[full_sig_name] = sig_time_info
+            else:
+                sig_time_info = self.sig_wft2timing[full_sig_name]
+            
+            index = 0
+            for wfc in self.curr_wfc_list:
+                if len(self.curr_events) == 1:
+                    sig_time_info.set_timing_for_wfc(wfc, self.curr_events[0], t[0] )
+                else:
+                    sig_time_info.set_timing_for_wfc(wfc, self.curr_events[index], t[0] )
+                index += 1
+            
 
+        self.curr_events.clear()
         self.curr_wfe_count = 0
         self.curr_sig_type = ""
 
@@ -221,7 +284,10 @@ class TimingBlockParser:
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
+            
         self.curr_sigref.clear()
+        self.curr_wfc_list = ""
+        self.curr_events.clear()
 
     def b_timing__CLOSE_TIMING_BLOCK(self, t):
         if self.debug:

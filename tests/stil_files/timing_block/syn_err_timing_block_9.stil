@@ -22,7 +22,7 @@ SignalGroups sg {
 
 Timing { 
   WaveformTable wft 
-  { Period '10ws';
+  { Period "wrong";
       Waveforms 
       {
         si1 {A {'0ns'  D;}}

@@ -13,20 +13,18 @@ SignalGroups {
     all = 'si1 + si2 + so1 + so2 + sio1 + sio2';
 }
 
-SignalGroups sg { 
-    si = 'si1 + si2';
-    so = 'so1 + so2';
-    sio = 'sio1 + sio2';
-    all = 'si + so + sio';
-}
 
 Timing { 
   WaveformTable wft 
-  { Period '' ;
+  { Period '100ns';
       Waveforms 
       {
-        si1 {A {'0ns'  D;}}
+        si1 {1 {'10ns' U;}}
+        si1 {1 {'10ns' D;}}
       }
   }
+
 }
-// ERROR : WaveformTable does not have a Period
+
+
+// ERROR : Duplication of WFC

@@ -461,16 +461,29 @@ class STILDumpCompiler(STILParser):
         super().b_procedures__pattern_statements__KEYWORD_VECTOR(t)
         self.add_cmd_proc(PattVecCmd.CMD_VECTOR)
 
-    def b_pattern__pattern_statements__LABEL_NAME(self, t):
-        super().b_pattern__pattern_statements__LABEL_NAME(t)
-        self.add_cmd_patt(PattVecCmd.CMD_LABEL, t.value)
+    def b_pattern__pattern_statements__LABEL(self, t):
+        label = super().b_pattern__pattern_statements__LABEL(t)
+        self.add_cmd_patt(PattVecCmd.CMD_LABEL, label)
 
-    def b_macrodefs__pattern_statements__LABEL_NAME(self, t):
-        super().b_macrodefs__pattern_statements__LABEL_NAME(t)
-        self.add_cmd_macro(PattVecCmd.CMD_LABEL, t.value)
-    def b_procedures__pattern_statements__LABEL_NAME(self, t):
-        super().b_procedures__pattern_statements__LABEL_NAME(t)
-        self.add_cmd_proc(PattVecCmd.CMD_LABEL, t.value)
+    def b_macrodefs__pattern_statements__LABEL(self, t):
+        label = super().b_macrodefs__pattern_statements__LABEL(t)
+        self.add_cmd_macro(PattVecCmd.CMD_LABEL, label)
+        
+    def b_procedures__pattern_statements__LABEL(self, t):
+        label = super().b_procedures__pattern_statements__LABEL(t)
+        self.add_cmd_proc(PattVecCmd.CMD_LABEL, label)
+
+    def b_pattern__pattern_statements__GOTO_LABEL(self, t):
+        super().b_pattern__pattern_statements__GOTO_LABEL(t)
+        self.save_in_prev_cmd_patt(PattVecCmd.CMD_GOTO, t.value)
+
+    def b_macrodefs__pattern_statements__GOTO_LABEL(self, t):
+        super().b_macrodefs__pattern_statements__GOTO_LABEL(t)
+        self.save_in_prev_cmd_macro(PattVecCmd.CMD_GOTO, t.value)
+
+    def b_procedures__pattern_statements__GOTO_LABEL(self, t):
+        super().b_procedures__pattern_statements__GOTO_LABEL(t)
+        self.save_in_prev_cmd_proc(PattVecCmd.CMD_GOTO, t.value)
 
     def b_macrodefs__pattern_statements__VEC_DATA_STRING(self, t):
         super().b_macrodefs__pattern_statements__VEC_DATA_STRING(t)
@@ -685,22 +698,22 @@ class STILDumpCompiler(STILParser):
         self.add_cmd_proc(PattVecCmd.CMD_IDDQTESTPOINT, None)
 
     def b_pattern__pattern_statements__KEYWORD_STOP(self, t):
-        self.add_cmd_patt(PattVecCmd.CMD_STOP, None)
+        self.save_in_prev_cmd_patt(PattVecCmd.CMD_STOP, None)
 
     def b_pattern__pattern_statements__KEYWORD_STOP_SC(self, t):
-        self.add_cmd_patt(PattVecCmd.CMD_STOP, None)
+        self.save_in_prev_cmd_patt(PattVecCmd.CMD_STOP, None)
 
     def b_macrodefs__pattern_statements__KEYWORD_STOP(self, t):
-        self.add_cmd_macro(PattVecCmd.CMD_STOP, None)
+        self.save_in_prev_cmd_macro(PattVecCmd.CMD_STOP, None)
 
     def b_macrodefs__pattern_statements__KEYWORD_STOP_SC(self, t):
-        self.add_cmd_proc(PattVecCmd.CMD_STOP, None)
+        self.save_in_prev_cmd_macro(PattVecCmd.CMD_STOP, None)
 
     def b_procedures__pattern_statements__KEYWORD_STOP(self, t):
-        self.add_cmd_proc(PattVecCmd.CMD_STOP, None)
+        self.save_in_prev_cmd_proc(PattVecCmd.CMD_STOP, None)
         
     def b_procedures__pattern_statements__KEYWORD_STOP_SC(self, t):
-        self.add_cmd_proc(PattVecCmd.CMD_STOP, None)
+        self.save_in_prev_cmd_proc(PattVecCmd.CMD_STOP, None)
 
     def b_macrodefs__MACRO_NAME(self, t):
 
@@ -1512,6 +1525,7 @@ class STILDumpCompiler(STILParser):
                     cmd_aggr += f"W  |{timing}::{vec_cmds.get_value(cmd)}"
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_LABEL]:
                     cmd_aggr += f"L  |{vec_cmds.get_value(cmd)}"
+                    va_cmd[-1].set_value(PattVecCmd.CMD_LABEL, vec_cmds.get_value(cmd))
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_LOAD_LOOP_COUNTER]:
                     cmd_aggr += f"LLC|{vec_cmds.get_value(cmd)}"
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_LOAD_MATCHLOOP_COUNTER]:
@@ -1551,7 +1565,8 @@ class STILDumpCompiler(STILParser):
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_BREAKPOINT]:
                     cmd_aggr += "B  "
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_GOTO]:
-                    cmd_aggr += "G  "
+                    cmd_aggr += "G  vec_cmds.get_value(cmd)"
+                    va_cmd[-1].set_value(PattVecCmd.CMD_GOTO, vec_cmds.get_value(cmd))
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP]:
                     cmd_aggr += "E  "
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_SHIFT]:
@@ -1694,19 +1709,19 @@ class STILDumpCompiler(STILParser):
                     if last_cmd.have_cmd(PattVecCmd.CMD_VECTOR) == False:
                         add_to_last_cmd = True
                         
-                    macro_comands = self.macro2cmd[fmn]
+                    macro_commands = self.macro2cmd[fmn]
                     last_start_loop_va = -1
                     m_va = 0
-                    for macro_comand in macro_comands:
+                    for macro_command in macro_commands:
                         if add_to_last_cmd:
-                            cids = macro_comand.get_cmd_ids()
+                            cids = macro_command.get_cmd_ids()
                             for cid in cids: 
-                                value = macro_comand.get_value(cid)
+                                value = macro_command.get_value(cid)
                                 last_cmd.add_cmd(cid, value)
                             add_to_last_cmd = False
                         else:
-                            va_cmd.append(macro_comand)
-                            for cmd in macro_comand.get_cmd_ids():
+                            va_cmd.append(macro_command)
+                            for cmd in macro_command.get_cmd_ids():
                                 cmd_name = PattVecCmd.get_cmd_name(cmd)
                                 if cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_LOOP]:
                                     last_start_loop_va = m_va
@@ -1720,6 +1735,10 @@ class STILDumpCompiler(STILParser):
                                     jmp = m_va - last_start_loop_va - 1
                                     va_cmd[-1].set_value(PattVecCmd.CMD_STOP_MATCHLOOP, jmp)
                                     last_start_loop_va = -1
+                                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_GOTO]:
+                                    va_cmd[-1].set_value(PattVecCmd.CMD_GOTO, macro_command.get_value(cmd))
+                                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_LABEL]:
+                                    va_cmd[-1].set_value(PattVecCmd.CMD_LABEL, macro_command.get_value(cmd))
                             m_va += 1
 
                 elif cmd_name ==  PattVecCmd.cmds[PattVecCmd.CMD_CALL]:
@@ -1863,19 +1882,19 @@ class STILDumpCompiler(STILParser):
                         if last_cmd.have_cmd(PattVecCmd.CMD_VECTOR) == False:
                             add_to_last_cmd = True
                             
-                        proc_comands = self.proc2cmd[fpn]
+                        proc_commands = self.proc2cmd[fpn]
                         last_start_loop_va = -1
                         m_va = 0
-                        for proc_comand in proc_comands:
+                        for proc_command in proc_commands:
                             if add_to_last_cmd:
-                                cids = proc_comand.get_cmd_ids()
+                                cids = proc_command.get_cmd_ids()
                                 for cid in cids: 
-                                    value = proc_comand.get_value(cid)
+                                    value = proc_command.get_value(cid)
                                     last_cmd.add_cmd(cid, value)
                                 add_to_last_cmd = False
                             else:
-                                va_cmd.append(proc_comand)
-                                for cmd in proc_comand.get_cmd_ids():
+                                va_cmd.append(proc_command)
+                                for cmd in proc_command.get_cmd_ids():
                                     cmd_name = PattVecCmd.get_cmd_name(cmd)
                                     if cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_LOOP]:
                                         last_start_loop_va = m_va
@@ -1889,6 +1908,10 @@ class STILDumpCompiler(STILParser):
                                         jmp = m_va - last_start_loop_va - 1
                                         va_cmd[-1].set_value(PattVecCmd.CMD_STOP_MATCHLOOP, jmp)
                                         last_start_loop_va = -1
+                                    elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_GOTO]:
+                                        va_cmd[-1].set_value(PattVecCmd.CMD_GOTO, proc_command.get_value(cmd))
+                                    elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_LABEL]:
+                                        va_cmd[-1].set_value(PattVecCmd.CMD_LABEL, proc_command.get_value(cmd))
                                 m_va += 1
 
                     else:
@@ -2209,7 +2232,7 @@ class STILDumpCompiler(STILParser):
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_BREAKPOINT]:
                     cmd_aggr += "B  "
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_GOTO]:
-                    cmd_aggr += "G  "
+                    cmd_aggr += "G  vec_cmds.get_value(cmd)"
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP]:
                     cmd_aggr += "E  "
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_SHIFT]:
@@ -2217,7 +2240,7 @@ class STILDumpCompiler(STILParser):
                     is_shift = True
 
             if len(cmd_aggr) > 0:
-                #print(f"cmd_aggr {cmd_aggr}")
+                    #print(f"cmd_aggr {cmd_aggr}")
                 cmd_list.append(cmd_aggr)
             if is_shift:
                 is_shift = False

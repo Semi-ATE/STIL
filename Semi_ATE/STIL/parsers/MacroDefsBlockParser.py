@@ -212,8 +212,11 @@ class MacroDefsBlockParser:
         else:
             label_str = t.value
         label_strip = label_str.strip()
-        label_split = label_strip.split(" ")
-        label = label_split[0].strip()
+        if label_strip.startswith('"') == False and label_strip.endswith('"') == False:
+            label_split = label_strip.split(" ")
+            label = label_split[0].strip()
+        else:
+            label = label_strip
 
         labels = self.macro_labels[self.curr_macro_name]
         if label in labels:
@@ -221,6 +224,8 @@ class MacroDefsBlockParser:
             raise Exception(err_msg)
         else:
             labels.append(label)
+
+        return label
             
 
     def b_macrodefs__pattern_statements__GOTO_LABEL(self, t):

@@ -170,14 +170,30 @@ class PatternBlockParser:
 
         self.is_vector_stmt = True
 
-    def b_pattern__pattern_statements__LABEL_NAME(self, t):
+    def b_pattern__pattern_statements__LABEL(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
-        label = t.value
+
+        if t.value[-1] == ':':
+            label_str = t.value[0:-1]
+        else:
+            label_str = t.value
+        label_strip = label_str.strip()
+        if label_strip.startswith('"') == False and label_strip.endswith('"') == False:
+            label_split = label_strip.split(" ")
+            label = label_split[0].strip()
+        else:
+            label = label_strip
+            
         labels = self.patt_labels[self.curr_pattern]
-        if label not in labels:
+        if label in labels:
+            err_msg = f"Label '{label}' is already defined !"
+            raise Exception(err_msg)
+        else:
             labels.append(label)
+
+        return label
 
     def b_pattern__pattern_statements__GOTO_LABEL(self, t):
         if self.debug:
@@ -482,7 +498,7 @@ class PatternBlockParser:
         for label in gt_labels:
             if label not in labels:
                 obj = self.goto_label_obj[label]
-                err_msg = f"Label {label} used by Goto statament in the Pattern block {self.curr_pattern} is not defined!"
+                err_msg = f"Label '{label}' used by Goto statament in the Pattern block '{self.curr_pattern}' is not defined!"
                 raise STILSemanticException( obj.line, obj.column, err_msg)
                 
 

@@ -1168,11 +1168,29 @@ def test_sem_err_sig_wfc():
     assert parser.err_line == 52
     assert parser.err_col == 24
 
-def test_sem_err_goto_label():
-    stil_file = get_stil_file("sem_err_goto_label.stil")
+def test_sem_err_goto_label_1():
+    stil_file = get_stil_file("sem_err_goto_label_1.stil")
 
     parser = STILParser(stil_file)
     parser.parse_syntax()
     parser.parse_semantic()
     assert parser.err_line == 53
     assert parser.err_col == 14
+
+def test_sem_err_goto_label_2():
+    stil_file = get_stil_file("sem_err_goto_label_2.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 55
+    assert parser.err_col == 1
+
+def test_sem_ok_goto():
+    stil_file = get_stil_file("sem_ok_goto.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == -1
+    assert parser.err_col == -1

@@ -12,8 +12,6 @@ USER_KEYWORD_NAME : (USER_KEYWORD_ID | USER_KEYWORD_ES)
 
 USER_KEYWORD_ID : IDENTIFIER
 USER_KEYWORD_ES : ESCAPED_STRING
-
-// Not clear if white space is (not)allowed between label name and ":" 
 LABEL : USER_DEFINED_NAME (" ")* ":"
 
 //v_stmt : ("V"         | "Vector")         vec_block

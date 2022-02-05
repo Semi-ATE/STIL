@@ -262,7 +262,7 @@ class STILDumpCompiler(STILParser):
         # Current pattern command : PattVecCmd object
         self.curr_cmd = None
         
-        self.is_shift = False
+#        self.is_shift = False
 #        self.is_condition_stmt = False
         self.is_fixed_stmt = False
 
@@ -289,6 +289,11 @@ class STILDumpCompiler(STILParser):
         # dict key   is the procedure name in full domain format -> domain::procedure_name
         # dict value is the number of vector addresses used by the procedure
         self.proc2vas = {}
+
+        # scan data is a list with maps which contains :
+        # key - timing_domain::wft_name::signal name
+        # value - WFC list 
+        self.scan_data = []
 
         # data contains list of lists with :
         # [0]     VA - list with vector addresses
@@ -487,30 +492,26 @@ class STILDumpCompiler(STILParser):
 
     def b_macrodefs__pattern_statements__VEC_DATA_STRING(self, t):
         super().b_macrodefs__pattern_statements__VEC_DATA_STRING(t)
-        if self.is_shift and self.is_found_hash_macro:
-            self.add_cmd_macro(PattVecCmd.CMD_SHIFT)
 
     def b_procedures__pattern_statements__VEC_DATA_STRING(self, t):
         super().b_procedures__pattern_statements__VEC_DATA_STRING(t)
-        if self.is_shift and self.is_found_hash_proc:
-            self.add_cmd_proc(PattVecCmd.CMD_SHIFT)
         
     # to be moved to WFC decoding where # is !!!
     def b_macrodefs__pattern_statements__KEYWORD_SHIFT(self, t):
         super().b_macrodefs__pattern_statements__KEYWORD_SHIFT(t)
-        self.is_shift = True
+        self.add_cmd_macro(PattVecCmd.CMD_START_SHIFT)
 
     def b_procedures__pattern_statements__KEYWORD_SHIFT(self, t):
         super().b_procedures__pattern_statements__KEYWORD_SHIFT(t)
-        self.is_shift = True
+        self.add_cmd_proc(PattVecCmd.CMD_START_SHIFT)
 
     def b_macrodefs__pattern_statements__close_shift_block(self, t):
         super().b_macrodefs__pattern_statements__close_shift_block(t)
-        self.is_shift = False
+        self.save_in_prev_cmd_macro(PattVecCmd.CMD_STOP_SHIFT)
 
     def b_procedures__pattern_statements__close_shift_block(self, t):
         super().b_procedures__pattern_statements__close_shift_block(t)
-        self.is_shift = False
+        self.save_in_prev_cmd_proc(PattVecCmd.CMD_STOP_SHIFT)
 
     def b_pattern__pattern_statements__CALL_PROC_NAME(self, t):
         super().b_pattern__pattern_statements__CALL_PROC_NAME(t)
@@ -1295,7 +1296,7 @@ class STILDumpCompiler(STILParser):
         # Key is the signal name
         # Value is a list with scan chain memory filled with WFC
         scan_mem = {}
-
+        
         shift_pos = -1
 
         # Processing signals which have # in shift block        
@@ -1445,9 +1446,11 @@ class STILDumpCompiler(STILParser):
         This function will "compile" the input block2cmd (which can be Pattern or Procedure block)
         into text file
         '''
-                
+        
         self.data = []
 
+        self.scan_data = []
+        
         # Collect WFC data from sgd_patt2sig2WFCs
         # sgd_patt2sig2WFCs can be either pattern or procedure block
         signals = []
@@ -1569,8 +1572,10 @@ class STILDumpCompiler(STILParser):
                     va_cmd[-1].set_value(PattVecCmd.CMD_GOTO, vec_cmds.get_value(cmd))
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP]:
                     cmd_aggr += "E  "
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_SHIFT]:
-                    cmd_aggr += "S  "
+                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_SHIFT]:
+                    cmd_aggr += "+S  "
+                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_SHIFT]:
+                    cmd_aggr += "-S  "
                 elif cmd_name ==  PattVecCmd.cmds[PattVecCmd.CMD_MACRO]:
                     # Macro blocks are always expanding into the pattern block
                     is_macro = True
@@ -1623,12 +1628,20 @@ class STILDumpCompiler(STILParser):
                                                     signals, 
                                                     sig_group_domain,
                                                     cond_sig2wfc)
-                            
+
                             if self.is_scan_mem_available:
+                                sd = {}
                                 for sig in scan_mem:
                                     if sig not in block_scan_mem:
                                         block_scan_mem[sig] = []
                                     block_scan_mem[sig].extend(scan_mem[sig])
+                                    scan_chain = ''
+                                    for wfc in scan_mem[sig]:
+                                        scan_chain += wfc
+                                    if len(scan_chain) > 0:
+                                        sd[sig] = scan_chain
+                                if len(sd) > 0:
+                                    self.scan_data.append(sd)
                             
                             is_first = True
                             sig_index = 6
@@ -1651,8 +1664,41 @@ class STILDumpCompiler(STILParser):
                                     last_wfc = self.data[sig_index][-1]
                                     self.data[sig_index][exp_va:exp_va] = last_wfc
                                 sig_index += 1
+                                
+                            shift_sig_wo_data = []
+                            if len(scan_mem) == 0:
+                                for sig in exp_sig2wfc:
+                                    wfcs = exp_sig2wfc[sig]
+                                    if len(wfcs) == 0:
+                                        shift_sig_wo_data.append(sig)
+
+                            if len(shift_sig_wo_data) > 0:
+                                print(f"WARNING: The following signals in Shift block do not have data in the call of the macro:")
+                                for s in shift_sig_wo_data:
+                                    print(f"         {s}")
+                                macro_va_length = 1
+
+                                sig_index = 6
+                                for sig in signals:
+                                    if sig in shift_sig_wo_data:
+                                        wfcs = self.data[sig_index]
+                                        last_wfc = self.data[sig_index][-1]
+                                        self.data[sig_index][exp_va:exp_va] = last_wfc
+                                    sig_index += 1
+
                             exp_va += exp
                             exp_shift_count = macro_va_length - len_wo_shift
+                        else:
+                            # Macro call without data, but with shift inside the macro
+                            exp_va += 1
+                            macro_va_length = 1
+
+                            sig_index = 6
+                            for sig in signals:
+                                last_wfc = self.data[sig_index][-1]
+                                self.data[sig_index][exp_va:exp_va] = last_wfc
+                                sig_index += 1
+
                     else:
                         is_first = True
                         sig_index = 6
@@ -1796,10 +1842,18 @@ class STILDumpCompiler(STILParser):
                                                         cond_sig2wfc)
 
                                 if self.is_scan_mem_available:
+                                    sd = {}
                                     for sig in scan_mem:
                                         if sig not in block_scan_mem:
                                             block_scan_mem[sig] = []
                                         block_scan_mem[sig].extend(scan_mem[sig])
+                                        scan_chain = ''
+                                        for wfc in scan_mem[sig]:
+                                            scan_chain += wfc
+                                        if len(scan_chain) > 0:
+                                            sd[sig] = scan_chain
+                                    if len(sd) > 0:
+                                        self.scan_data.append(sd)
                                 
                                 is_first = True
                                 sig_index = 6
@@ -1823,8 +1877,39 @@ class STILDumpCompiler(STILParser):
                                         self.data[sig_index][exp_va:exp_va] = last_wfc
                                     sig_index += 1
 
+                                shift_sig_wo_data = []
+                                if len(scan_mem) == 0:
+                                    for sig in exp_sig2wfc:
+                                        wfcs = exp_sig2wfc[sig]
+                                        if len(wfcs) == 0:
+                                            shift_sig_wo_data.append(sig)
+    
+                                if len(shift_sig_wo_data) > 0:
+                                    print(f"WARNING: The following signals in Shift block do not have data in the call of the procedure:")
+                                    for s in shift_sig_wo_data:
+                                        print(f"         {s}")
+                                    proc_va_length = 1
+
+                                    sig_index = 6
+                                    for sig in signals:
+                                        if sig in shift_sig_wo_data:
+                                            wfcs = self.data[sig_index]
+                                            last_wfc = self.data[sig_index][-1]
+                                            self.data[sig_index][exp_va:exp_va] = last_wfc
+                                        sig_index += 1
+
                                 exp_va += exp
                                 exp_shift_count = proc_va_length - len_wo_shift
+                            else:
+                                # Procedure call without data, but with shift inside the procedure
+                                exp_va += 1
+                                proc_va_length = 1
+
+                                sig_index = 6
+                                for sig in signals:
+                                    last_wfc = self.data[sig_index][-1]
+                                    self.data[sig_index][exp_va:exp_va] = last_wfc
+                                    sig_index += 1
                                                                 
                         else:
                             is_first = True
@@ -2235,9 +2320,11 @@ class STILDumpCompiler(STILParser):
                     cmd_aggr += "G  vec_cmds.get_value(cmd)"
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP]:
                     cmd_aggr += "E  "
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_SHIFT]:
-                    cmd_aggr += "S  "
+                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_SHIFT]:
+                    cmd_aggr += "+S  "
                     is_shift = True
+                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_SHIFT]:
+                    cmd_aggr += "-S  "
 
             if len(cmd_aggr) > 0:
                     #print(f"cmd_aggr {cmd_aggr}")

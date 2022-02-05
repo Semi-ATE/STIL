@@ -1023,7 +1023,52 @@ def test_syn_err_shift_12():
     parser.parse_syntax()
     assert parser.err_line == 51
     assert parser.err_col == 15
-    
+
+def test_sem_ok_shift_1():
+    stil_file = get_stil_file("sem_ok_shift_1.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == -1
+    assert parser.err_col == -1
+
+def test_sem_ok_shift_2():
+    stil_file = get_stil_file("sem_ok_shift_2.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == -1
+    assert parser.err_col == -1
+
+def test_sem_ok_shift_3():
+    stil_file = get_stil_file("sem_ok_shift_3.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == -1
+    assert parser.err_col == -1
+
+def test_sem_ok_shift_4():
+    stil_file = get_stil_file("sem_ok_shift_4.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == -1
+    assert parser.err_col == -1
+
+def test_sem_ok_shift_5():
+    stil_file = get_stil_file("sem_ok_shift_5.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == -1
+    assert parser.err_col == -1
+
 def test_sem_err_macrodefs_block_1():
     stil_file = get_stil_file("sem_err_macrodefs_block_1.stil")
 

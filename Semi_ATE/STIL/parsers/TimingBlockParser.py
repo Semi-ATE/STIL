@@ -78,7 +78,7 @@ class TimingBlockParser:
         self.curr_events = []
 
         # dict key   is the timing_domain::wft
-        # dict value is the wft's period 
+        # dict value is the wft's period value.
         self.wft2period = {}
 
         self.is_timing_block_defined = False

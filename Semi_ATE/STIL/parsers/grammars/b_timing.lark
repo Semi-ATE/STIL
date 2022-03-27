@@ -1,6 +1,6 @@
 %import base.annotation
 %import base.USER_DEFINED_NAME
-%import base.TIME_EXPR
+%import time_expr.TIME_EXPR
 %import base.ALPHA_NUM
 %import base.SIGNAL_NAME_TERMINAL
 

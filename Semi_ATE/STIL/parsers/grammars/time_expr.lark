@@ -1,0 +1,30 @@
+%import base.INT
+%import base.NUMBER
+
+// =============================================================================
+// ============================= TIME_EXPR =====================================
+
+TIME_EXPR : "'" OPEN_MARK EXPR ( OP OPEN_MARK EXPR CLOSE_MARK )* CLOSE_MARK "'"
+
+WS : (" ")*
+OPEN_MARK  :  WS ("(")* WS
+CLOSE_MARK :  WS (")")* WS
+
+OP : WS TIME_EXPR_ADD WS | WS TIME_EXPR_SUB WS| WS TIME_EXPR_DIV WS | WS TIME_EXPR_MUL WS | WS
+
+TIME_EXPR_ADD : "+"
+TIME_EXPR_SUB : "-"
+TIME_EXPR_DIV : "/"
+TIME_EXPR_MUL : "*"
+
+EXPR : VAR | (NUMBER | EXP) (TIME_UNIT|FREQ_UNIT)* 
+
+VAR : /[A-Za-z_][A-Za-z0-9_]+/
+
+EXP : NUMBER ("e"|"E") ("+"|"-")  INT
+
+FREQ_UNIT :  ("aHz"|"fHz"|"pHz"|"nHz"|"uHz"|"mHz"|"Hz"|"kHz"|"MHz"|"GHz"|"THz"|"PHz"|"EHz") 
+TIME_UNIT :  ("as"|"fs"|"ps"|"ns"|"us"|"ms"|"s"|"ks"|"Ms"|"Gs"|"Ts"|"Ps"|"Es") 
+
+// ========================= End of TIME_EXPR ==================================
+// =============================================================================

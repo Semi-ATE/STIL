@@ -60,7 +60,7 @@ class SyntaxParserExceptions:
                 if err.endswith("USER_DEFINED_NAME"):
                     return_value += "User defined name"
                 elif err.endswith("TIME_EXPR"):
-                    return_value += "Time expression in format 'NUMBER UNIT' without whitespace between them or 'NUMBER MATH_OPERATOR NUMBER UNIT' or 'NUMBER' \n\t\t   Where:\n\t\t   - Mandatory single quotes 'xxx' for the value\n\t\t   - NUMBER can be integer, real or exponential number\n\t\t   - UNIT SI Time/Frequency unit with engineering prefixes (ns, us, ms, s, Hz, MHz ...)\n\t\t   - MATH_OPERATOR can be *,/,+.- \n\t\t   Example: '5ns' '1.234ms' '10E-3s' '1MHz' '2/1MHz' "
+                    return_value += "Time expression in format 'NUMBER UNIT' without whitespace between them or 'NUMBER MATH_OPERATOR NUMBER UNIT' or 'NUMBER' or 'VARIABLE' \n\t\t   Where:\n\t\t   - Mandatory single quotes 'xxx' for the value\n\t\t   - NUMBER can be integer, real or exponential number\n\t\t   - UNIT SI Time/Frequency unit with engineering prefixes (ns, us, ms, s, Hz, MHz ...)\n\t\t   - VARIABLE defined in the Spec block\n\t\t   - MATH_OPERATOR can be *,/,+.- \n\t\t   Examples: '5ns' '1.234ms' '10E-3s' '1MHz' '2/1MHz+PLL_Freq' "
                 elif err.endswith("SEMICOLON"):
                     return_value += ";"
                 elif err.find("QUOTE") > -1:

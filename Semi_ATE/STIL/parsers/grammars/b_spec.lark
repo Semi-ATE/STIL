@@ -1,5 +1,5 @@
 %import base.USER_DEFINED_NAME
-%import base.TIME_EXPR
+%import time_expr.TIME_EXPR
 %import base.MIN
 %import base.TYP
 %import base.MAX
@@ -12,16 +12,23 @@ SPEC_DOMAIN_NAME : USER_DEFINED_NAME
  
 OPEN_SPEC_BLOCK : "{"
 
-//  category_spec: "Category"        USER_DEFINED_NAME "{"                 (var_typ | var_all)* "}"
-    category_spec : KEYWORD_CATEGORY USER_DEFINED_NAME open_category_block (var_typ | var_all)* close_category_block
+//  category_spec: "Category"        USER_DEFINED_NAME "{"        (var_typ | var_all)* "}"
+    category_spec : KEYWORD_CATEGORY cat_name open_category_block (var_typ | var_all)* close_category_block
     KEYWORD_CATEGORY : "Category"
+
+    cat_name   : USER_DEFINED_NAME
+
+    var_name   : USER_DEFINED_NAME
+    var_typ_value  : TIME_EXPR
+    var_type   : (MIN|TYP|MAX)
+    var_value  : TIME_EXPR
 
     open_category_block : "{"
     
-        var_typ : USER_DEFINED_NAME "=" TIME_EXPR ";"
+        var_typ : var_name "=" var_typ_value ";"
 
 //      var_all : USER_DEFINED_NAME "{"                ((MIN|TYP|MAX) TIME_EXPR ";")* "}"
-        var_all : USER_DEFINED_NAME open_var_all_block ((MIN|TYP|MAX) TIME_EXPR ";")* close_var_all_block
+        var_all : var_name open_var_all_block (var_type var_value ";")* close_var_all_block
 
         open_var_all_block : "{"
         close_var_all_block : "}"
@@ -31,13 +38,13 @@ OPEN_SPEC_BLOCK : "{"
     open_var_block : "{"
 
 //  variable_spec: "Variable"        USER_DEFINED_NAME "{"            (cat_typ | cat_all)* "}"
-    variable_spec : KEYWORD_VARIABLE USER_DEFINED_NAME open_var_block (cat_typ | cat_all)* close_var_block 
+    variable_spec : KEYWORD_VARIABLE var_name open_var_block (cat_typ | cat_all)* close_var_block 
     KEYWORD_VARIABLE : "Variable"
 
-        cat_typ : USER_DEFINED_NAME "=" TIME_EXPR ";"
+        cat_typ : cat_name "=" var_typ_value ";"
 
 //      cat_all : USER_DEFINED_NAME "{"                ((MIN|TYP|MAX) TIME_EXPR ";")* "}"
-        cat_all : USER_DEFINED_NAME open_cat_all_block ((MIN|TYP|MAX) TIME_EXPR ";")* close_cat_all_block
+        cat_all : cat_name open_cat_all_block (var_type var_value ";")* close_cat_all_block
 
         open_cat_all_block : "{"
         close_cat_all_block : "}"

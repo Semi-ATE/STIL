@@ -2,11 +2,13 @@
 import inspect
 
 from .DomainUtils import DomainUtils
-
+from .TimeUtils import TimeUtils
 
 class PatternExecBlockParser:
     def __init__(self, debug=False):
         self.debug = debug
+        
+        self.op = {'+', '-', '/', '*', '(', ')'}
 
         # dict key   is the pattern exec block name
         # dict value is a list with pattern burst blocks
@@ -22,6 +24,14 @@ class PatternExecBlockParser:
         # dict key   is the pattern exec block name
         # dict value is the timing domain
         self.patt_exec_block2time_domain = {}
+
+        # dict key   is the pattern exec block name
+        # dict value is the spec category
+        self.patt_exec2category = {}
+
+        # dict key   is the pattern exec block name
+        # dict value is the spec selector
+        self.patt_exec2selector = {}
 
         self.is_patternexec_block_defined = False
 
@@ -129,13 +139,153 @@ class PatternExecBlockParser:
         if self.curr_timing_domain not in self.time_domain2wft:
             err_msg = f"Timing domain {self.curr_timing_domain} is not defined!"
             raise Exception(err_msg)
+            
+    def b_pattern_exec__category_name(self, t):
+        if self.debug:
+            func_name = inspect.stack()[0][3]
+            self.trace(func_name, t)
+           
+        self.patt_exec2category[self.curr_patt_exec] = str(t[0])
+            
+    def b_pattern_exec__selector_name(self, t):
+        if self.debug:
+            func_name = inspect.stack()[0][3]
+            self.trace(func_name, t)
+
+        self.patt_exec2selector[self.curr_patt_exec] = str(t[0])
 
     def b_pattern_exec__CLOSE_PATTERN_EXEC_BLOCK(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
 
+        self.process_timings()
+
         self.patt_exec_block2time_domain[self.curr_patt_exec] = self.curr_timing_domain
 
         self.curr_patt_exec = DomainUtils.global_domain
-        self.curr_timing_domain = DomainUtils.global_domain
+        self.curr_timing_domain = DomainUtils.global_domain      
+        
+
+    def process_timings(self):
+        
+        for time_wft in self.wft2period:
+            period = self.wft2period[time_wft]
+            key = self.curr_patt_exec + "::" + time_wft
+#            print(f"key {key} period {period}")
+            self.wft2period[time_wft] = self.parse_time_expr(period)
+            
+        
+        # dict key   is the timing_domain::wft::signal_name
+        # dict value is a SigTimingInfo object with timing information 
+        for tws in self.sig_wft2timing:
+            sti = self.sig_wft2timing[tws]
+            wfcs = sti.get_wfcs()
+            for wfc in wfcs:
+                timing = sti.get_timing_for_wfc(wfc)
+                for wfe_time in timing:
+                    wfe = wfe_time[0]
+                    time = wfe_time[1]
+                    ftime = self.parse_time_expr(time)
+                    sti.replace_timing_for_wfc(wfc, wfe, time, ftime)
+        
+            
+    def get_var_value(self, selector, category, variable):
+        
+        sel_var = selector + "::" + variable
+#        print(f"self.selector_var {self.selector_var}")
+        if sel_var in self.selector_var:
+            sel = self.selector_var[sel_var]
+            # key is category::variable      
+            if sel == 'Min':
+                key = category + "::" + variable
+                keyn = "NONE::" + variable
+                if key in self.var_min_value:
+                    return self.var_min_value[key]
+                elif keyn in self.var_min_value:
+                    return self.var_min_value[keyn]
+                else:
+                    err_msg = f"ERROR: Can not find 'Min' value for variable '{variable}' in category '{category}'!"
+                    raise Exception(err_msg)
+            elif sel == 'Typ':
+                key = category + "::" + variable
+                keyn = "NONE::" + variable
+                if key in self.var_typ_value:
+                    return self.var_typ_value[key]
+                elif keyn in self.var_typ_value:
+                    return self.var_typ_value[keyn]
+                else:
+                    err_msg = f"ERROR: Can not find 'Typ' value for variable '{variable}' in category '{category}'!"
+                    raise Exception(err_msg)
+            elif sel == 'Max':
+                key = category + "::" + variable
+                keyn = "NONE::" + variable
+                if key in self.var_max_value:
+                    return self.var_max_value[key]
+                elif keyn in self.var_max_value:
+                    return self.var_min_value[keyn]
+                else:
+                    err_msg = f"ERROR: Can not find 'Max' value for variable '{variable}' in category '{category}'!"
+                    raise Exception(err_msg)
+            else:
+                err_msg = f"ERROR: Unknown selector {sel}!"
+                raise Exception(err_msg)
+
+                
+        else:
+            err_msg = f"ERROR: Variable {variable} is not defined in the selector {selector}!"
+            raise Exception(err_msg)
+            
+            
+    def parse_time_expr(self, time_expr):
+        
+        # Check first if the value is simple time:
+        is_simple_time = True
+        for i in range(0, len(time_expr)):
+            char = time_expr[i]
+            if char in self.op:
+                is_simple_time = False
+                break
+        
+        if is_simple_time:
+            fsec = TimeUtils.get_time_fsec(time_expr)
+            return str(int(fsec)) + "fs"
+
+        # The time is expressoin, let's calculate it:
+        cat = self.patt_exec2category[self.curr_patt_exec]
+        sel = self.patt_exec2selector[self.curr_patt_exec]
+        
+        op_list = []
+
+        buff = ""
+        for i in range(0, len(time_expr)):
+            char = time_expr[i]
+            if char.isalnum():
+                buff += char
+            elif char == ' ':
+                pass
+            elif char == '_':
+                buff += char
+            elif char == '.':
+                buff += char
+            elif char in self.op:
+                if buff in self.variables:
+                    val = self.get_var_value(sel, cat, buff)
+                    buff = val
+                if len(buff) > 0:
+                    op_list.append(buff)
+                if len(char) > 0:
+                    op_list.append(char)
+                buff = ''
+                
+        if buff in self.variables:
+            val = self.get_var_value(sel, cat, buff)
+            if len(val) > 0:
+                op_list.append(val)
+        else:
+            if len(buff) > 0:
+                op_list.append(buff)
+            
+        # Return expression according order of operations
+        return TimeUtils.bodmas(op_list, time_expr)
+

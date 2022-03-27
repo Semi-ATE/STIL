@@ -1,5 +1,5 @@
 %import base.USER_DEFINED_NAME
-%import base.TIME_EXPR
+%import time_expr.TIME_EXPR
 %import pattern_statements.pattern_statement
 %import pattern_statements.label
 

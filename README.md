@@ -9,6 +9,8 @@ Standard Tester Interface Language [IEEE1450]
 [![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/Semi-ATE/STIL/latest)](https://github.com/Semi-ATE/STIL)
 [![PyPI](https://img.shields.io/pypi/v/Semi-ATE-STIL?color=blue&label=PyPI)](https://pypi.org/project/Semi-ATE-STIL/)
 
+[![Conda (channel only)](https://img.shields.io/conda/vn/conda-forge/Semi-ATE-STIL?color=blue&label=conda-forge)](https://anaconda.org/conda-forge/semi-ate-stil)
+[![conda-forge feedstock](https://img.shields.io/github/issues-pr/conda-forge/Semi-ATE-STIL-feedstock?label=feedstock)](https://github.com/conda-forge/Semi-ATE-STIL-feedstock)
 
 [![GitHub issues](https://img.shields.io/github/issues/Semi-ATE/STIL)](https://github.com/Semi-ATE/STIL/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/Semi-ATE/STIL)](https://github.com/Semi-ATE/STIL/pulls)

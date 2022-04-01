@@ -34,7 +34,7 @@ stil_file = "PATH_TO_STIL_FILE"
 parser = STILParser(stil_file)
 parser.parse_syntax()
 parser.parse_semantic()
-if parser.err_msg == None:
+if parser.err_line == -1:
   print("No errors are found during STIL file parsing")
 else:
   print("Found error during STIL file parsing")

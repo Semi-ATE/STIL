@@ -22,11 +22,12 @@ class PattVecCmd:
     CMD_BREAKPOINT = 9
     CMD_IDDQTESTPOINT = 10
     CMD_STOP = 11
-    CMD_SHIFT = 12
-    CMD_STOP_LOOP = 13
-    CMD_STOP_MATCHLOOP = 14
-    CMD_MACRO = 15
-    CMD_CALL = 16
+    CMD_START_SHIFT = 12
+    CMD_STOP_SHIFT = 13
+    CMD_STOP_LOOP = 14
+    CMD_STOP_MATCHLOOP = 15
+    CMD_MACRO = 16
+    CMD_CALL = 17
 
     cmds = {
         0: "NO CMD",
@@ -41,11 +42,12 @@ class PattVecCmd:
         9: "BREAKPOINT",
         10: "IDDQTESTPOINT",
         11: "STOP",
-        12: "SHIFT",
-        13: "STOP_LOOP",
-        14: "STOP_MATCHLOOP",
-        15: "MACRO",
-        16: "CALL",
+        12: "START_SHIFT",
+        13: "STOP_SHIFT",
+        14: "STOP_LOOP",
+        15: "STOP_MATCHLOOP",
+        16: "MACRO",
+        17: "CALL",
     }
 
     def __init__(self, debug=False):

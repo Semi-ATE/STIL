@@ -166,6 +166,7 @@ class STILDumpCompiler(STILParser):
         expanding_procs = False,
         is_scan_mem_available = False,
         dump_data = True,
+        enable_trace = True,
         debug = False,
     ):
         STILParser.__init__(self, stil_file, propagate_positions, expanding_procs, debug)
@@ -178,10 +179,12 @@ class STILDumpCompiler(STILParser):
         # this option will supprass the creation of the text files by STILDumpCompiler
         self.dump_data = dump_data
         
+        self.enable_trace = enable_trace
+        
         out_folder = os.path.join(os.getcwd(), out_folder)
         try: 
             os.mkdir(out_folder)
-        except OSError as error: 
+        except OSError: 
             pass
 
         self.out_folder = out_folder
@@ -191,7 +194,7 @@ class STILDumpCompiler(STILParser):
         if signals_order_file != None:
             if os.path.exists(signals_order_file):
                 with open(signals_order_file) as f:
-                    signals_order = f.readlines()
+                    self.signals_order.append(f.readline())
             else:
                 raise Exception("File with signal order does not exists")
         # Key is in format SignalsGroupDomain::Pattern
@@ -262,7 +265,7 @@ class STILDumpCompiler(STILParser):
         # Current pattern command : PattVecCmd object
         self.curr_cmd = None
         
-        self.is_shift = False
+#        self.is_shift = False
 #        self.is_condition_stmt = False
         self.is_fixed_stmt = False
 
@@ -290,6 +293,11 @@ class STILDumpCompiler(STILParser):
         # dict value is the number of vector addresses used by the procedure
         self.proc2vas = {}
 
+        # scan data is a list with maps which contains :
+        # key - timing_domain::wft_name::signal name
+        # value - WFC list 
+        self.scan_data = []
+
         # data contains list of lists with :
         # [0]     VA - list with vector addresses
         # [1]     | separator 
@@ -305,16 +313,19 @@ class STILDumpCompiler(STILParser):
 
     def compile(self):
 
-        print("\nSyntax parsing is in progress...")
+        if self.enable_trace:
+            print("\nSyntax parsing is in progress...")
         self.parse_syntax()
-        print("Semantic parsing is in progress...")
+        if self.enable_trace:
+            print("Semantic parsing is in progress...")
         self.parse_semantic()
         # The real compilation will happen once the semantic
         # parsing is finished in self.eof() method bellow
 
     def eof(self):
         # at the end of the file:
-        print("Dump compilation is in progress...")
+        if self.enable_trace:
+            print("Dump compilation is in progress...")
         try:
             self.dump_timing_data()
             self.dump_pattern_flow()
@@ -323,22 +334,23 @@ class STILDumpCompiler(STILParser):
             patt_va, proc_va = self.dump_pattern_blocks()
             self.assamble_all()
 
-            print(f"Vector statements in pattern blocks : {patt_va}")
-            if self.expanding_procs:
-                print(f"Vector statements in procedures blocks : {proc_va} (Procedure memory option is disabled) ")
-            else:
-                print(f"Vector statements in procedures blocks : {proc_va}")
-            print("Compiled with the following options:")
-            if self.is_scan_mem_available:
-                print(" => Scan memory option is enabled [is_scan_mem_available=True] ")
-            else:
-                print(" => Scan memory option is disabled (shift operator is expanded) [is_scan_mem_available=False] ")
-            if self.expanding_procs:
-                print(" => Procedure memory option is not available [expanding_procs=True]")
-            else:
-                print(" => Procedure memory option is available [expanding_procs=False]")
+            if self.enable_trace:
+                print(f"Vector statements in pattern blocks : {patt_va}")
+                if self.expanding_procs:
+                    print(f"Vector statements in procedures blocks : {proc_va} (Procedure memory option is disabled) ")
+                else:
+                    print(f"Vector statements in procedures blocks : {proc_va}")
+                print("Compiled with the following options:")
+                if self.is_scan_mem_available:
+                    print(" => Scan memory option is enabled [is_scan_mem_available=True] ")
+                else:
+                    print(" => Scan memory option is disabled (shift operator is expanded) [is_scan_mem_available=False] ")
+                if self.expanding_procs:
+                    print(" => Procedure memory option is not available [expanding_procs=True]")
+                else:
+                    print(" => Procedure memory option is available [expanding_procs=False]")
     
-            print("Compilation is finished.")
+                print("Compilation is finished.")
 
         except STILDumpCompilerException as e:
             print(e.msg)
@@ -487,30 +499,26 @@ class STILDumpCompiler(STILParser):
 
     def b_macrodefs__pattern_statements__VEC_DATA_STRING(self, t):
         super().b_macrodefs__pattern_statements__VEC_DATA_STRING(t)
-        if self.is_shift and self.is_found_hash_macro:
-            self.add_cmd_macro(PattVecCmd.CMD_SHIFT)
 
     def b_procedures__pattern_statements__VEC_DATA_STRING(self, t):
         super().b_procedures__pattern_statements__VEC_DATA_STRING(t)
-        if self.is_shift and self.is_found_hash_proc:
-            self.add_cmd_proc(PattVecCmd.CMD_SHIFT)
         
     # to be moved to WFC decoding where # is !!!
     def b_macrodefs__pattern_statements__KEYWORD_SHIFT(self, t):
         super().b_macrodefs__pattern_statements__KEYWORD_SHIFT(t)
-        self.is_shift = True
+        self.add_cmd_macro(PattVecCmd.CMD_START_SHIFT)
 
     def b_procedures__pattern_statements__KEYWORD_SHIFT(self, t):
         super().b_procedures__pattern_statements__KEYWORD_SHIFT(t)
-        self.is_shift = True
+        self.add_cmd_proc(PattVecCmd.CMD_START_SHIFT)
 
     def b_macrodefs__pattern_statements__close_shift_block(self, t):
         super().b_macrodefs__pattern_statements__close_shift_block(t)
-        self.is_shift = False
+        self.save_in_prev_cmd_macro(PattVecCmd.CMD_STOP_SHIFT)
 
     def b_procedures__pattern_statements__close_shift_block(self, t):
         super().b_procedures__pattern_statements__close_shift_block(t)
-        self.is_shift = False
+        self.save_in_prev_cmd_proc(PattVecCmd.CMD_STOP_SHIFT)
 
     def b_pattern__pattern_statements__CALL_PROC_NAME(self, t):
         super().b_pattern__pattern_statements__CALL_PROC_NAME(t)
@@ -1295,7 +1303,7 @@ class STILDumpCompiler(STILParser):
         # Key is the signal name
         # Value is a list with scan chain memory filled with WFC
         scan_mem = {}
-
+        
         shift_pos = -1
 
         # Processing signals which have # in shift block        
@@ -1445,9 +1453,11 @@ class STILDumpCompiler(STILParser):
         This function will "compile" the input block2cmd (which can be Pattern or Procedure block)
         into text file
         '''
-                
+        
         self.data = []
 
+        self.scan_data = []
+        
         # Collect WFC data from sgd_patt2sig2WFCs
         # sgd_patt2sig2WFCs can be either pattern or procedure block
         signals = []
@@ -1533,7 +1543,7 @@ class STILDumpCompiler(STILParser):
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_LOOP]:
                     cmd_aggr += f"SL |{vec_cmds.get_value(cmd)}"
                     if last_start_loop_va != -1:
-                        int_err_msg = f"COMPILER ERROR : nested loop block detected"
+                        int_err_msg = "COMPILER ERROR : nested loop block detected"
                         raise STILDumpCompilerException(-1, -1, int_err_msg)
                     else:
                         last_start_loop_va = exp_va
@@ -1550,7 +1560,7 @@ class STILDumpCompiler(STILParser):
                         cmd_aggr += "SML"
 
                     if last_start_loop_va != -1:
-                        int_err_msg = f"COMPILER ERROR : nested loop block detected"
+                        int_err_msg = "COMPILER ERROR : nested loop block detected"
                         raise STILDumpCompilerException(-1, -1, int_err_msg)
                     else:
                         last_start_loop_va = exp_va
@@ -1569,8 +1579,10 @@ class STILDumpCompiler(STILParser):
                     va_cmd[-1].set_value(PattVecCmd.CMD_GOTO, vec_cmds.get_value(cmd))
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP]:
                     cmd_aggr += "E  "
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_SHIFT]:
-                    cmd_aggr += "S  "
+                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_SHIFT]:
+                    cmd_aggr += "+S  "
+                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_SHIFT]:
+                    cmd_aggr += "-S  "
                 elif cmd_name ==  PattVecCmd.cmds[PattVecCmd.CMD_MACRO]:
                     # Macro blocks are always expanding into the pattern block
                     is_macro = True
@@ -1623,12 +1635,20 @@ class STILDumpCompiler(STILParser):
                                                     signals, 
                                                     sig_group_domain,
                                                     cond_sig2wfc)
-                            
+
                             if self.is_scan_mem_available:
+                                sd = {}
                                 for sig in scan_mem:
                                     if sig not in block_scan_mem:
                                         block_scan_mem[sig] = []
                                     block_scan_mem[sig].extend(scan_mem[sig])
+                                    scan_chain = ''
+                                    for wfc in scan_mem[sig]:
+                                        scan_chain += wfc
+                                    if len(scan_chain) > 0:
+                                        sd[sig] = scan_chain
+                                if len(sd) > 0:
+                                    self.scan_data.append(sd)
                             
                             is_first = True
                             sig_index = 6
@@ -1651,8 +1671,41 @@ class STILDumpCompiler(STILParser):
                                     last_wfc = self.data[sig_index][-1]
                                     self.data[sig_index][exp_va:exp_va] = last_wfc
                                 sig_index += 1
+                                
+                            shift_sig_wo_data = []
+                            if len(scan_mem) == 0:
+                                for sig in exp_sig2wfc:
+                                    wfcs = exp_sig2wfc[sig]
+                                    if len(wfcs) == 0:
+                                        shift_sig_wo_data.append(sig)
+
+                            if len(shift_sig_wo_data) > 0:
+                                print("WARNING: The following signals in Shift block do not have data in the call of the macro:")
+                                for s in shift_sig_wo_data:
+                                    print(f"         {s}")
+                                macro_va_length = 1
+
+                                sig_index = 6
+                                for sig in signals:
+                                    if sig in shift_sig_wo_data:
+                                        wfcs = self.data[sig_index]
+                                        last_wfc = self.data[sig_index][-1]
+                                        self.data[sig_index][exp_va:exp_va] = last_wfc
+                                    sig_index += 1
+
                             exp_va += exp
                             exp_shift_count = macro_va_length - len_wo_shift
+                        else:
+                            # Macro call without data, but with shift inside the macro
+                            exp_va += 1
+                            macro_va_length = 1
+
+                            sig_index = 6
+                            for sig in signals:
+                                last_wfc = self.data[sig_index][-1]
+                                self.data[sig_index][exp_va:exp_va] = last_wfc
+                                sig_index += 1
+
                     else:
                         is_first = True
                         sig_index = 6
@@ -1796,10 +1849,18 @@ class STILDumpCompiler(STILParser):
                                                         cond_sig2wfc)
 
                                 if self.is_scan_mem_available:
+                                    sd = {}
                                     for sig in scan_mem:
                                         if sig not in block_scan_mem:
                                             block_scan_mem[sig] = []
                                         block_scan_mem[sig].extend(scan_mem[sig])
+                                        scan_chain = ''
+                                        for wfc in scan_mem[sig]:
+                                            scan_chain += wfc
+                                        if len(scan_chain) > 0:
+                                            sd[sig] = scan_chain
+                                    if len(sd) > 0:
+                                        self.scan_data.append(sd)
                                 
                                 is_first = True
                                 sig_index = 6
@@ -1823,8 +1884,39 @@ class STILDumpCompiler(STILParser):
                                         self.data[sig_index][exp_va:exp_va] = last_wfc
                                     sig_index += 1
 
+                                shift_sig_wo_data = []
+                                if len(scan_mem) == 0:
+                                    for sig in exp_sig2wfc:
+                                        wfcs = exp_sig2wfc[sig]
+                                        if len(wfcs) == 0:
+                                            shift_sig_wo_data.append(sig)
+    
+                                if len(shift_sig_wo_data) > 0:
+                                    print("WARNING: The following signals in Shift block do not have data in the call of the procedure:")
+                                    for s in shift_sig_wo_data:
+                                        print(f"         {s}")
+                                    proc_va_length = 1
+
+                                    sig_index = 6
+                                    for sig in signals:
+                                        if sig in shift_sig_wo_data:
+                                            wfcs = self.data[sig_index]
+                                            last_wfc = self.data[sig_index][-1]
+                                            self.data[sig_index][exp_va:exp_va] = last_wfc
+                                        sig_index += 1
+
                                 exp_va += exp
                                 exp_shift_count = proc_va_length - len_wo_shift
+                            else:
+                                # Procedure call without data, but with shift inside the procedure
+                                exp_va += 1
+                                proc_va_length = 1
+
+                                sig_index = 6
+                                for sig in signals:
+                                    last_wfc = self.data[sig_index][-1]
+                                    self.data[sig_index][exp_va:exp_va] = last_wfc
+                                    sig_index += 1
                                                                 
                         else:
                             is_first = True
@@ -2180,8 +2272,6 @@ class STILDumpCompiler(STILParser):
         for vec_cmd in cmds:
             #print("\tNEW COMMAND macro_or_proc\n")
             cmd_aggr = ""
-            is_call = False
-            is_macro = False
             
             #print(f"va= {va}")
             
@@ -2208,7 +2298,7 @@ class STILDumpCompiler(STILParser):
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_LOOP]:
                     cmd_aggr += f"SL |{vec_cmd.get_value(cmd)}"
                     if last_start_loop_va != -1:
-                        int_err_msg = f"COMPILER ERROR : nested loop block detected"
+                        int_err_msg = "COMPILER ERROR : nested loop block detected"
                         raise STILDumpCompilerException(-1, -1, int_err_msg)
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_LOAD_LOOP_COUNTER]:
                     cmd_aggr += f"LLC|{vec_cmd.get_value(cmd)}"
@@ -2221,7 +2311,7 @@ class STILDumpCompiler(STILParser):
                     else:
                         cmd_aggr += "SML"
                     if last_start_loop_va != -1:
-                        int_err_msg = f"COMPILER ERROR : nested loop block detected"
+                        int_err_msg = "COMPILER ERROR : nested loop block detected"
                         raise STILDumpCompilerException(-1, -1, int_err_msg)
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_LOAD_MATCHLOOP_COUNTER]:
                     cmd_aggr += f"LMC|{vec_cmd.get_value(cmd)}"
@@ -2235,9 +2325,11 @@ class STILDumpCompiler(STILParser):
                     cmd_aggr += "G  vec_cmds.get_value(cmd)"
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP]:
                     cmd_aggr += "E  "
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_SHIFT]:
-                    cmd_aggr += "S  "
+                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_SHIFT]:
+                    cmd_aggr += "+S  "
                     is_shift = True
+                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_SHIFT]:
+                    cmd_aggr += "-S  "
 
             if len(cmd_aggr) > 0:
                     #print(f"cmd_aggr {cmd_aggr}")

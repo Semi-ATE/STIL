@@ -21,6 +21,7 @@ from .STILDumpCompilerExceptions import STILDumpCompilerException
 from .STILDumpCompilerExceptions import STILDumpCompilerInternalException
 from .DomainUtils import DomainUtils
 from .WFCUtils import WFCUtils
+from .TimeUtils import TimeUtils
 from .HashInfo import HashInfo
 from .PattVecCmd import PattVecCmd
 from .SigTimingInfo import SigTimingInfo

@@ -6,11 +6,21 @@ class SigTimingInfo:
         self.signal = signal
         # key is wfc, value is list of tuples (wfe + time offset)
         self.wfc2wfe_time = {}
-        
-    def set_timing_for_wfc(self, wfc, wfe, time):
+
+    def replace_timing_for_wfc(self, wfc, wfe, old_time, new_time):
+                
         if wfc in self.wfc2wfe_time:
             pairs = self.wfc2wfe_time[wfc]
-            pairs.append((wfe, time))
+            old_value = (wfe, old_time)
+            i = pairs.index(old_value) 
+            pairs[i] = (wfe, new_time)
+        
+    def set_timing_for_wfc(self, wfc, wfe, time):
+
+        if wfc in self.wfc2wfe_time:
+            pairs = self.wfc2wfe_time[wfc]
+            value = (wfe, time)
+            pairs.append(value)
         else:
             self.wfc2wfe_time[wfc] = [(wfe, time)]
 

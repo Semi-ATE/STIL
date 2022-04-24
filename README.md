@@ -9,12 +9,14 @@ Standard Tester Interface Language [IEEE1450]
 [![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/Semi-ATE/STIL/latest)](https://github.com/Semi-ATE/STIL)
 [![PyPI](https://img.shields.io/pypi/v/Semi-ATE-STIL?color=blue&label=PyPI)](https://pypi.org/project/Semi-ATE-STIL/)
 
+[![Conda (channel only)](https://img.shields.io/conda/vn/conda-forge/Semi-ATE-STIL?color=blue&label=conda-forge)](https://anaconda.org/conda-forge/semi-ate-stil)
+[![conda-forge feedstock](https://img.shields.io/github/issues-pr/conda-forge/Semi-ATE-STIL-feedstock?label=feedstock)](https://github.com/conda-forge/Semi-ATE-STIL-feedstock)
 
 [![GitHub issues](https://img.shields.io/github/issues/Semi-ATE/STIL)](https://github.com/Semi-ATE/STIL/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/Semi-ATE/STIL)](https://github.com/Semi-ATE/STIL/pulls)
 
 [![codecov](https://codecov.io/gh/Semi-ATE/STIL/branch/main/graph/badge.svg?token=BAP0H9OMED)](https://codecov.io/gh/Semi-ATE/STIL)
-
+![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/semi-ate-stil.svg?color=brightgreen)
 
 This repository contains STIL parser and dump compiler written in Python using Lark parser library and Language Server Protocol (LSP) for integration into IDE.
 The work is in progress and the parser is not yet ready to be used in production environment.
@@ -32,7 +34,7 @@ stil_file = "PATH_TO_STIL_FILE"
 parser = STILParser(stil_file)
 parser.parse_syntax()
 parser.parse_semantic()
-if parser.err_msg == None:
+if parser.err_line == -1:
   print("No errors are found during STIL file parsing")
 else:
   print("Found error during STIL file parsing")

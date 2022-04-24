@@ -194,7 +194,7 @@ class STILDumpCompiler(STILParser):
         if signals_order_file != None:
             if os.path.exists(signals_order_file):
                 with open(signals_order_file) as f:
-                    self.signals_order.appen(f.readline())
+                    self.signals_order.append(f.readline())
             else:
                 raise Exception("File with signal order does not exists")
         # Key is in format SignalsGroupDomain::Pattern

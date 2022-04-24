@@ -45,7 +45,8 @@ class STILParser(STILLark):
                 propagate_positions=propagate_positions,
                 import_paths=ip,
             )
-        
+
+
         self.is_compressed = utils.check_for_compression(stil_file)
     
     def preprocess_include(self, file):

@@ -1,5 +1,6 @@
 include LICENSE
 include CODEOWNERS
+exclude *.ods
 recursive-include Semi_ATE *.md
 recursive-include requirements *.txt
 recursive-exclude tests *.py

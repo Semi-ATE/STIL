@@ -171,7 +171,7 @@ class PatternExecBlockParser:
         
         for time_wft in self.wft2period:
             period = self.wft2period[time_wft]
-            key = self.curr_patt_exec + "::" + time_wft
+#            key = self.curr_patt_exec + "::" + time_wft
 #            print(f"key {key} period {period}")
             self.wft2period[time_wft] = self.parse_time_expr(period)
             
@@ -249,12 +249,17 @@ class PatternExecBlockParser:
         
         if is_simple_time:
             fsec = TimeUtils.get_time_fsec(time_expr)
-            return str(int(fsec)) + "fs"
+            try:
+                value = int(fsec)
+                return str(value) + "fs"
+            except Exception:
+                # The value is spec variable, will be processed in the next lines
+                pass
 
         # The time is expressoin, let's calculate it:
         cat = self.patt_exec2category[self.curr_patt_exec]
         sel = self.patt_exec2selector[self.curr_patt_exec]
-        
+            
         op_list = []
 
         buff = ""

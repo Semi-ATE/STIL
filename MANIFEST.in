@@ -1,9 +1,9 @@
 include LICENSE
 include CODEOWNERS
+exclude *.ods
 recursive-include Semi_ATE *.md
 recursive-include requirements *.txt
 recursive-exclude tests *.py
 recursive-include Semi_ATE *.py
 recursive-include Semi_ATE *.lark
 recursive-exclude tests *.stil
-recursive-exclude *.ods

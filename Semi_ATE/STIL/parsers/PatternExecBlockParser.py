@@ -246,6 +246,9 @@ class PatternExecBlockParser:
             if char in self.op:
                 is_simple_time = False
                 break
+            elif char.isalpha():
+                is_simple_time = False
+                break
         
         if is_simple_time:
             fsec = TimeUtils.get_time_fsec(time_expr)

@@ -1074,7 +1074,6 @@ class STILDumpCompiler(STILParser):
         return data
 
     def wfc_substitution(self, hash_info, arg_sig2wfc, sig2wfcs, signals, sig_group_domain, cond_sig2wfc):
-        
         """
         Replacing # and % with WFC from Macro/Procedure invocation according 
         the STIL standard.
@@ -1230,6 +1229,10 @@ class STILDumpCompiler(STILParser):
                     elif self.sig2type[sig] == "Out":
                         postpad_sig.append(sig)
                         #print(f"post padding for signal {sig} : {pad}")
+                    elif sig in self.scanin_sigs:
+                        postpad_sig.append(sig)
+                    elif sig in self.scanout_sigs:
+                        postpad_sig.append(sig)
                     else:
                         err_msg = "COMPILER ERROR: padding is unknown for none unidirectional signal"
                         raise STILDumpCompilerException(-1, -1, err_msg)

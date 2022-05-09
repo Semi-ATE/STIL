@@ -1,0 +1,60 @@
+STIL 1.0;
+
+Signals {
+    si1 In;
+    si2 In;
+    so1 Out;
+    so2 Out;
+    sio1 InOut;
+    sio2 InOut;
+}
+
+
+SignalGroups { 
+    si = 'si1 + si2';
+    so = 'so1 + so2';
+    sio = 'sio1 + sio2';
+    all = 'si + so + sio';
+}
+
+Spec {
+    Category default{
+        PLL_Time {Min '10ns'; Typ '100ns'; Max '1000nsz'; }
+    }
+}
+
+Selector default {
+    PLL_Time Typ;
+}
+
+
+Timing { 
+  WaveformTable wft 
+  { Period 'PLL_Time';
+      Waveforms 
+      {
+        si {P {'10ns' D; '25ns' U; '50ns' D;}}
+        
+        so {LHX {'10ns' L/H/X;}}
+        sio {01 {'10ns' D/U;}}
+        sio {P {'10ns' D; '25ns' U; '50ns' D;}}
+        sio {LHX {'10ns' L/H/X;}}
+      }
+  }
+}
+
+PatternBurst patt_burst{
+ PatList {pattern;}
+}
+
+PatternExec patt_exec {
+    Selector default;
+    Category default;
+    PatternBurst patt_burst;
+}
+
+Pattern pattern{
+        W wft;
+        Vector { all  = PPLLPL;}
+}
+// PASS

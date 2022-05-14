@@ -310,6 +310,8 @@ class STILDumpCompiler(STILParser):
         # [6+X+1] one or more commands for every vector address, separated with |. Temporary, it will be replaced by next record:
         # [6+X+2] PattVecCmd for every vector. Late
         self.data = []
+        
+        self.is_matchloop_inf = False
 
     def compile(self):
 
@@ -654,26 +656,41 @@ class STILDumpCompiler(STILParser):
     def b_pattern__pattern_statements__MATCHLOOP_INF(self, t):
         super().b_pattern__pattern_statements__MATCHLOOP_INF(t)
         self.add_cmd_patt(PattVecCmd.CMD_START_MATCHLOOP, t.value)
+        self.is_matchloop_inf = True
 
     def b_macrodefs__pattern_statements__MATCHLOOP_INF(self, t):
         super().b_macrodefs__pattern_statements__MATCHLOOP_INF(t)
         self.add_cmd_macro(PattVecCmd.CMD_START_MATCHLOOP, t.value)
+        self.is_matchloop_inf = True
 
     def b_procedures__pattern_statements__MATCHLOOP_INF(self, t):
         super().b_procedures__pattern_statements__MATCHLOOP_INF(t)
         self.add_cmd_proc(PattVecCmd.CMD_START_MATCHLOOP, t.value)
+        self.is_matchloop_inf = True
 
     def b_pattern__pattern_statements__close_matchloop_block(self, t):
         super().b_pattern__pattern_statements__close_matchloop_block(t)
-        self.save_in_prev_cmd_patt(PattVecCmd.CMD_STOP_MATCHLOOP)
+        if self.is_matchloop_inf:
+            self.save_in_prev_cmd_patt(PattVecCmd.CMD_STOP_INF_MATCHLOOP)
+            self.is_matchloop_inf = False
+        else:
+            self.save_in_prev_cmd_patt(PattVecCmd.CMD_STOP_COUNT_MATCHLOOP)
 
     def b_macrodefs__pattern_statements__close_matchloop_block(self, t):
         super().b_macrodefs__pattern_statements__close_matchloop_block(t)
-        self.save_in_prev_cmd_macro(PattVecCmd.CMD_STOP_MATCHLOOP)
+        if self.is_matchloop_inf:
+            self.save_in_prev_cmd_macro(PattVecCmd.CMD_STOP_INF_MATCHLOOP)
+            self.is_matchloop_inf = False
+        else:
+            self.save_in_prev_cmd_macro(PattVecCmd.CMD_STOP_COUNT_MATCHLOOP)
 
     def b_procedures__pattern_statements__close_matchloop_block(self, t):
         super().b_procedures__pattern_statements__close_matchloop_block(t)
-        self.save_in_prev_cmd_proc(PattVecCmd.CMD_STOP_MATCHLOOP)
+        if self.is_matchloop_inf:
+            self.save_in_prev_cmd_proc(PattVecCmd.CMD_STOP_INF_MATCHLOOP)
+            self.is_matchloop_inf = False
+        else:
+            self.save_in_prev_cmd_proc(PattVecCmd.CMD_STOP_COUNT_MATCHLOOP)
 
     def b_pattern__pattern_statements__CLOSE_CALL_VECTOR_BLOCK(self, t):
         self.save_cmd_patt()
@@ -1568,10 +1585,15 @@ class STILDumpCompiler(STILParser):
                     else:
                         last_start_loop_va = exp_va
 
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_MATCHLOOP]:
+                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_COUNT_MATCHLOOP]:
                     cmd_aggr += "EML"
                     jmp = exp_va - last_start_loop_va - 1
-                    va_cmd[-1].set_value(PattVecCmd.CMD_STOP_MATCHLOOP, jmp)
+                    va_cmd[-1].set_value(PattVecCmd.CMD_STOP_COUNT_MATCHLOOP, jmp)
+                    last_start_loop_va = -1
+                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_INF_MATCHLOOP]:
+                    cmd_aggr += "EML"
+                    jmp = exp_va - last_start_loop_va - 1
+                    va_cmd[-1].set_value(PattVecCmd.CMD_STOP_INF_MATCHLOOP, jmp)
                     last_start_loop_va = -1
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_IDDQTESTPOINT]:
                     cmd_aggr += "I  "
@@ -1787,9 +1809,13 @@ class STILDumpCompiler(STILParser):
                                     last_start_loop_va = -1
                                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_MATCHLOOP]:
                                     last_start_loop_va = m_va
-                                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_MATCHLOOP]:
+                                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_COUNT_MATCHLOOP]:
                                     jmp = m_va - last_start_loop_va - 1
-                                    va_cmd[-1].set_value(PattVecCmd.CMD_STOP_MATCHLOOP, jmp)
+                                    va_cmd[-1].set_value(PattVecCmd.CMD_STOP_COUNT_MATCHLOOP, jmp)
+                                    last_start_loop_va = -1
+                                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_INF_MATCHLOOP]:
+                                    jmp = m_va - last_start_loop_va - 1
+                                    va_cmd[-1].set_value(PattVecCmd.CMD_STOP_INF_MATCHLOOP, jmp)
                                     last_start_loop_va = -1
                                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_GOTO]:
                                     va_cmd[-1].set_value(PattVecCmd.CMD_GOTO, macro_command.get_value(cmd))
@@ -1999,9 +2025,13 @@ class STILDumpCompiler(STILParser):
                                         last_start_loop_va = -1
                                     elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_MATCHLOOP]:
                                         last_start_loop_va = m_va
-                                    elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_MATCHLOOP]:
+                                    elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_COUNT_MATCHLOOP]:
                                         jmp = m_va - last_start_loop_va - 1
-                                        va_cmd[-1].set_value(PattVecCmd.CMD_STOP_MATCHLOOP, jmp)
+                                        va_cmd[-1].set_value(PattVecCmd.CMD_STOP_COUNT_MATCHLOOP, jmp)
+                                        last_start_loop_va = -1
+                                    elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_INF_MATCHLOOP]:
+                                        jmp = m_va - last_start_loop_va - 1
+                                        va_cmd[-1].set_value(PattVecCmd.CMD_STOP_INF_MATCHLOOP, jmp)
                                         last_start_loop_va = -1
                                     elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_GOTO]:
                                         va_cmd[-1].set_value(PattVecCmd.CMD_GOTO, proc_command.get_value(cmd))
@@ -2318,7 +2348,9 @@ class STILDumpCompiler(STILParser):
                         raise STILDumpCompilerException(-1, -1, int_err_msg)
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_LOAD_MATCHLOOP_COUNTER]:
                     cmd_aggr += f"LMC|{vec_cmd.get_value(cmd)}"
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_MATCHLOOP]:
+                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_COUNT_MATCHLOOP]:
+                    cmd_aggr += "EML"        
+                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_INF_MATCHLOOP]:
                     cmd_aggr += "EML"        
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_IDDQTESTPOINT]:
                     cmd_aggr += "I  "
@@ -2512,7 +2544,7 @@ class STILDumpCompiler(STILParser):
                                 loop_count = int(vec_cmds.get_value(cmd))
                             elif (
                                 cmd == PattVecCmd.CMD_STOP_LOOP
-                                or cmd == PattVecCmd.CMD_STOP_MATCHLOOP
+                                or cmd == PattVecCmd.CMD_STOP_COUNT_MATCHLOOP
                             ):
                                 if loop_count > 0:
                                     tc += (tc - start_loop_va + 1) * (loop_count - 1)

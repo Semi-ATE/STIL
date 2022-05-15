@@ -79,7 +79,6 @@ class PattVecCmd:
 
     def have_cmd(self, cmd_id):
         found = False
-        cmds = []
         for bit in range(len(PattVecCmd.cmds)):
             if ((self.cmd >> bit) & 0x1) == 0x1:
                 if cmd_id == bit:
@@ -122,10 +121,14 @@ class PattVecCmd:
         
     def __str__(self):
         msg = ""
-        new_line = "\n"
         cmds = self.get_cmd_ids()
         for cmd in cmds:
             value = self.get_value(cmd)
-            msg += f"cmd {PattVecCmd.get_cmd_name(cmd)} value {value} "
-            msg += new_line
+            cmd_name = PattVecCmd.get_cmd_name(cmd)
+            
+            if value == None:
+                msg += f"{cmd_name}"
+            else:
+                msg += f"{cmd_name}={value} "
+            msg += "|"
         return msg

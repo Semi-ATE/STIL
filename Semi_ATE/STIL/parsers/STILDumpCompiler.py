@@ -1633,7 +1633,7 @@ class STILDumpCompiler(STILParser):
                             cond_sig2wfc = None
                             if fmn in self.macro2first_cond:
                                 cond_sig2wfc = self.macro2first_cond[fmn]
-                            exp_sig2wfc, scan_mem = self.wfc_substitution(
+                            exp_sig2wfc, scan_mem, new_vectors = self.wfc_substitution(
                                                     hash_info, 
                                                     arg_sig2wfc, 
                                                     sig2macro_wfcs, 

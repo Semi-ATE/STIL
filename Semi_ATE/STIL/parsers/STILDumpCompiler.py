@@ -11,7 +11,7 @@ import os
 
 '''
 This is an example class which can be used as a base for a real STIL compiler.
-The main compile method will make a syntax and semantic parsing of the file
+The main compile method will make a syntax and semantic analisys of the file
 and will dump the content of the STIL file in several text files:
     
 pattern_blocks.flow :   this is the main entry point which define the order of 
@@ -319,7 +319,7 @@ class STILDumpCompiler(STILParser):
             print("\nSyntax parsing is in progress...")
         self.parse_syntax()
         if self.enable_trace:
-            print("Semantic parsing is in progress...")
+            print("Semantic analisys is in progress...")
         self.parse_semantic()
         # The real compilation will happen once the semantic
         # parsing is finished in self.eof() method bellow
@@ -912,9 +912,6 @@ class STILDumpCompiler(STILParser):
         if self.is_vector_stmt:
             self.save_cmd_patt()
 
-#            if self.curr_pattern not in self.patt2sig_group_domain:
-#                super().b_pattern__pattern_statements__CLOSE_VECTOR_BLOCK(t)
-#                return
             sig_groups = self.patt2sig_group_domain[self.curr_pattern]
             #print(f"sig_groups {sig_groups}")
             
@@ -1334,6 +1331,8 @@ class STILDumpCompiler(STILParser):
             
             wfcs = sig2wfcs[sig]
             
+            new_vectors = 0
+            
             if sig in arg_sig2wfc and sig in signals_with_shift_hash:
                 #print(f" signals_with_shift_hash {sig}")
                 new_sig2wfcs[sig] = []
@@ -1365,6 +1364,7 @@ class STILDumpCompiler(STILParser):
                                     scan_mem[sig].append(wfc)
                                 else:
                                     new_sig2wfcs[sig].append(wfc)
+                                    new_vectors += 1
                                 arg_indx += 1
                             is_shift_done = True
                         elif post > 0:
@@ -1463,7 +1463,7 @@ class STILDumpCompiler(STILParser):
                     err_msg = "COMPILER ERROR: Only 1 WFC expected for % substitution of the signal {sig} "
                     raise STILDumpCompilerException(-1, -1, err_msg)
         
-        return new_sig2wfcs, scan_mem
+        return new_sig2wfcs, scan_mem, new_vectors
 
     def dump_patt_stmt_block(
         self, sgd_patt2sig2WFCs, block2cmd, block_name, file_name, timing, sig_group_domain, macro_domain, proc_domain, is_pattern_block
@@ -1517,8 +1517,6 @@ class STILDumpCompiler(STILParser):
         vamp = []
         vap = []
         vap_c = 0
-        # Collect command data from self.patt2cmd
-        cmd_list = []
         cmds = block2cmd[block_name]
         # Key is the signal name
         # Value is a list with scan chain memory filled with WFC
@@ -1532,9 +1530,6 @@ class STILDumpCompiler(STILParser):
         
         for vec_cmds in cmds:
             #print("\tNEW COMMAND\n")
-            cmd_aggr = ""
-            is_call = False
-            is_macro = False
             
             va_cmd.append(vec_cmds)
                                     
@@ -1542,42 +1537,32 @@ class STILDumpCompiler(STILParser):
                 cmd_name = PattVecCmd.get_cmd_name(cmd)
                 #print(f"\t\tCMD {cmd_name} | VALUE {vec_cmds.get_value(cmd)}\n")
                 
-                if len(cmd_aggr) > 0:
-                    cmd_aggr += "|"
                 if cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_VECTOR]:
                     #print("vector cmd")
                     vamp.append("-")
                     vap.append(vap_c)
                     vap_c += 1
                     exp_va += 1 
-                    cmd_aggr += "V  "
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_WFT]:
-                    cmd_aggr += f"W  |{timing}::{vec_cmds.get_value(cmd)}"
+                    pass
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_LABEL]:
-                    cmd_aggr += f"L  |{vec_cmds.get_value(cmd)}"
                     va_cmd[-1].set_value(PattVecCmd.CMD_LABEL, vec_cmds.get_value(cmd))
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_LOAD_LOOP_COUNTER]:
-                    cmd_aggr += f"LLC|{vec_cmds.get_value(cmd)}"
+                    pass
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_LOAD_MATCHLOOP_COUNTER]:
-                    cmd_aggr += f"LMC|{vec_cmds.get_value(cmd)}"
+                    pass
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_LOOP]:
-                    cmd_aggr += f"SL |{vec_cmds.get_value(cmd)}"
                     if last_start_loop_va != -1:
                         int_err_msg = "COMPILER ERROR : nested loop block detected"
                         raise STILDumpCompilerException(-1, -1, int_err_msg)
                     else:
                         last_start_loop_va = exp_va
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_LOOP]:
-                    cmd_aggr += "EL "
                     jmp = exp_va - last_start_loop_va - 1
                     va_cmd[-1].set_value(PattVecCmd.CMD_STOP_LOOP, jmp)
                     last_start_loop_va = -1
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_MATCHLOOP]:
                     value = vec_cmds.get_value(cmd)
-                    if value is not None and len(value) > 0:
-                        cmd_aggr += f"SML|{value}"
-                    else:
-                        cmd_aggr += "SML"
 
                     if last_start_loop_va != -1:
                         int_err_msg = "COMPILER ERROR : nested loop block detected"
@@ -1586,31 +1571,28 @@ class STILDumpCompiler(STILParser):
                         last_start_loop_va = exp_va
 
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_COUNT_MATCHLOOP]:
-                    cmd_aggr += "EML"
                     jmp = exp_va - last_start_loop_va - 1
                     va_cmd[-1].set_value(PattVecCmd.CMD_STOP_COUNT_MATCHLOOP, jmp)
                     last_start_loop_va = -1
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_INF_MATCHLOOP]:
-                    cmd_aggr += "EML"
                     jmp = exp_va - last_start_loop_va - 1
                     va_cmd[-1].set_value(PattVecCmd.CMD_STOP_INF_MATCHLOOP, jmp)
                     last_start_loop_va = -1
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_IDDQTESTPOINT]:
-                    cmd_aggr += "I  "
+                    pass
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_BREAKPOINT]:
-                    cmd_aggr += "B  "
+                    pass
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_GOTO]:
-                    cmd_aggr += "G  vec_cmds.get_value(cmd)"
+                    pass
                     va_cmd[-1].set_value(PattVecCmd.CMD_GOTO, vec_cmds.get_value(cmd))
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP]:
-                    cmd_aggr += "E  "
+                    pass
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_SHIFT]:
-                    cmd_aggr += "+S  "
+                    pass
                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_SHIFT]:
-                    cmd_aggr += "-S  "
+                    pass
                 elif cmd_name ==  PattVecCmd.cmds[PattVecCmd.CMD_MACRO]:
                     # Macro blocks are always expanding into the pattern block
-                    is_macro = True
 
                     macro_va_length = 0
 
@@ -1642,8 +1624,6 @@ class STILDumpCompiler(STILParser):
                         if is_new_data_created:
                             self.data.append(sep)
                     
-                    exp_shift_count = 0
-                    
                     # WFC data substitution
                     if fmn in self.macro_for_subs:
                         arg_sig2wfc = vec_cmds.get_props(PattVecCmd.CMD_MACRO)
@@ -1674,6 +1654,8 @@ class STILDumpCompiler(STILParser):
                                         sd[sig] = scan_chain
                                 if len(sd) > 0:
                                     self.scan_data.append(sd)
+                            else:
+                                pass
                             
                             is_first = True
                             sig_index = 6
@@ -1681,7 +1663,6 @@ class STILDumpCompiler(STILParser):
                             for sig in signals:
                                 if sig in sig2macro_wfcs:
                                     wfcs = sig2macro_wfcs[sig]
-                                    len_wo_shift = len(wfcs)
                                 if sig in exp_sig2wfc:
                                     wfcs = exp_sig2wfc[sig]
                                     macro_va_length = len(wfcs)
@@ -1719,7 +1700,6 @@ class STILDumpCompiler(STILParser):
                                     sig_index += 1
 
                             exp_va += exp
-                            exp_shift_count = macro_va_length - len_wo_shift
                         else:
                             # Macro call without data, but with shift inside the macro
                             exp_va += 1
@@ -1747,38 +1727,6 @@ class STILDumpCompiler(STILParser):
                                     is_first = False
                             sig_index += 1
                         exp_va += exp
-
-                    for i in range(macro_va_length):
-                        vap.append("-")
-                        vamp.append(i)
-
-                    #Add commands
-                    if macro_va_length == 1:
-                        # Mark that cmd as start and end of the macro expansion
-                        c = f"V  |M  |{fmn}|EM "
-                        if len(cmd_aggr) > 0:
-                            combined = cmd_aggr + "|" + c
-                            cmd_list.append(combined)
-                            cmd_aggr = ""
-                        else:
-                            cmd_list.append(c)
-                    else:
-                        first_cmd = ""
-                        c = f"M  |{fmn}"
-
-                        if len(cmd_aggr) > 0:
-                            combined = cmd_aggr + "|" + c
-                            first_cmd = combined
-                            cmd_aggr = ""
-                        else:
-                            first_cmd = c
-
-                        last_cmd = "|EM "
-
-                        macro_cmds = self.collect_macro_proc_cmds(self.macro2cmd, fmn, timing, first_cmd, last_cmd, exp_shift_count)
-                        for macro_cmd in macro_cmds:
-                            #print(f"adding macro_cmd {macro_cmd}")
-                            cmd_list.append(macro_cmd)
                             
                     # In the case when the last command does not have Vector statement
                     # like macro or procedure invocation we have to "transfer" the new command to the old command
@@ -1801,7 +1749,9 @@ class STILDumpCompiler(STILParser):
                             va_cmd.append(macro_command)
                             for cmd in macro_command.get_cmd_ids():
                                 cmd_name = PattVecCmd.get_cmd_name(cmd)
-                                if cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_LOOP]:
+                                if cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_WFT]:
+                                    pass
+                                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_LOOP]:
                                     last_start_loop_va = m_va
                                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_LOOP]:
                                     jmp = m_va - last_start_loop_va - 1
@@ -1822,9 +1772,12 @@ class STILDumpCompiler(STILParser):
                                 elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_LABEL]:
                                     va_cmd[-1].set_value(PattVecCmd.CMD_LABEL, macro_command.get_value(cmd))
                             m_va += 1
+                            
+                    for i in range(macro_va_length):
+                        vap.append("-")
+                        vamp.append(i)
 
                 elif cmd_name ==  PattVecCmd.cmds[PattVecCmd.CMD_CALL]:
-                    is_call = True
 
                     proc_va_length = 0
 
@@ -1858,9 +1811,9 @@ class STILDumpCompiler(STILParser):
                             if is_new_data_created:
                                 self.data.append(sep)
                         
-                        exp_shift_count = 0
-
                         # WFC data substitution
+                        is_wfc_subs = False
+                        scan_len = 0
                         if fpn in self.proc_for_subs:
                             arg_sig2wfc = vec_cmds.get_props(PattVecCmd.CMD_CALL)
                             # TODO : to check STIL standard what should be done
@@ -1869,7 +1822,7 @@ class STILDumpCompiler(STILParser):
                                 cond_sig2wfc = None
                                 if fpn in self.proc2first_cond:
                                     cond_sig2wfc = self.proc2first_cond[fpn]
-                                exp_sig2wfc, scan_mem = self.wfc_substitution(
+                                exp_sig2wfc, scan_mem, new_vectors = self.wfc_substitution(
                                                         hash_info, 
                                                         arg_sig2wfc, 
                                                         sig2proc_wfcs, 
@@ -1890,6 +1843,8 @@ class STILDumpCompiler(STILParser):
                                             sd[sig] = scan_chain
                                     if len(sd) > 0:
                                         self.scan_data.append(sd)
+                                else:
+                                    is_wfc_subs = True
                                 
                                 is_first = True
                                 sig_index = 6
@@ -1897,7 +1852,6 @@ class STILDumpCompiler(STILParser):
                                 for sig in signals:
                                     if sig in sig2proc_wfcs:
                                         wfcs = sig2proc_wfcs[sig]
-                                        len_wo_shift = len(wfcs)
                                     if sig in exp_sig2wfc:
                                         wfcs = exp_sig2wfc[sig]
                                         proc_va_length = len(wfcs)
@@ -1906,6 +1860,7 @@ class STILDumpCompiler(STILParser):
             
                                         if is_first:
                                             exp += proc_va_length
+                                            scan_len = len(wfcs)
                                             is_first = False
                                     else:
                                         # For signal not in the expansion, takes the latest WFC (issue #13)
@@ -1935,7 +1890,6 @@ class STILDumpCompiler(STILParser):
                                         sig_index += 1
 
                                 exp_va += exp
-                                exp_shift_count = proc_va_length - len_wo_shift
                             else:
                                 # Procedure call without data, but with shift inside the procedure
                                 exp_va += 1
@@ -1964,37 +1918,6 @@ class STILDumpCompiler(STILParser):
                                 sig_index += 1
                             exp_va += exp
 
-                        for i in range(proc_va_length):
-                            vap.append("-")
-                            vamp.append(i)
-
-                        #Add commands
-                        if proc_va_length == 1:
-                            # Mark that cmd as start and end of the macro expansion
-                            c = f"CP  |{proc_domain}::{vec_cmds.get_value(cmd)} |EXP|EP |{proc_domain}::{vec_cmds.get_value(cmd)}"
-                            if len(cmd_aggr) > 0:
-                                combined = cmd_aggr + "|" + c
-                                cmd_list.append(combined)
-                                cmd_aggr = ""
-                            else:
-                                cmd_list.append(c)
-                        else:
-                            first_cmd = ""
-                            c = f"CP  |{proc_domain}::{vec_cmds.get_value(cmd)}|EXP"
-
-                            if len(cmd_aggr) > 0:
-                                combined = cmd_aggr + "|" + c
-                                first_cmd = combined
-                                cmd_aggr = ""
-                            else:
-                                first_cmd = c
-    
-                            last_cmd = "|EP "
-
-                            proc_cmds = self.collect_macro_proc_cmds(self.proc2cmd, fpn, timing, first_cmd, last_cmd, exp_shift_count)
-                            for proc_cmd in proc_cmds:
-                                #print(f"adding proc_cmd {proc_cmd}")
-                                cmd_list.append(proc_cmd)
 
                         # In the case when the last command does not have Vector statement
                         # like macro or procedure invocation we have to "transfer" the new command to the old command
@@ -2002,7 +1925,7 @@ class STILDumpCompiler(STILParser):
                         last_cmd = va_cmd[-1]
                         if last_cmd.have_cmd(PattVecCmd.CMD_VECTOR) == False:
                             add_to_last_cmd = True
-                            
+                                
                         proc_commands = self.proc2cmd[fpn]
                         last_start_loop_va = -1
                         m_va = 0
@@ -2015,10 +1938,18 @@ class STILDumpCompiler(STILParser):
                                 add_to_last_cmd = False
                             else:
                                 va_cmd.append(proc_command)
+
+                                is_shift_start = False
+                                is_shift_stop = False
+
                                 for cmd in proc_command.get_cmd_ids():
                                     cmd_name = PattVecCmd.get_cmd_name(cmd)
                                     if cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_LOOP]:
                                         last_start_loop_va = m_va
+                                    elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_SHIFT]:
+                                        is_shift_start = True
+                                    elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_SHIFT]:
+                                        is_shift_stop = True
                                     elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_LOOP]:
                                         jmp = m_va - last_start_loop_va - 1
                                         va_cmd[-1].set_value(PattVecCmd.CMD_STOP_LOOP, jmp)
@@ -2037,38 +1968,29 @@ class STILDumpCompiler(STILParser):
                                         va_cmd[-1].set_value(PattVecCmd.CMD_GOTO, proc_command.get_value(cmd))
                                     elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_LABEL]:
                                         va_cmd[-1].set_value(PattVecCmd.CMD_LABEL, proc_command.get_value(cmd))
+
+                                if is_shift_start and is_shift_stop:
+                                    if is_wfc_subs:
+                                        for i in range(new_vectors-1):
+                                            cmd = PattVecCmd()
+                                            cmd.add_cmd(PattVecCmd.CMD_VECTOR)
+                                            va_cmd.append(cmd)
+                                elif is_shift_start or is_shift_stop:
+                                    int_err_msg = "INTERNAL COMPILER ERROR : Shift block with more of one vector is not yet supported!"
+                                    raise STILDumpCompilerException(-1, -1, int_err_msg)
+
+
                                 m_va += 1
 
-                    else:
-                        #print("proc cmd nexp")
-                        # Depends on ATE WH, may be procedure call have to be invoked earlier than prevoius vector address
-                        c = f"CP |{proc_domain}::{vec_cmds.get_value(cmd)}|NEXP"
-                        if len(cmd_list[-1]) > 0:
-                            cmd_list[-1] += "|"+c
-                        else:
-                            cmd_list[-1] = c
-                        proc_va += self.proc2vas[fpn] 
+                        for i in range(proc_va_length):
+                            vap.append("-")
+                            vamp.append(i)
                             
-            if len(cmd_aggr) > 0:
-                #print(f"cmd_aggr {cmd_aggr}")
-                cmd_list.append(cmd_aggr)
-            elif is_macro or is_call:
-                #print(f"is_macro is_call")
-                is_macro = False
-                is_proc = False
-		# else:
-                #print(f"cmd_list.append {cmd_name}")
-                #cmd_list.append(f'{cmd_name}')
         
-        #print(f"len cmd_list {len(cmd_list)} ")
-        # Adding commands
-        self.data.append(cmd_list)
-        # ToDo : should be keep only va_cmd and command decoding into text to
-        #        performed from va_cmd
         self.data.append(va_cmd)
         
-        if len(cmd_list) != exp_va:
-            int_err_msg = f"INTERNAL COMPILER ERROR : total vector addresses ({exp_va}) does not match with number of commands ({len(cmd_list)})"
+        if len(va_cmd) != exp_va:
+            int_err_msg = f"INTERNAL COMPILER ERROR : total vector addresses ({exp_va}) does not match with number of commands ({len(va_cmd)})"
             raise STILDumpCompilerException(-1, -1, int_err_msg)
         if len(vap) != exp_va:
             int_err_msg = f"INTERNAL COMPILER ERROR : total vector addresses ({exp_va}) does not match pattern VA ({len(vap)})"
@@ -2157,8 +2079,7 @@ class STILDumpCompiler(STILParser):
         [5]     | separator 
         [6+X-1]   For every used signal (total X signals), separate list with own WFCs
         [6+X]   | separator 
-        [6+X+1] one or more commands for every vector address, separated with |. Temporary, it will be replaced by next record:
-        [6+X+2] PattVecCmd for every vector. Late
+        [6+X+1] PattVecCmd for every vector.
         '''
         pass
 
@@ -2168,33 +2089,17 @@ class STILDumpCompiler(STILParser):
         f = open(file, "w")
 
         # start the dump:
-        # Write first description of the command data:
+        # Write first description:
         f.write(f"# Block name  : {block_name}\n\n")
         f.write( "# Domain info:\n")
         f.write(f"# - Timing domain       : {timing}\n")
         f.write(f"# - SignalsGroup domain : {sig_group_domain}\n")
         f.write(f"# - MacroDefs domain    : {macro_domain}\n")
         f.write(f"# - Procedures domain   : {proc_domain}\n\n")
-        f.write( "# Commands syntax:\n")
-        f.write( "# CMD => Vector                 : V   | CMD arg => not applicable \n\n")
-        f.write( "# CMD => WaveformTable          : W   | CMD arg => Timing domain::WaveformTable name \n\n")
-        f.write( "# CMD => Label                  : L   | CMD arg => Label name \n\n")
-        f.write( "# CMD => Load Loop Counter      : LLC | CMD arg => Loop counter value \n")
-        f.write( "# CMD => Start of Loop          : SL  | CMD arg => not applicable \n")
-        f.write( "# CMD => End   of Loop          : EL  | CMD arg => not applicable \n\n")
-        f.write( "# CMD => Load MatchLoop Counter : LMC | CMD arg => MatchLoop counter value \n")
-        f.write( "# CMD => Start of MatchLoop     : SML | CMD arg => Infinite (optional) \n")
-        f.write( "# CMD => End   of MatchLoop     : EML | CMD arg => not applicable \n\n")
-        f.write( "# CMD => Call to Procedure      : CP  | CMD arg => Procedure domain::Procedure name | EXP (procedure expanding) or NEXP (procedure is not expanded) | SC (signal chain followed by one or more signal's wfc sequence. Only when NEXP = TRUE )| signal = wfs \n")
-        f.write( "# CMD => End  of Procedure      : EP  | CMD arg => Procedure domain::Procedure name . Applicable only if procedure was expanded \n\n")
-        f.write( "# CMD => Macro                  : M   | CMD arg => MacroDefs domain::Macro name (Macro blocks are always expanded)\n")
-        f.write( "# CMD => End of Macro           : EM  | CMD arg => MacroDefs domain::Macro name \n\n")
-        f.write( "# CMD => Goto                   : G   | CMD arg => Name of the label \n\n")
-        f.write( "# CMD => Shift                  : S   | CMD arg => not applicable \n\n")
-        f.write( "# CMD => BreakPoint             : B   | CMD arg => not applicable \n\n")
-        f.write( "# CMD => IDDQTestPoint          : I   | CMD arg => not applicable \n\n")
-        f.write( "# CMD => Stop                   : E   | CMD arg => not applicable \n\n")
-        f.write( "# If more than one command exists on the same vector address, they are separated with | \n\n")
+
+        f.write("# Format of compiled data :\n")
+        f.write("# VA|VAP|VAMP|WFC|CMD|CMD arg| .... |CMD|CMD arg \n\n")
+
         
         f.write( "# Vector data information :\n")
         f.write( "# VA   - absolute vector address for this particular pattern block. \n\
@@ -2205,11 +2110,12 @@ class STILDumpCompiler(STILParser):
         Value '-' indicates that there is WFC/CMD data from Macro/Procdure at this VA\n")
         f.write( "# VAMP - absolute vector address of the Macro or expanded Procedure block.\n\
         Value '-' indicates that there is no WFC/CMD data from Macro/Procdure at this VA\n\n")
-        f.write( "# Format of compiled data :\n")
-        # write header before the data
-        f.write("# VA|VAP|VAMP|WFC|CMD|CMD arg| .... |CMD|CMD arg \n\n")
 
-        f.write("SIGNALS_ORDER|")
+        f.write( "# Commands syntax:\n")
+        f.write( "# COMMAND_NAME=value_if_applicable\n")
+        f.write( "# If more than one command exists on the same vector address, they are separated with | \n\n")
+
+        f.write("# SIGNALS_ORDER|")
         s = ""
         si = 0
         err_msg = ""
@@ -2222,7 +2128,7 @@ class STILDumpCompiler(STILParser):
                 raise_int_err = True
             si += 1
         f.write(f"{s[:-1]}")
-        f.write("|\n")
+        f.write("|\n\n")
         
         if raise_int_err:
             raise STILDumpCompilerException(-1, -1, err_msg)
@@ -2250,15 +2156,20 @@ class STILDumpCompiler(STILParser):
                  f.write(f"{mem_data}")
              f.write("\n")         
         """        
+        f.write("# VA| VAP|VAMP|  WFCs  |CMD ... \n")
         va_size = len(list(self.data[0]))
         for va in range(va_size):
             s =""
             c = 0
             for column in self.data:
                 if len(column) > 0:
-                    s += str(column[va])
+                    if c == 0 or c == 2 or c == 4:
+                        s += str(column[va]).rjust(4)
+                    elif c == 6:
+                        s += str(column[va]).rjust(6)
+                    else:
+                        s += str(column[va])
                 c += 1
-                # ToDo va_cmd should replace the text based commands
                 if c > (6+si+1):
                     break
             s += "\n"
@@ -2282,110 +2193,6 @@ class STILDumpCompiler(STILParser):
                 f.write("\n")
                     
             f.close()
-        
-
-    def collect_macro_proc_cmds(self, 
-                                macro_or_proc2cmd, 
-                                macro_proc_name, 
-                                timing, 
-                                first_cmd, 
-                                last_cmd, 
-                                exp_shift_count):
-        
-        #print(f"\t\tcollect_macro_proc_cmds {macro_proc_name}\n")
-        cmd_list = []
-        
-        last_start_loop_va = -1
-        
-        exp_va = 0
-        
-        cmd_index = 0
-        cmds = macro_or_proc2cmd[macro_proc_name]
-        
-        for vec_cmd in cmds:
-            #print("\tNEW COMMAND macro_or_proc\n")
-            cmd_aggr = ""
-            
-            #print(f"va= {va}")
-            
-            if vec_cmd is None:
-                return cmd_list
-                        
-            is_shift = False
-            
-            for cmd in vec_cmd.get_cmd_ids():
-                cmd_name = PattVecCmd.get_cmd_name(cmd)
-                #print(f"\t\tCMD {cmd_name} | VALUE {vec_cmd.get_value(cmd)}\n")
-                
-                if len(cmd_aggr) > 0:
-                    cmd_aggr += "|"
-                    
-                if cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_VECTOR]:
-                    #print("vector cmd")
-                    cmd_aggr += "V  "
-                    exp_va += 1
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_WFT]:
-                    cmd_aggr += f"W  |{timing}::{vec_cmd.get_value(cmd)}"
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_LABEL]:
-                    cmd_aggr += f"L  |{vec_cmd.get_value(cmd)}"
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_LOOP]:
-                    cmd_aggr += f"SL |{vec_cmd.get_value(cmd)}"
-                    if last_start_loop_va != -1:
-                        int_err_msg = "COMPILER ERROR : nested loop block detected"
-                        raise STILDumpCompilerException(-1, -1, int_err_msg)
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_LOAD_LOOP_COUNTER]:
-                    cmd_aggr += f"LLC|{vec_cmd.get_value(cmd)}"
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_LOOP]:
-                    cmd_aggr += "EL "
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_MATCHLOOP]:
-                    value = vec_cmd.get_value(cmd)
-                    if value is not None and len(value) > 0:
-                        cmd_aggr += f"SML|{value}"
-                    else:
-                        cmd_aggr += "SML"
-                    if last_start_loop_va != -1:
-                        int_err_msg = "COMPILER ERROR : nested loop block detected"
-                        raise STILDumpCompilerException(-1, -1, int_err_msg)
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_LOAD_MATCHLOOP_COUNTER]:
-                    cmd_aggr += f"LMC|{vec_cmd.get_value(cmd)}"
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_COUNT_MATCHLOOP]:
-                    cmd_aggr += "EML"        
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_INF_MATCHLOOP]:
-                    cmd_aggr += "EML"        
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_IDDQTESTPOINT]:
-                    cmd_aggr += "I  "
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_BREAKPOINT]:
-                    cmd_aggr += "B  "
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_GOTO]:
-                    cmd_aggr += "G  vec_cmds.get_value(cmd)"
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP]:
-                    cmd_aggr += "E  "
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_START_SHIFT]:
-                    cmd_aggr += "+S  "
-                    is_shift = True
-                elif cmd_name == PattVecCmd.cmds[PattVecCmd.CMD_STOP_SHIFT]:
-                    cmd_aggr += "-S  "
-
-            if len(cmd_aggr) > 0:
-                    #print(f"cmd_aggr {cmd_aggr}")
-                cmd_list.append(cmd_aggr)
-            if is_shift:
-                is_shift = False
-
-                if self.is_scan_mem_available == False:
-                    if exp_shift_count > 0:
-                        for i in range(exp_shift_count):
-                            cmd_list.append("V")
-            cmd_index += 1
-    
-        if first_cmd is not None:
-            fc = cmd_list[0]
-            cmd_list[0] = first_cmd + "|" + fc 
-        if last_cmd is not None:
-            lc = cmd_list[-1]
-            cmd_list[-1] = lc + last_cmd
-                
-        return cmd_list
     
     def collect_wfc_for_signals(self, s2w, sgds, block_name, sig_order, wfc_order):
 

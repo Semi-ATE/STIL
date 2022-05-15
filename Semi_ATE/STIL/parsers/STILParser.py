@@ -248,14 +248,14 @@ class STILParser(STILLark):
         if self.tree != None:
             if debug:
                 print("\n===========================")
-                print("Start of semantic parsing :\n")
+                print("Start of semantic analisys :\n")
             try:
                 self.transform(self.tree)
                 self.eof()
                 self.is_parsing_done = True
 
                 if debug:
-                    print("\nEnd of semantic parsing")
+                    print("\nEnd of semantic analisys")
                     print("===========================\n")
                                     
             except VisitError as e:
@@ -292,4 +292,4 @@ class STILParser(STILLark):
                 print(self.err_msg)
 
         else:
-            print("ERROR : syntax parse must be performed before semantic parsing b")
+            print("ERROR : syntax parsing must be performed before semantic analisys b")

@@ -7,13 +7,14 @@ Signals {
 }
 
 
-SignalGroups { 
+SignalGroups sd { 
 	bidi = 'sio1 + sio2';
     all = 'si + bidi';
 }
 
 
-Timing { 
+Timing td { 
+  SignalGroups sd;
   WaveformTable wft 
   { Period '100ns';
       Waveforms 
@@ -31,10 +32,12 @@ Timing {
 }
 
 PatternBurst patt_burst{
- PatList {pattern;}
+    SignalGroups sd;
+    PatList {pattern;}
 }
 
 PatternExec patt_exec {
+    Timing td;
     PatternBurst patt_burst;
 }
 
@@ -42,25 +45,36 @@ Procedures {
    "load_unload" {
       W wft;
       C { all=0ZL; }
-      "pre_shift": V { si=1; }
+      "pre_shift": V { all  = 1ZX;}
       Shift {
-         W wft;
+// ToDo : support more than one Vector in the Shift block
+//         V { all  = 1ZX;}
          V { si=P; sio1=#; sio2=#; }
       }
+      "post_shift": V { all  = 1ZX;}
    }
 }
+
+MacroDefs {
+   macro {
+      W wft;
+      Vector { all  = 0ZX;}
+      Vector { all  = 0ZX;}
+      Vector { all  = 0ZX;}
+   }
+}
+
 Pattern pattern{
         W wft;
-        Vector { all  = 0ZX;}
+        Vector { all  = 1ZX;}
+        
+        Macro macro;
 
 	   "pattern 0": Call "load_unload" { 
-		  sio1=000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000; }
-	   "pattern 1": Call "load_unload" { 
-		  sio1=001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001100110011001011111111111111100101;
-		  sio2=LHHLLLHHHHHHHLLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHLHHLHLHLLHHHLLHHLHHLLHLLLL; }
-	   "pattern X": Call "load_unload" { 
-		  sio2=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX; }
+		  sio1=0011001; 
+		  sio2=LLHHLLH;}
 
+        W wft;
         Vector { all  = 0ZX;}
 
 }

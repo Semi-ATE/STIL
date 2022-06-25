@@ -4,7 +4,6 @@ import inspect
 from lark.exceptions import VisitError
 from .WFCUtils import WFCUtils
 from .DomainUtils import DomainUtils
-from .PattVecCmd import PattVecCmd
 from .STILSemanticException import STILSemanticException
 
 class PatternBlockParser:
@@ -62,6 +61,16 @@ class PatternBlockParser:
         else:
             print(f'{head} token value "{t}" at line {t.line} column {t.column}')
 
+
+    def b_pattern__pattern_statements__USER_KEYWORD_NAME(self, t):
+        if self.debug:
+            func_name = inspect.stack()[0][3]
+            self.trace(func_name, t)
+        
+        if t.value not in self.user_defined_keywords:
+            err_msg = f"User keyword {t.value} is not defined!"
+            raise Exception(err_msg)
+        
     def b_pattern__PATTERN_NAME(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]

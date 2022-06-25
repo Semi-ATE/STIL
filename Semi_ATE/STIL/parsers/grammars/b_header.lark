@@ -1,7 +1,6 @@
 %import base.NUMBER
 %import base.IDENTIFIER
 %import base.ANN_TEXT
-//%import base.annotation
 
 
 %import common.ESCAPED_STRING

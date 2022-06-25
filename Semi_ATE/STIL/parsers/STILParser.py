@@ -15,7 +15,13 @@ from . import STILSemanticException
 from . import utils
 
 class STILParser(STILLark):
-    def __init__(self, stil_file, propagate_positions=True, expanding_procs = False, debug=False):
+    def __init__(self, 
+                 stil_file, 
+                 propagate_positions=True, 
+                 expanding_procs = False, 
+                 stil_lark_file = None,
+                 extra_grammars = [],
+                 debug=False):
 
         STILLark.__init__(self, stil_file, debug)
 
@@ -32,11 +38,20 @@ class STILParser(STILLark):
 
         grammar_base_file = os.path.dirname(__file__)
         # Adding main lark grammar file
-        grammar_file = os.path.join(str(grammar_base_file), "grammars", "stil.lark")
+        if stil_lark_file == None:
+            grammar_file = os.path.join(str(grammar_base_file), "grammars", "stil.lark")
+        else:
+            grammar_file = stil_lark_file
+                
         grammars_file = os.path.join(str(grammar_base_file), "grammars")
         # Adding all lark grammars files under grammars folder
         ip = list()
         ip.append(grammars_file)
+
+        # Adding additional grammar files
+        if extra_grammars:
+            ip.extend(extra_grammars)
+            
         with open(grammar_file) as grammar:
             self.parser = Lark(
                 grammar.read(),

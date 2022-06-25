@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import inspect
 
 from lark import Transformer
 
@@ -51,8 +52,8 @@ class STILLark(
         """
         self.debug = debug
         self.stil_file = stil_file
-
         self.total_va = 0
+        self.user_defined_keywords = set()
 
         STILBlockParser.__init__(self, debug)
         HeaderBlockParser.__init__(self, debug)
@@ -76,6 +77,12 @@ class STILLark(
         else:
             print(f'{head} token value "{t}" at line {t.line} column {t.column}')
 
+    def USER_KEYWORDS(self, t):
+        if self.debug:
+            func_name = inspect.stack()[0][3]
+            self.trace(func_name, t)
+        self.user_defined_keywords.add(t.value)
+            
     def eof(self):
         # end of the file
         PatternBlockParser.eof(self)

@@ -165,6 +165,14 @@ class ProceduresBlockParser:
         self.pos_rel_shift = HashInfo.POS_BEFORE_SHIFT
         self.va = 0
 
+    def b_procedures__pattern_statements__USER_KEYWORD_NAME(self, t):
+        if self.debug:
+            func_name = inspect.stack()[0][3]
+            self.trace(func_name, t)
+        
+        if t.value not in self.user_defined_keywords:
+            err_msg = f"User keyword {t.value} is not defined!"
+            raise Exception(err_msg)
 
     def b_procedures__pattern_statements__WAVEFORM_TABLE_NAME(self, t):
         if self.debug:

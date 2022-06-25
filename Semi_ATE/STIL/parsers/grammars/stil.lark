@@ -2,7 +2,6 @@
 
 %import base.USER_DEFINED_NAME
 %import base.SPECIAL_CHAR
-//%import base.IDENTIFICATOR
 %import base.annotation
 %import base.user_keyword_stmt
 
@@ -66,7 +65,8 @@ KEYWORD_BLOCK_USER_FUNCTIONS    : "UserFunctions"
 KEYWORD_BLOCK_ANN               : "Ann"
 
 //user_keywords : "UserKeywords"              (USER_DEFINED_NAME)* ";"
-  user_keywords : KEYWORD_BLOCK_USER_KEYWORDS (USER_DEFINED_NAME)* ";"
+  user_keywords : KEYWORD_BLOCK_USER_KEYWORDS (USER_KEYWORDS)* ";"
+  USER_KEYWORDS : USER_DEFINED_NAME
 
 //user_functions : "UserFunctions"              (USER_DEFINED_NAME)* ";"
   user_functions : KEYWORD_BLOCK_USER_FUNCTIONS (USER_DEFINED_NAME)* ";"

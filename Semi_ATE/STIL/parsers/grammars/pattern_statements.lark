@@ -4,14 +4,16 @@
 %import base.USER_DEFINED_NAME
 %import base.INT
 
-pattern_statement : (LABEL | USER_KEYWORD | v_stmt | c_stmt | f_stmt | w_stmt | call_stmt | macro_stmt | l_stmt | ml_stmt | g_stmt | b_stmt | i_stmt | s_stmt | sc_stmt | asc_stmt | annotation)
+pattern_statement : (LABEL | uk_stmt | v_stmt | c_stmt | f_stmt | w_stmt | call_stmt | macro_stmt | l_stmt | ml_stmt | g_stmt | b_stmt | i_stmt | s_stmt | sc_stmt | asc_stmt | annotation)
 
-USER_KEYWORD : USER_KEYWORD_NAME (USER_KEYWORD_ID | USER_KEYWORD_ES)* ";"
+uk_stmt :  USER_KEYWORD_NAME (USER_KEYWORD_VALUE)* ";"
 
 USER_KEYWORD_NAME : (USER_KEYWORD_ID | USER_KEYWORD_ES)
+USER_KEYWORD_VALUE: (USER_KEYWORD_ID | USER_KEYWORD_ES)
 
 USER_KEYWORD_ID : IDENTIFIER
 USER_KEYWORD_ES : ESCAPED_STRING
+
 LABEL : USER_DEFINED_NAME (" ")* ":"
 
 //v_stmt : ("V"         | "Vector")         vec_block
@@ -41,15 +43,15 @@ CLOSE_VECTOR_BLOCK : "}"
 
 
 //w_stmt : ("W"       | "WaveformTable")        WAVEFORM_TABLE_NAME ";"
-  w_stmt : (KEYWORD_W | KEYWORD_WAVEFORM_TABLE) WAVEFORM_TABLE_NAME ";"
-  KEYWORD_W: "W"
-  KEYWORD_WAVEFORM_TABLE: "WaveformTable"
+  w_stmt.1 : (KEYWORD_W | KEYWORD_WAVEFORM_TABLE) WAVEFORM_TABLE_NAME ";"
+  KEYWORD_W.1: "W"
+  KEYWORD_WAVEFORM_TABLE.1: "WaveformTable"
   
-  WAVEFORM_TABLE_NAME : USER_DEFINED_NAME
+  WAVEFORM_TABLE_NAME.1 : USER_DEFINED_NAME
 
 //macro_stmt : "Macro"       CALL_MACRO_NAME (";" | macro_vec_block)
   macro_stmt : KEYWORD_MACRO CALL_MACRO_NAME (MACRO_CALL_END_STMT | macro_vec_block)
-  KEYWORD_MACRO: "Macro"
+  KEYWORD_MACRO.1: "Macro"
   CALL_MACRO_NAME : USER_DEFINED_NAME
   
   MACRO_CALL_END_STMT : ";"
@@ -58,12 +60,12 @@ CLOSE_VECTOR_BLOCK : "}"
     OPEN_MACRO_VECTOR_BLOCK  : "{"
       macro_vec_data_block: MACRO_SIGREF_EXPR "=" MACRO_VEC_DATA_STRING
       MACRO_SIGREF_EXPR : USER_DEFINED_NAME
-      MACRO_VEC_DATA_STRING : /[A-Za-z0-9%#\\r\\j\\m\n ]+/
+      MACRO_VEC_DATA_STRING : /[A-Za-z0-9\\r\\j\\m\n ]+/
     CLOSE_MACRO_VECTOR_BLOCK : "}"
 
 //call_stmt : "Call"        CALL_PROC_NAME (";" | call_vec_block)
   call_stmt : KEYWORD_CALL  CALL_PROC_NAME (PROC_CALL_END_STMT | call_vec_block)
-  KEYWORD_CALL: "Call"
+  KEYWORD_CALL.1    : "Call"
   CALL_PROC_NAME : USER_DEFINED_NAME
 
   PROC_CALL_END_STMT : ";"
@@ -72,7 +74,7 @@ CLOSE_VECTOR_BLOCK : "}"
     OPEN_CALL_VECTOR_BLOCK  : "{"
       call_vec_data_block: CALL_SIGREF_EXPR "=" CALL_VEC_DATA_STRING
       CALL_SIGREF_EXPR : USER_DEFINED_NAME
-      CALL_VEC_DATA_STRING : /[A-Za-z0-9%#\\r\\j\\m\n ]+/
+      CALL_VEC_DATA_STRING : /[A-Za-z0-9\\r\\j\\m\n ]+/
     CLOSE_CALL_VECTOR_BLOCK : "}"
 
 //l_stmt : "Loop"       LOOP_COUNT "{"             (pattern_statement)* "}"
@@ -96,12 +98,12 @@ CLOSE_VECTOR_BLOCK : "}"
 
 //g_stmt : "Goto" USER_DEFINED_NAME ";"
   g_stmt : KEYWORD_GOTO GOTO_LABEL ";"
-  KEYWORD_GOTO: "Goto"
+  KEYWORD_GOTO.1 : "Goto"
   GOTO_LABEL : USER_DEFINED_NAME
 
 //b_stmt : "BreakPoint"         (";" | break_point_block)
   b_stmt : KEYWORD_BREAKPOINT   (";" | break_point_block)
-  KEYWORD_BREAKPOINT: "BreakPoint"
+  KEYWORD_BREAKPOINT.1 : "BreakPoint"
 
 //break_point_block : "{"                   (pattern_statement)* "}"
   break_point_block : OPEN_BREAKPOINT (pattern_statement)* "}"
@@ -111,14 +113,12 @@ CLOSE_VECTOR_BLOCK : "}"
 
 
 //i_stmt : "IddqTestPoint" ";"
-  i_stmt : (KEYWORD_IDDQ_TEST_POINT ";" | KEYWORD_IDDQ_TEST_POINT_SC)
-  KEYWORD_IDDQ_TEST_POINT: "IDDQTestPoint"
-  KEYWORD_IDDQ_TEST_POINT_SC: "IDDQTestPoint;"
+  i_stmt : KEYWORD_IDDQ_TEST_POINT ";"
+  KEYWORD_IDDQ_TEST_POINT.1 : ("IDDQTestPoint" | "IddqTestPoint")
 
 //s_stmt : "Stop" ";"
-  s_stmt : (KEYWORD_STOP ";" | KEYWORD_STOP_SC)
-  KEYWORD_STOP : "Stop"
-  KEYWORD_STOP_SC : "Stop;"
+  s_stmt : KEYWORD_STOP ";"
+  KEYWORD_STOP.1 : "Stop"
 
 //sc_stmt : "ScanChain" USER_DEFINED_NAME ";"
   sc_stmt : KEYWORD_SCAN_CHAIN  SCANCHAIN_NAME ";"

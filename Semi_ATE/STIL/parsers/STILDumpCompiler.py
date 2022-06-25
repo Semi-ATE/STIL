@@ -167,9 +167,12 @@ class STILDumpCompiler(STILParser):
         is_scan_mem_available = False,
         dump_data = True,
         enable_trace = True,
+        stil_lark_file = None,
+        extra_grammars = [],
         debug = False,
     ):
-        STILParser.__init__(self, stil_file, propagate_positions, expanding_procs, debug)
+
+        STILParser.__init__(self, stil_file, propagate_positions, expanding_procs, stil_lark_file, extra_grammars, debug)
         # Depends on ATE pattern engine capabilities, WFC used as arguments in the Macro/Proc invocation
         # can be stored into a dedicated scan memory or to be expanded in the general available memory
         # This choice impacts calculation of the total VA
@@ -707,21 +710,12 @@ class STILDumpCompiler(STILParser):
     def b_pattern__pattern_statements__KEYWORD_IDDQ_TEST_POINT(self, t):
         self.add_cmd_patt(PattVecCmd.CMD_IDDQTESTPOINT, None)
         
-    def b_pattern__pattern_statements__KEYWORD_IDDQ_TEST_POINT_SC(self, t):
-        self.add_cmd_patt(PattVecCmd.CMD_IDDQTESTPOINT, None)
-
     def b_macrodefs__pattern_statements__KEYWORD_IDDQ_TEST_POINT(self, t):
-        self.add_cmd_macro(PattVecCmd.CMD_IDDQTESTPOINT, None)
-        
-    def b_macrodefs__pattern_statements__KEYWORD_IDDQ_TEST_POINT_SC(self, t):
         self.add_cmd_macro(PattVecCmd.CMD_IDDQTESTPOINT, None)
         
     def b_procedures__pattern_statements__KEYWORD_IDDQ_TEST_POINT(self, t):
         self.add_cmd_proc(PattVecCmd.CMD_IDDQTESTPOINT, None)
         
-    def b_procedures__pattern_statements__KEYWORD_IDDQ_TEST_POINT_SC(self, t):
-        self.add_cmd_proc(PattVecCmd.CMD_IDDQTESTPOINT, None)
-
     def b_pattern__pattern_statements__KEYWORD_STOP(self, t):
         self.save_in_prev_cmd_patt(PattVecCmd.CMD_STOP, None)
 

@@ -52,6 +52,7 @@ def test_syn_err_pattern_block_4():
 
     parser = STILParser(stil_file)
     parser.parse_syntax()
+    parser.parse_semantic()
     assert parser.err_line == 46
     assert parser.err_col == 10
 
@@ -60,8 +61,9 @@ def test_syn_err_pattern_block_5():
 
     parser = STILParser(stil_file)
     parser.parse_syntax()
+    parser.parse_semantic()
     assert parser.err_line == 46
-    assert parser.err_col == 10
+    assert parser.err_col == 23
 
 def test_syn_err_label_1():
     stil_file = get_stil_file("syn_err_label_1.stil")
@@ -77,7 +79,7 @@ def test_syn_err_label_2():
     parser = STILParser(stil_file)
     parser.parse_syntax()
     assert parser.err_line == 51
-    assert parser.err_col == 9
+    assert parser.err_col == 16
 
 def test_syn_err_label_3():
     stil_file = get_stil_file("syn_err_label_3.stil")
@@ -85,7 +87,7 @@ def test_syn_err_label_3():
     parser = STILParser(stil_file)
     parser.parse_syntax()
     assert parser.err_line == 51
-    assert parser.err_col == 9
+    assert parser.err_col == 31
 
 def test_syn_err_vector_1():
     stil_file = get_stil_file("syn_err_vector_1.stil")

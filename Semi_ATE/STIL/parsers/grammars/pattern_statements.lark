@@ -14,11 +14,11 @@ USER_KEYWORD_VALUE: (USER_KEYWORD_ID | USER_KEYWORD_ES)
 USER_KEYWORD_ID : IDENTIFIER
 USER_KEYWORD_ES : ESCAPED_STRING
 
-uk_block_stmt 	: USER_KEYWORD_NAME open_uk_block UK_BLOCK_VALUE ";" close_uk_block
+uk_block_stmt 	: USER_KEYWORD_NAME (USER_KEYWORD_VALUE)* open_uk_block (UK_BLOCK_VALUE ";")* close_uk_block
 
 open_uk_block : "{"
 
-UK_BLOCK_VALUE: /[a-zA-Z=!@#$%^&* ]+/
+UK_BLOCK_VALUE: /[a-zA-Z0-9=!@#$%^&*\" ]+/
 
 close_uk_block : "}"
 
@@ -86,20 +86,24 @@ CLOSE_VECTOR_BLOCK : "}"
     CLOSE_CALL_VECTOR_BLOCK : "}"
 
 //l_stmt : "Loop"       LOOP_COUNT "{"             (pattern_statement)* "}"
-  l_stmt : KEYWORD_LOOP LOOP_COUNT OPEN_LOOP_BLOCK (pattern_statement)* close_loop_block
+  l_stmt : KEYWORD_LOOP (LOOP_COUNT | LOOP_VAR) OPEN_LOOP_BLOCK (pattern_statement)* close_loop_block
   KEYWORD_LOOP: "Loop"
   
   LOOP_COUNT : INT
+  // IEEE 1450.1 allows variables in the loop
+  LOOP_VAR   : USER_DEFINED_NAME
   
   OPEN_LOOP_BLOCK : "{"
   close_loop_block: "}"
 
 //ml_stmt : "MatchLoop"         (MATCHLOOP_COUNT | MATCHLOOP_INF) "{" (pattern_statement)* "}"
-  ml_stmt : KEYWORD_MATCH_LOOP  (MATCHLOOP_COUNT | MATCHLOOP_INF) OPEN_MATCH_LOOP_BLOCK (pattern_statement)* close_matchloop_block
+  ml_stmt : KEYWORD_MATCH_LOOP  (MATCHLOOP_COUNT | MATCHLOOP_INF | MATCHLOOP_VAR) OPEN_MATCH_LOOP_BLOCK (pattern_statement)* close_matchloop_block
   KEYWORD_MATCH_LOOP: "MatchLoop"
 
   MATCHLOOP_COUNT : INT
   MATCHLOOP_INF : "Infinite"
+  // IEEE 1450.1 allows variables in the loop
+  MATCHLOOP_VAR   : USER_DEFINED_NAME
 
   OPEN_MATCH_LOOP_BLOCK : "{"
   close_matchloop_block: "}"

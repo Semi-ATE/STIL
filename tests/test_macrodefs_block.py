@@ -63,7 +63,7 @@ def test_syn_err_macrodefs_block_5():
     parser.parse_syntax()
     parser.parse_semantic()
     assert parser.err_line == 47
-    assert parser.err_col == 23
+    assert parser.err_col == 24
 
 def test_syn_err_label_1():
     stil_file = get_stil_file("syn_err_label_1.stil")

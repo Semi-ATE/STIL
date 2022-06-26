@@ -21,10 +21,13 @@ error_map = {
     "b_timing__WFT_NAME": "Name of the WaveformTable",
     "b_pattern_burst__PATTERN_BURST_BLOCK_NAME" : "Name of the PatternBurst block",
     "b_pattern_exec__PATTERN_EXEC_BLOCK_NAME" : "Name of the PatternExec block",
-    "b_macrodefs__pattern_statements__USER_KEYWORD_VALUE" : "UserKeyword value",
     "b_macrodefs__MACRO_NAME" : "Name of the MacroDefs block",
     "b_pattern__pattern_statements__USER_KEYWORD_VALUE" : "UserKeyword value",
     "b_procedures__pattern_statements__USER_KEYWORD_VALUE" : "UserKeyword value",
+    "b_macrodefs__pattern_statements__USER_KEYWORD_VALUE" : "UserKeyword value",
+    "b_pattern__pattern_statements__UK_BLOCK_VALUE" : "value in the UserKeyword block",
+    "b_procedures__pattern_statements__UK_BLOCK_VALUE" : "value in the UserKeyword block",
+    "b_macrodefs__pattern_statements__UK_BLOCK_VALUE" : "value in the UserKeyword block",
     "ESCAPED_STRING" : "String in double quotes"    
 }
 

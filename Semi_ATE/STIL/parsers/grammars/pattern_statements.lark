@@ -4,7 +4,7 @@
 %import base.USER_DEFINED_NAME
 %import base.INT
 
-pattern_statement : (LABEL | uk_stmt | v_stmt | c_stmt | f_stmt | w_stmt | call_stmt | macro_stmt | l_stmt | ml_stmt | g_stmt | b_stmt | i_stmt | s_stmt | sc_stmt | asc_stmt | annotation)
+pattern_statement : (LABEL | uk_stmt | uk_block_stmt | v_stmt | c_stmt | f_stmt | w_stmt | call_stmt | macro_stmt | l_stmt | ml_stmt | g_stmt | b_stmt | i_stmt | s_stmt | sc_stmt | asc_stmt | annotation)
 
 uk_stmt :  USER_KEYWORD_NAME (USER_KEYWORD_VALUE)* ";"
 
@@ -13,6 +13,14 @@ USER_KEYWORD_VALUE: (USER_KEYWORD_ID | USER_KEYWORD_ES)
 
 USER_KEYWORD_ID : IDENTIFIER
 USER_KEYWORD_ES : ESCAPED_STRING
+
+uk_block_stmt 	: USER_KEYWORD_NAME open_uk_block UK_BLOCK_VALUE ";" close_uk_block
+
+open_uk_block : "{"
+
+UK_BLOCK_VALUE: /[a-zA-Z=!@#$%^&* ]+/
+
+close_uk_block : "}"
 
 LABEL : USER_DEFINED_NAME (" ")* ":"
 

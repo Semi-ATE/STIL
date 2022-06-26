@@ -101,3 +101,125 @@ def test_sem_ok_user_keyword_5():
 
     assert parser.err_line == -1
     assert parser.err_col == -1
+
+def test_sem_ok_user_keyword_block_1():
+
+    stil_file = get_stil_file("test_sem_ok_user_keyword_block_1.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+
+    assert parser.err_line == -1
+    assert parser.err_col == -1
+
+def test_sem_ok_user_keyword_block_2():
+
+    stil_file = get_stil_file("test_sem_ok_user_keyword_block_2.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+
+    assert parser.err_line == -1
+    assert parser.err_col == -1
+
+def test_sem_ok_user_keyword_block_3():
+
+    stil_file = get_stil_file("test_sem_ok_user_keyword_block_3.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+
+    assert parser.err_line == -1
+    assert parser.err_col == -1
+
+    
+def test_sem_ok_user_keyword_block_11():
+
+    stil_file = get_stil_file("test_sem_ok_user_keyword_block_11.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+
+    assert parser.err_line == -1
+    assert parser.err_col == -1
+    
+def test_sem_ok_user_keyword_block_12():
+
+    stil_file = get_stil_file("test_sem_ok_user_keyword_block_12.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+
+    assert parser.err_line == -1
+    assert parser.err_col == -1
+    
+def test_sem_ok_user_keyword_block_13():
+
+    stil_file = get_stil_file("test_sem_ok_user_keyword_block_13.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+
+    assert parser.err_line == -1
+    assert parser.err_col == -1
+
+def test_sem_ok_user_keyword_block_21():
+
+    stil_file = get_stil_file("test_sem_ok_user_keyword_block_21.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+
+    assert parser.err_line == -1
+    assert parser.err_col == -1
+    
+def test_sem_ok_user_keyword_block_22():
+
+    stil_file = get_stil_file("test_sem_ok_user_keyword_block_22.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+
+    assert parser.err_line == -1
+    assert parser.err_col == -1
+    
+def test_sem_ok_user_keyword_block_23():
+
+    stil_file = get_stil_file("test_sem_ok_user_keyword_block_23.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+
+    assert parser.err_line == -1
+    assert parser.err_col == -1
+    
+def test_syn_err_user_keyword_block_1():
+
+    stil_file = get_stil_file("test_syn_err_user_keyword_block_1.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+
+    assert parser.err_line == 66
+    assert parser.err_col == 17
+
+def test_syn_err_user_keyword_block_2():
+
+    stil_file = get_stil_file("test_syn_err_user_keyword_block_2.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+
+    assert parser.err_line == 66
+    assert parser.err_col == 54

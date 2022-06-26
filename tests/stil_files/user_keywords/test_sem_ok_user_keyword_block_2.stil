@@ -1,0 +1,68 @@
+STIL 1.0;
+
+
+Signals {
+    s1 In;
+}
+
+UserKeywords user_defined_keyword;
+
+SignalGroups {
+    ALL = 's1';
+}
+
+Timing {
+    
+    WaveformTable wft{
+        Period '500ns';
+             Waveforms {
+                 ALL { 01 { '0ns' D; '250ns' U; }}
+             }
+    }
+}
+
+PatternBurst patt_burst{
+    PatList { patt;}
+}
+
+PatternExec {
+    PatternBurst patt_burst;
+}
+
+
+Pattern patt{
+
+    start_label:
+                W wft;
+                V {ALL = 0;}
+                V {ALL = 0;}
+                V {ALL = 0;}
+                V {ALL = 0;}
+                V {ALL = 0;}
+                Goto FWD1;
+                V {ALL = 0;}
+                Goto FWD2 ;
+                V {ALL = 0;}
+                IddqTestPoint;
+                V {ALL = 0;}
+                IddqTestPoint ;
+                V {ALL = 0;}
+                Stop;
+                V {ALL = 0;}
+                Stop ;
+                V {ALL = 0;}
+                BreakPoint;
+                V {ALL = 0;}
+                BreakPoint ;
+                V {ALL = 0;}
+                BreakPoint {
+                    V {ALL = 0;}
+                }
+                V {ALL = 0;}
+    FWD1 :
+                V {ALL = 0;}
+    FWD2:
+                V {ALL = 0;}
+                user_defined_keyword block { sig = WFC; sig1 = WFC1;}
+                V {ALL = 0;}
+}

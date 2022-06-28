@@ -1,0 +1,87 @@
+STIL 1.0 { 
+    Design 2005; 
+   }
+
+Signals {
+    si1 In;
+    si2 In;
+    so1 Out;
+    so2 Out;
+    sio1 InOut;
+    sio2 InOut;
+}
+
+SignalGroups { 
+    all = 'si1 + si2 + so1 + so2 + sio1 + sio2';
+}
+
+SignalGroups sg { 
+    si = 'si1 + si2';
+    so = 'so1 + so2';
+    sio = 'sio1 + sio2';
+    all = 'si + so + sio';
+}
+
+Timing { 
+  WaveformTable wft 
+  { Period '100ns';
+      Waveforms 
+      {
+        si1 {P {'10ns' D; '25ns' U; '50ns' D;}}
+        si2 {P {'10ns' D; '25ns' U; '50ns' D;}}
+        so1 {LHX {'10ns' L/H/x;}}
+        so2 {LHX {'10ns' L/H/x;}}
+        sio1 {P {'10ns' D; '25ns' U; '50ns' D;}}
+        sio1 {LHX {'10ns' L/H/x;}}
+        sio2 {P {'10ns' D; '25ns' U; '50ns' D;}}
+        sio2 {LHX {'10ns' L/H/x;}}
+      }
+  }
+}
+
+UserKeywords scan_id;
+ScanStructures {
+     ScanChain chain_master {
+         Ann {* data "test" *}
+         ScanLength 512;
+         ScanIn Signal_in__1;
+         scan_id user_defined_id;
+         ScanOut Signal_out_1;
+         ScanMasterClock CLOCK;
+         ScanInversion 1;
+         ScanCells ! sc0 sc1 sc2 ! sc2a;
+     }
+     ScanChain chain_slave {
+         ScanLength 512;
+         ScanIn Signal_in__1;
+         ScanOut Signal_out_1;
+         ScanMasterClock CLOCK;
+         ScanInversion 0;
+         ScanCells { sc00 ; sc01 ! sc00a ;}
+     }
+ }
+ScanStructures Named{
+     ScanChain chain_master_alt {
+         ScanLength 1024;
+         ScanIn Signal_in__1;
+         scan_id user_defined_id;
+         ScanOut Signal_out_1;
+         ScanMasterClock CLOCK1 "CLOCK2"  CLOCK3 ;
+         ScanSlaveClock SCLOCK1 "SCLOCK2" SCLOCK3;
+         ScanInversion 1;
+         ScanCells ! sc0 sc1 sc2 ! sc2a; { sc00 ; sc01 ;};
+     }
+ }
+
+PatternBurst patt_burst{
+ PatList {pattern;}
+}
+
+PatternExec patt_exec {
+    PatternBurst patt_burst;
+}
+
+Pattern pattern{
+        label: W wft;
+        Vector { all  = PPLLPL;}
+}

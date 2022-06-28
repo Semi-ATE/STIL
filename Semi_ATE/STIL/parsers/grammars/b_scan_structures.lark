@@ -80,11 +80,11 @@ SCAN_STRUCTURES_DOMAIN_NAME : USER_DEFINED_NAME
         KEYWORD_SCAN_OUT : "ScanOut"
         
 //      scan_master_clock   : "ScanMasterClock"         USER_DEFINED_NAME ";" 
-        scan_master_clock   : KEYWORD_SCAN_MASTER_CLOCK USER_DEFINED_NAME ";" 
+        scan_master_clock   : KEYWORD_SCAN_MASTER_CLOCK (USER_DEFINED_NAME)* ";" 
         KEYWORD_SCAN_MASTER_CLOCK : "ScanMasterClock"
         
 //      scan_slave_clock    : "ScanSlaveClock"          USER_DEFINED_NAME ";" 
-        scan_slave_clock    : KEYWORD_SCAN_SLAVE_CLOCK  USER_DEFINED_NAME ";" 
+        scan_slave_clock    : KEYWORD_SCAN_SLAVE_CLOCK  (USER_DEFINED_NAME)* ";" 
         KEYWORD_SCAN_SLAVE_CLOCK : "ScanSlaveClock"
         
 //      scan_inversion      : "ScanInversion"           ("0"|"1") ";" 

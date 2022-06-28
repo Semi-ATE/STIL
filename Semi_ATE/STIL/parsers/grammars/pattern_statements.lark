@@ -14,7 +14,7 @@ USER_KEYWORD_VALUE: (USER_KEYWORD_ID | USER_KEYWORD_ES)
 USER_KEYWORD_ID : IDENTIFIER
 USER_KEYWORD_ES : ESCAPED_STRING
 
-uk_block_stmt 	: USER_KEYWORD_NAME (USER_KEYWORD_VALUE)* open_uk_block (UK_BLOCK_VALUE ";")* close_uk_block
+uk_block_stmt 	: USER_KEYWORD_NAME (USER_KEYWORD_VALUE)* open_uk_block (UK_BLOCK_VALUE ";")* (" ")* close_uk_block
 
 open_uk_block : "{"
 
@@ -40,10 +40,10 @@ LABEL : USER_DEFINED_NAME (" ")* ":"
   KEYWORD_FIXED: "Fixed"
 
 //vec_block : "{"               (vec_data_block ";")* "}" 
-  vec_block : OPEN_VECTOR_BLOCK (vec_data_block ";")* CLOSE_VECTOR_BLOCK
+  vec_block : open_vector_block (vec_data_block ";")* close_vector_block
 
-OPEN_VECTOR_BLOCK  : "{"
-CLOSE_VECTOR_BLOCK : "}"
+open_vector_block  : "{"
+close_vector_block : "}"
 
     vec_data_block: SIGREF_EXPR "=" VEC_DATA_STRING
     SIGREF_EXPR : USER_DEFINED_NAME
@@ -55,7 +55,7 @@ CLOSE_VECTOR_BLOCK : "}"
   KEYWORD_W.1: "W"
   KEYWORD_WAVEFORM_TABLE.1: "WaveformTable"
   
-  WAVEFORM_TABLE_NAME.1 : USER_DEFINED_NAME
+  WAVEFORM_TABLE_NAME : USER_DEFINED_NAME
 
 //macro_stmt : "Macro"       CALL_MACRO_NAME (";" | macro_vec_block)
   macro_stmt : KEYWORD_MACRO CALL_MACRO_NAME (MACRO_CALL_END_STMT | macro_vec_block)
@@ -64,12 +64,12 @@ CLOSE_VECTOR_BLOCK : "}"
   
   MACRO_CALL_END_STMT : ";"
 
-  macro_vec_block : OPEN_MACRO_VECTOR_BLOCK (macro_vec_data_block ";")* CLOSE_MACRO_VECTOR_BLOCK
-    OPEN_MACRO_VECTOR_BLOCK  : "{"
+  macro_vec_block : open_macro_vector_block (macro_vec_data_block ";")* close_macro_vector_block
+    open_macro_vector_block  : "{"
       macro_vec_data_block: MACRO_SIGREF_EXPR "=" MACRO_VEC_DATA_STRING
       MACRO_SIGREF_EXPR : USER_DEFINED_NAME
       MACRO_VEC_DATA_STRING : /[A-Za-z0-9\\r\\j\\m\n ]+/
-    CLOSE_MACRO_VECTOR_BLOCK : "}"
+    close_macro_vector_block : "}"
 
 //call_stmt : "Call"        CALL_PROC_NAME (";" | call_vec_block)
   call_stmt : KEYWORD_CALL  CALL_PROC_NAME (PROC_CALL_END_STMT | call_vec_block)
@@ -78,26 +78,26 @@ CLOSE_VECTOR_BLOCK : "}"
 
   PROC_CALL_END_STMT : ";"
   
-  call_vec_block : OPEN_CALL_VECTOR_BLOCK (call_vec_data_block ";")* CLOSE_CALL_VECTOR_BLOCK
-    OPEN_CALL_VECTOR_BLOCK  : "{"
+  call_vec_block : open_call_vector_block (call_vec_data_block ";")* close_call_vector_block
+    open_call_vector_block  : "{"
       call_vec_data_block: CALL_SIGREF_EXPR "=" CALL_VEC_DATA_STRING
       CALL_SIGREF_EXPR : USER_DEFINED_NAME
       CALL_VEC_DATA_STRING : /[A-Za-z0-9\\r\\j\\m\n ]+/
-    CLOSE_CALL_VECTOR_BLOCK : "}"
+    close_call_vector_block : "}"
 
 //l_stmt : "Loop"       LOOP_COUNT "{"             (pattern_statement)* "}"
-  l_stmt : KEYWORD_LOOP (LOOP_COUNT | LOOP_VAR) OPEN_LOOP_BLOCK (pattern_statement)* close_loop_block
+  l_stmt : KEYWORD_LOOP (LOOP_COUNT | LOOP_VAR) open_loop_block (pattern_statement)* close_loop_block
   KEYWORD_LOOP: "Loop"
   
   LOOP_COUNT : INT
   // IEEE 1450.1 allows variables in the loop
   LOOP_VAR   : USER_DEFINED_NAME
   
-  OPEN_LOOP_BLOCK : "{"
+  open_loop_block : "{"
   close_loop_block: "}"
 
 //ml_stmt : "MatchLoop"         (MATCHLOOP_COUNT | MATCHLOOP_INF) "{" (pattern_statement)* "}"
-  ml_stmt : KEYWORD_MATCH_LOOP  (MATCHLOOP_COUNT | MATCHLOOP_INF | MATCHLOOP_VAR) OPEN_MATCH_LOOP_BLOCK (pattern_statement)* close_matchloop_block
+  ml_stmt : KEYWORD_MATCH_LOOP  (MATCHLOOP_COUNT | MATCHLOOP_INF | MATCHLOOP_VAR) open_matchloop_block (pattern_statement)* close_matchloop_block
   KEYWORD_MATCH_LOOP: "MatchLoop"
 
   MATCHLOOP_COUNT : INT
@@ -105,7 +105,7 @@ CLOSE_VECTOR_BLOCK : "}"
   // IEEE 1450.1 allows variables in the loop
   MATCHLOOP_VAR   : USER_DEFINED_NAME
 
-  OPEN_MATCH_LOOP_BLOCK : "{"
+  open_matchloop_block : "{"
   close_matchloop_block: "}"
 
 //g_stmt : "Goto" USER_DEFINED_NAME ";"
@@ -118,10 +118,10 @@ CLOSE_VECTOR_BLOCK : "}"
   KEYWORD_BREAKPOINT.1 : "BreakPoint"
 
 //break_point_block : "{"                   (pattern_statement)* "}"
-  break_point_block : OPEN_BREAKPOINT (pattern_statement)* "}"
+  break_point_block : open_breakpoit (pattern_statement)* close_breakpoit
 
-  OPEN_BREAKPOINT : "{"
-  CLOSE_BREAKPOINT: "}"
+  open_breakpoit : "{"
+  close_breakpoit: "}"
 
 
 //i_stmt : "IddqTestPoint" ";"

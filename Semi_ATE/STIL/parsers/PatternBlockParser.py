@@ -318,7 +318,7 @@ class PatternBlockParser:
                     # pattern is not used
                     pass
 
-    def b_pattern__pattern_statements__CLOSE_VECTOR_BLOCK(self, t):
+    def b_pattern__pattern_statements__close_vector_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)

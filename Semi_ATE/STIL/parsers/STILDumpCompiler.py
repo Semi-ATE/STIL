@@ -695,13 +695,13 @@ class STILDumpCompiler(STILParser):
         else:
             self.save_in_prev_cmd_proc(PattVecCmd.CMD_STOP_COUNT_MATCHLOOP)
 
-    def b_pattern__pattern_statements__CLOSE_CALL_VECTOR_BLOCK(self, t):
+    def b_pattern__pattern_statements__close_call_vector_block(self, t):
         self.save_cmd_patt()
 
     def b_pattern__pattern_statements__PROC_CALL_END_STMT(self, t):
         self.save_cmd_patt()
 
-    def b_pattern__pattern_statements__CLOSE_MACRO_VECTOR_BLOCK(self, t):
+    def b_pattern__pattern_statements__close_macro_vector_block(self, t):
         self.save_cmd_patt()
 
     def b_pattern__pattern_statements__MACRO_CALL_END_STMT(self, t):
@@ -893,13 +893,13 @@ class STILDumpCompiler(STILParser):
                         f.write(rec)
             f.close()
 
-    def b_pattern__pattern_statements__CLOSE_VECTOR_BLOCK(self, t):
+    def b_pattern__pattern_statements__close_vector_block(self, t):
         
-        #print("b_pattern__pattern_statements__CLOSE_VECTOR_BLOCK")
+        #print("b_pattern__pattern_statements__close_vector_block")
 
         # Current pattern block is not used in pattern burst
         if self.curr_pattern not in self.patt2sig_group_domain:
-            super().b_pattern__pattern_statements__CLOSE_VECTOR_BLOCK(t)
+            super().b_pattern__pattern_statements__close_vector_block(t)
             return
 
         #Ignore so far the Fixed and Condition statements
@@ -1024,7 +1024,7 @@ class STILDumpCompiler(STILParser):
                     if sig not in self.signals_order:
                         self.signals_order.append(sig)
         
-        super().b_pattern__pattern_statements__CLOSE_VECTOR_BLOCK(t)
+        super().b_pattern__pattern_statements__close_vector_block(t)
         self.is_fixed_stmt = False
         self.is_condition_stmt = False
         self.is_vector_stmt = False
@@ -2228,7 +2228,7 @@ class STILDumpCompiler(STILParser):
                         old_sig2wfc[sig] += wfc
 
     
-    def b_macrodefs__pattern_statements__CLOSE_VECTOR_BLOCK(self, t):
+    def b_macrodefs__pattern_statements__close_vector_block(self, t):
 
         if self.is_vector_stmt:
             self.save_cmd_macro()
@@ -2242,9 +2242,9 @@ class STILDumpCompiler(STILParser):
                                      self.curr_macro_wfc_order
                                      )
 
-        super().b_macrodefs__pattern_statements__CLOSE_VECTOR_BLOCK(t)
+        super().b_macrodefs__pattern_statements__close_vector_block(t)
 
-    def b_procedures__pattern_statements__CLOSE_VECTOR_BLOCK(self, t):
+    def b_procedures__pattern_statements__close_vector_block(self, t):
 
         if self.is_vector_stmt:
             self.save_cmd_proc()
@@ -2259,7 +2259,7 @@ class STILDumpCompiler(STILParser):
                                      )
 
         
-        super().b_procedures__pattern_statements__CLOSE_VECTOR_BLOCK(t)
+        super().b_procedures__pattern_statements__close_vector_block(t)
 
     def dump_timing_data(self):
         

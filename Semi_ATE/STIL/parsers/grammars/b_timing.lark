@@ -34,7 +34,7 @@ OPEN_TIMING_BLOCK : "{"
             OPEN_WAVEFORMS_BLOCK : "{" 
             
 //              waveforms_list : WF_SIGREF_EXPR "{"            WFC_LIST "{"              (time_offset)+  "}"              "}"
-                waveforms_list : WF_SIGREF_EXPR OPEN_WFC_BLOCK WFC_LIST OPEN_WFCS_BLOCK  (time_offset)+  CLOSE_WFCS_BLOCK CLOSE_WFC_BLOCK
+                waveforms_list : WF_SIGREF_EXPR OPEN_WFC_BLOCK (WFC_LIST OPEN_WFCS_BLOCK  (time_offset)+  CLOSE_WFCS_BLOCK)* CLOSE_WFC_BLOCK
 
                 WF_SIGREF_EXPR : SIGNAL_NAME_TERMINAL 
 

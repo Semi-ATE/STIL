@@ -222,4 +222,4 @@ def test_syn_err_user_keyword_block_2():
     parser.parse_semantic()
 
     assert parser.err_line == 66
-    assert parser.err_col == 54
+    assert parser.err_col == 17

@@ -63,6 +63,6 @@ Pattern patt{
                 V {ALL = 0;}
     FWD2:
                 V {ALL = 0;}
-                user_defined_keyword block1 block2 { }
+                not_user_defined_keyword block1 block2 { }
                 V {ALL = 0;}
 }

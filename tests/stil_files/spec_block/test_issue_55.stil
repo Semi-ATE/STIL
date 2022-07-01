@@ -1,0 +1,85 @@
+STIL 1.0;
+
+Signals {
+    si1 In;
+    si2 In;
+    so1 Out;
+    so2 Out;
+    sio1 InOut;
+    sio2 InOut;
+}
+
+SignalGroups { 
+    all = 'si1 + si2 + so1 + so2 + sio1 + sio2';
+}
+
+
+
+Timing {
+
+    WaveformTable wft1{
+        Period 'catvar_wo_typ';
+             Waveforms {
+                 si1 { 01 { '0ns' D; '250ns' U; }}
+                 si2 { 01 { '0ns' D; '250ns' U; }}
+                 so1 { LH { '0ns' L; '250ns' H; }}
+                 so2 { LH { '0ns' L; '250ns' H; }}
+                 sio1 { 01 { '0ns' D; '250ns' U; }}
+                 sio1 { LH { '0ns' L; '250ns' H; }}
+                 sio2 { 01 { '0ns' D; '250ns' U; }}
+                 sio2 { LH { '0ns' L; '250ns' H; }}
+             }
+    }
+    WaveformTable wft2{
+        Period 'var_wo_typ';
+             Waveforms {
+                 si1 { 01 { '0ns' D; '250ns' U; }}
+                 si2 { 01 { '0ns' D; '250ns' U; }}
+                 so1 { LH { '0ns' L; '250ns' H; }}
+                 so2 { LH { '0ns' L; '250ns' H; }}
+                 sio1 { 01 { '0ns' D; '250ns' U; }}
+                 sio1 { LH { '0ns' L; '250ns' H; }}
+                 sio2 { 01 { '0ns' D; '250ns' U; }}
+                 sio2 { LH { '0ns' L; '250ns' H; }}
+             }
+    }
+}
+
+Spec spec_domain_name { 
+  Category spec_category {
+
+      catvar_wo_typ = '1us';
+      catvar_w_spec {Min '1ms'; Typ '1.5ms'; Max '12ms' ;}
+
+  }
+  Variable var_wo_typ {
+      spec_category = '10us';
+  }
+
+  Variable var_w_spec {
+      spec_category {Min '1ms'; Typ '1.5ms'; Max '12ms' ;}
+  }
+}
+
+
+Selector typSelector {
+        catvar_w_spec Typ;
+        var_w_spec Typ;
+}
+
+PatternBurst patt_burst{
+    PatList { pattern;
+             }
+}
+
+PatternExec {
+    Selector typSelector;
+    Category spec_category;
+    PatternBurst patt_burst;
+}
+
+Pattern pattern{
+
+    W wft1;
+    V {all = 00LH0H;}
+}

@@ -17,7 +17,7 @@ SignalGroups {
     all = 'si + so + sio';
 }
 
-Spec {
+Spec spec_domain{
     Category default{
         typ_var = '10ns';
         typ_var = '10ns';

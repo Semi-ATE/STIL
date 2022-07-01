@@ -173,6 +173,9 @@ class STILParser(STILLark):
                         self.tree = self.parser.parse(data.read())
                         if debug == True:
                             print(self.tree.pretty())
+            else:
+                msg = "ERROR : input STIL file does not exists '{self.stil_file}' b"
+                raise Exception(msg)
 
             if debug:
                 print("\nEnd of syntax parsing")
@@ -307,4 +310,5 @@ class STILParser(STILLark):
                 print(self.err_msg)
 
         else:
-            print("ERROR : syntax parsing must be performed before semantic analisys b")
+            msg = "ERROR : syntax parsing must be performed before semantic analisys b"
+            raise Exception(msg)

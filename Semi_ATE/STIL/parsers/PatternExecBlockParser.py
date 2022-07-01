@@ -257,8 +257,19 @@ class PatternExecBlockParser:
                 pass
 
         # The time is expressoin, let's calculate it:
-        cat = self.patt_exec2category[self.curr_patt_exec]
-        sel = self.patt_exec2selector[self.curr_patt_exec]
+        if self.curr_patt_exec in self.patt_exec2category:
+            cat = self.patt_exec2category[self.curr_patt_exec]
+        else:
+            domain_name = DomainUtils.get_domain(self.curr_patt_exec, True)
+            err_msg = f"ERROR: Trying to find value for time expression {time_expr}, but Category is missing in the {domain_name} PatternExec block"
+            raise Exception(err_msg)
+
+        if self.curr_patt_exec in self.patt_exec2selector:
+            sel = self.patt_exec2selector[self.curr_patt_exec]
+        else:
+            domain_name = DomainUtils.get_domain(self.curr_patt_exec, True)
+            err_msg = f"ERROR: Trying to find value for time expression {time_expr}, but Selector is missing in the {domain_name} PatternExec block"
+            raise Exception(err_msg)
             
         op_list = []
 

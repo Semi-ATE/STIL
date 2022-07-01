@@ -17,7 +17,7 @@ SignalGroups {
     all = 'si + so + sio';
 }
 
-Spec {
+Spec spec_domain{
     Category default{
         PLL_Time {Min '10ns'; Typ '100ns'; Max '1000nsz'; }
     }

@@ -734,6 +734,48 @@ class STILDumpCompiler(STILParser):
     def b_procedures__pattern_statements__KEYWORD_STOP_SC(self, t):
         self.save_in_prev_cmd_proc(PattVecCmd.CMD_STOP, None)
 
+
+    def b_macrodefs__OPEN_MACRO_DEFS_BLOCK(self, t):
+
+        if self.is_signal_block_defined == False:
+            err_msg = "Expected Signal block before any MacroDefs block"
+            raise Exception(err_msg)
+        if self.is_signalgroups_block_defined == False:
+            err_msg = "Expected SignalGroups block before any MacroDefs block"
+            raise Exception(err_msg)
+        if self.is_timing_block_defined == False:
+            err_msg = "Expected Timing block before any MacroDefs block"
+            raise Exception(err_msg)
+        if self.is_patternburst_block_defined == False:
+            err_msg = "Expected PatternBurst block before any MacroDefs block"
+            raise Exception(err_msg)
+        if self.is_patternexec_block_defined == False:
+            err_msg = "Expected PatternExec block before any MacroDefs block"
+            raise Exception(err_msg)
+
+        super().b_macrodefs__OPEN_MACRO_DEFS_BLOCK(t)
+
+    def b_procedures__OPEN_PROCEDURES_BLOCK(self, t):
+
+        if self.is_signal_block_defined == False:
+            err_msg = "Expected Signal block before any Procedures block"
+            raise Exception(err_msg)
+        if self.is_signalgroups_block_defined == False:
+            err_msg = "Expected SignalGroups block before any Procedures block"
+            raise Exception(err_msg)
+        if self.is_timing_block_defined == False:
+            err_msg = "Expected Timing block before any Procedures block"
+            raise Exception(err_msg)
+        if self.is_patternburst_block_defined == False:
+            err_msg = "Expected PatternBurst block before any Procedures block"
+            raise Exception(err_msg)
+        if self.is_patternexec_block_defined == False:
+            err_msg = "Expected PatternExec block before any Procedures block"
+            raise Exception(err_msg)
+
+
+        super().b_procedures__OPEN_PROCEDURES_BLOCK(t)
+
     def b_macrodefs__MACRO_NAME(self, t):
 
         super().b_macrodefs__MACRO_NAME(t)

@@ -108,22 +108,6 @@ class MacroDefsBlockParser:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
 
-        if self.is_signal_block_defined == False:
-            err_msg = "Expected Signal block before any MacroDefs block"
-            raise Exception(err_msg)
-        if self.is_signalgroups_block_defined == False:
-            err_msg = "Expected SignalGroups block before any MacroDefs block"
-            raise Exception(err_msg)
-        if self.is_timing_block_defined == False:
-            err_msg = "Expected Timing block before any MacroDefs block"
-            raise Exception(err_msg)
-        if self.is_patternburst_block_defined == False:
-            err_msg = "Expected PatternBurst block before any MacroDefs block"
-            raise Exception(err_msg)
-        if self.is_patternexec_block_defined == False:
-            err_msg = "Expected PatternExec block before any MacroDefs block"
-            raise Exception(err_msg)
-
         if self.curr_macro_domain in self.macrodefs_domains:
             domain_name = DomainUtils.get_domain(self.curr_macro_domain, True)
             err_msg = f"Macrodefs block domain '{domain_name}' is already defined !"

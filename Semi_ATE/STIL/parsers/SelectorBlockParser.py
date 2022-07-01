@@ -54,5 +54,12 @@ class SelectorBlockParser:
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
+
+        # issue 55 : for all variables which have typ values, but they are not in the Selector
+        for key in self.var_typ_value.keys():
+            s = key.split("::")
+            key = self.curr_selector + "::" + s[1]
+            self.selector_var[key] = "Typ"
+        
             
         self.curr_selector = DomainUtils.global_domain

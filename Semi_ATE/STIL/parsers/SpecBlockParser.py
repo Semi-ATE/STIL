@@ -63,8 +63,9 @@ class SpecBlockParser:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
             
-        key = self.curr_spec + "::" + self.curr_category + "::" + self.curr_var_name
-        self.var_typ_value[key] = str(t[0])
+        key = self.curr_category + "::" + self.curr_var_name
+        value = str(t[0]).replace('\'','')
+        self.var_typ_value[key] = value
 
     def b_spec__var_type(self, t):
         if self.debug:

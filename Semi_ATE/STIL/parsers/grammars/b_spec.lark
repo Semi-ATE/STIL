@@ -5,7 +5,7 @@
 %import base.MAX
 
 //spec_block: "Spec"         SPEC_DOMAIN_NAME "{"             (category_spec | variable_spec)* "}"
-  spec_block: KEYWORD_SPEC   SPEC_DOMAIN_NAME OPEN_SPEC_BLOCK (category_spec | variable_spec)* CLOSE_SPEC_BLOCK
+  spec_block: KEYWORD_SPEC   (SPEC_DOMAIN_NAME)* OPEN_SPEC_BLOCK (category_spec | variable_spec)* CLOSE_SPEC_BLOCK
 KEYWORD_SPEC : "Spec"
 
 SPEC_DOMAIN_NAME : USER_DEFINED_NAME

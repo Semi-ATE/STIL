@@ -26,11 +26,11 @@ class PatternExecBlockParser:
         self.patt_exec_block2time_domain = {}
 
         # dict key   is the pattern exec block name
-        # dict value is the spec category
+        # dict value is a list with all spec categories used in this pattern exec
         self.patt_exec2category = {}
 
         # dict key   is the pattern exec block name
-        # dict value is the spec selector
+        # dict value is a list with all selectors used in this pattern exec
         self.patt_exec2selector = {}
 
         self.is_patternexec_block_defined = False
@@ -144,15 +144,25 @@ class PatternExecBlockParser:
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
-           
-        self.patt_exec2category[self.curr_patt_exec] = str(t[0])
+            
+        if self.curr_patt_exec in self.patt_exec2category:
+            list_cat = self.patt_exec2category[self.curr_patt_exec]
+        else:
+            list_cat = []
+            self.patt_exec2category[self.curr_patt_exec] = list_cat
+        list_cat.append(str(t[0]))
             
     def b_pattern_exec__selector_name(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
 
-        self.patt_exec2selector[self.curr_patt_exec] = str(t[0])
+        if self.curr_patt_exec in self.patt_exec2selector:
+            list_sel = self.patt_exec2selector[self.curr_patt_exec]
+        else:
+            list_sel = []
+            self.patt_exec2selector[self.curr_patt_exec] = list_sel
+        list_sel.append(str(t[0]))
 
     def b_pattern_exec__CLOSE_PATTERN_EXEC_BLOCK(self, t):
         if self.debug:
@@ -190,51 +200,55 @@ class PatternExecBlockParser:
                     sti.replace_timing_for_wfc(wfc, wfe, time, ftime)
         
             
-    def get_var_value(self, selector, category, variable):
-        
-        sel_var = selector + "::" + variable
-#        print(f"self.selector_var {self.selector_var}")
-        if sel_var in self.selector_var:
-            sel = self.selector_var[sel_var]
-            # key is category::variable      
-            if sel == 'Min':
-                key = category + "::" + variable
-                keyn = "NONE::" + variable
-                if key in self.var_min_value:
-                    return self.var_min_value[key]
-                elif keyn in self.var_min_value:
-                    return self.var_min_value[keyn]
-                else:
-                    err_msg = f"ERROR: Can not find 'Min' value for variable '{variable}' in category '{category}'!"
-                    raise Exception(err_msg)
-            elif sel == 'Typ':
-                key = category + "::" + variable
-                keyn = "NONE::" + variable
-                if key in self.var_typ_value:
-                    return self.var_typ_value[key]
-                elif keyn in self.var_typ_value:
-                    return self.var_typ_value[keyn]
-                else:
-                    err_msg = f"ERROR: Can not find 'Typ' value for variable '{variable}' in category '{category}'!"
-                    raise Exception(err_msg)
-            elif sel == 'Max':
-                key = category + "::" + variable
-                keyn = "NONE::" + variable
-                if key in self.var_max_value:
-                    return self.var_max_value[key]
-                elif keyn in self.var_max_value:
-                    return self.var_min_value[keyn]
-                else:
-                    err_msg = f"ERROR: Can not find 'Max' value for variable '{variable}' in category '{category}'!"
-                    raise Exception(err_msg)
-            else:
-                err_msg = f"ERROR: Unknown selector {sel}!"
-                raise Exception(err_msg)
+    def get_var_value(self, selectors, categories, variable):
 
-                
-        else:
-            err_msg = f"ERROR: Variable {variable} is not defined in the selector {selector}!"
-            raise Exception(err_msg)
+        for category in categories:        
+            for selector in selectors:   
+                cat_var = category + "::" + variable
+                sel_var = selector + "::" + variable
+                #print(f"category {category} cat_var {cat_var}")
+                if sel_var in self.selector_var:
+                    sel = self.selector_var[sel_var]
+                    # key is category::variable      
+                    if sel == 'Min':
+                        key = category + "::" + variable
+                        keyn = "NONE::" + variable
+                        if key in self.var_min_value:
+                            return self.var_min_value[key]
+                        elif keyn in self.var_min_value:
+                            return self.var_min_value[keyn]
+                        else:
+                            err_msg = f"ERROR: Can not find 'Min' value for variable '{variable}' in category '{category}'!"
+                            raise Exception(err_msg)
+                    elif sel == 'Typ':
+                        key = category + "::" + variable
+                        keyn = "NONE::" + variable
+                        if key in self.var_typ_value:
+                            return self.var_typ_value[key]
+                        elif keyn in self.var_typ_value:
+                            return self.var_typ_value[keyn]
+                        else:
+                            err_msg = f"ERROR: Can not find 'Typ' value for variable '{variable}' in category '{category}'!"
+                            raise Exception(err_msg)
+                    elif sel == 'Max':
+                        key = category + "::" + variable
+                        keyn = "NONE::" + variable
+                        if key in self.var_max_value:
+                            return self.var_max_value[key]
+                        elif keyn in self.var_max_value:
+                            return self.var_min_value[keyn]
+                        else:
+                            err_msg = f"ERROR: Can not find 'Max' value for variable '{variable}' in category '{category}'!"
+                            raise Exception(err_msg)
+                    else:
+                        err_msg = f"ERROR: Unknown selector {sel}!"
+                        raise Exception(err_msg)
+                elif cat_var in self.var_typ_value:
+                    return self.var_typ_value[cat_var]
+
+    
+        err_msg = f"ERROR: Variable {variable} is not defined in the selector {selector}!"
+        raise Exception(err_msg)
             
             
     def parse_time_expr(self, time_expr):
@@ -255,10 +269,15 @@ class PatternExecBlockParser:
             except Exception:
                 # The value is spec variable, will be processed in the next lines
                 pass
-
+            
         # The time is expressoin, let's calculate it:
         if self.curr_patt_exec in self.patt_exec2category:
             cat = self.patt_exec2category[self.curr_patt_exec]
+        elif len(self.var_typ_value) != 0 :
+            for var in self.var_typ_value:
+                cat2var = var.split("::")
+                if cat2var[1] == time_expr:
+                    cat.append(cat2var[0])
         else:
             domain_name = DomainUtils.get_domain(self.curr_patt_exec, True)
             err_msg = f"ERROR: Trying to find value for time expression {time_expr}, but Category is missing in the {domain_name} PatternExec block"
@@ -266,6 +285,9 @@ class PatternExecBlockParser:
 
         if self.curr_patt_exec in self.patt_exec2selector:
             sel = self.patt_exec2selector[self.curr_patt_exec]
+        elif len(self.var_typ_value) != 0 :
+            #issue 60 : PatternExec without selector
+            sel = ["Typ"]
         else:
             domain_name = DomainUtils.get_domain(self.curr_patt_exec, True)
             err_msg = f"ERROR: Trying to find value for time expression {time_expr}, but Selector is missing in the {domain_name} PatternExec block"

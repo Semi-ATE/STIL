@@ -45,7 +45,7 @@ Timing {
     }
 
     WaveformTable wft3{
-        Period 'catvar_w_spec';
+        Period 'nd_catvar_wo_typ';
              Waveforms {
                  si1 { 01 { '0ns' D; '250ns' U; }}
                  si2 { 01 { '0ns' D; '250ns' U; }}
@@ -58,7 +58,7 @@ Timing {
              }
     }
     WaveformTable wft4{
-        Period 'var_w_spec';
+        Period 'nd_var_wo_typ';
              Waveforms {
                  si1 { 01 { '0ns' D; '250ns' U; }}
                  si2 { 01 { '0ns' D; '250ns' U; }}
@@ -76,30 +76,24 @@ Spec spec_domain_name {
   Category spec_category {
 
       catvar_wo_typ = '1us';
-      catvar_w_spec {Min '1ms'; Typ '1.5ms'; Max '12ms' ;}
-      catvar_w_spec1 {Min '1ms'; Typ '1.5ms'; Max '12ms' ;}
 
   }
   Variable var_wo_typ {
       spec_category = '10us';
   }
+}
 
-  Variable var_w_spec {
-      spec_category {Min '1ms'; Typ '1.5ms'; Max '12ms' ;}
-      spec_category1 {Min '1ms'; Typ '1.5ms'; Max '12ms' ;}
+Spec { 
+  Category category_wo_spec_domain {
+
+      nd_catvar_wo_typ = '1us';
+
+  }
+  Variable nd_var_wo_typ {
+      category_wo_spec_domain = '10us';
   }
 }
 
-
-Selector typSelector {
-        catvar_w_spec Typ;
-        var_w_spec Typ;
-}
-
-Selector maxSelector {
-        catvar_w_spec1 Max;
-        spec_category1 Max;
-}
 
 PatternBurst patt_burst{
     PatList { pattern;
@@ -107,9 +101,8 @@ PatternBurst patt_burst{
 }
 
 PatternExec {
-    Selector typSelector;
-    Selector maxSelector;
     Category spec_category;
+    Category category_wo_spec_domain;
     PatternBurst patt_burst;
 }
 

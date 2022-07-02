@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 import inspect
-from .DomainUtils import DomainUtils
-
 
 class SpecBlockParser:
     def __init__(self, debug=False):
         self.debug = debug
 
-        self.curr_spec = DomainUtils.global_domain
         self.curr_var_name = None
         self.curr_var_type = None
         self.curr_category = 'NONE'
@@ -33,8 +30,6 @@ class SpecBlockParser:
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
-
-        self.curr_spec = t.value
 
     def b_spec__OPEN_SPEC_BLOCK(self, t):
         if self.debug:

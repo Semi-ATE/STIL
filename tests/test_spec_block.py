@@ -217,3 +217,13 @@ def test_issue_55():
     parser.parse_semantic()
     assert parser.err_line == -1
     assert parser.err_col == -1
+
+def test_issue_60():
+
+    stil_file = get_stil_file("test_issue_60.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == -1
+    assert parser.err_col == -1

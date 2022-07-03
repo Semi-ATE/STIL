@@ -56,7 +56,7 @@ class PatternExecBlockParser:
             self.patt_exec_block2patt_burst[t.value] = []
             self.curr_patt_exec = t.value
 
-    def b_pattern_exec__OPEN_PATTERN_EXEC_BLOCK(self, t):
+    def b_pattern_exec__open_pattern_exec_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
@@ -164,7 +164,7 @@ class PatternExecBlockParser:
             self.patt_exec2selector[self.curr_patt_exec] = list_sel
         list_sel.append(str(t[0]))
 
-    def b_pattern_exec__CLOSE_PATTERN_EXEC_BLOCK(self, t):
+    def b_pattern_exec__close_pattern_exec_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
@@ -286,7 +286,6 @@ class PatternExecBlockParser:
         if self.curr_patt_exec in self.patt_exec2selector:
             sel = self.patt_exec2selector[self.curr_patt_exec]
         elif len(self.var_typ_value) != 0 :
-            #issue 60 : PatternExec without selector
             sel = ["Typ"]
         else:
             domain_name = DomainUtils.get_domain(self.curr_patt_exec, True)

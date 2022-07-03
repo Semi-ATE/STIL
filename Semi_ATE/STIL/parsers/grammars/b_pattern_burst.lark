@@ -2,13 +2,13 @@
 %import base.annotation
 
 //pattern_burst_block : "PatternBurst"     PATTERN_BURST_BLOCK_NAME "{"                pattern_burst_list_statements "}"
-  pattern_burst_block : KEYWORD_PATT_BURST PATTERN_BURST_BLOCK_NAME OPEN_PATTERN_BURST_BLOCK pattern_burst_list_statements CLOSE_PATTERN_BURST_BLOCK
+  pattern_burst_block : KEYWORD_PATT_BURST PATTERN_BURST_BLOCK_NAME open_pattern_burst_block pattern_burst_list_statements close_pattern_burst_block
 
 KEYWORD_PATT_BURST  : "PatternBurst"
                         
 PATTERN_BURST_BLOCK_NAME : USER_DEFINED_NAME
 
-OPEN_PATTERN_BURST_BLOCK : "{"
+open_pattern_burst_block : "{"
 
     pattern_burst_list_statements: pbls (pbs_patt_list)+
     
@@ -45,7 +45,7 @@ OPEN_PATTERN_BURST_BLOCK : "{"
     
 
 //  pbs_patt_list       : "PatList"         "{"               (single_patt_or_burst | block_patt_or_burst)* "}"
-    pbs_patt_list       : KEYWORD_PAT_LIST  OPEN_PATTERN_LIST (single_patt_or_burst | block_patt_or_burst)* CLOSE_PATTERN_LIST
+    pbs_patt_list       : KEYWORD_PAT_LIST  open_pattern_list (single_patt_or_burst | block_patt_or_burst)* close_pattern_list
     KEYWORD_PAT_LIST : "PatList"
 
     SIGNAL_GROUPS_DOMAIN : USER_DEFINED_NAME
@@ -58,19 +58,19 @@ OPEN_PATTERN_BURST_BLOCK : "{"
     LABEL_NAME          : USER_DEFINED_NAME
 
 
-    OPEN_PATTERN_LIST  : "{"
+    open_pattern_list  : "{"
 
         single_patt_or_burst : PATT_OR_BURST_NAME ";"
         
 //      block_patt_or_burst : PATT_OR_BURST_NAME "{"                pbls "}"
-        block_patt_or_burst : PATT_OR_BURST_NAME OPEN_PATT_OR_BURST pbls CLOSE_PATT_OR_BURST
+        block_patt_or_burst : PATT_OR_BURST_NAME open_patt_or_burst pbls close_patt_or_burst
 
         PATT_OR_BURST_NAME  : USER_DEFINED_NAME
     
-        OPEN_PATT_OR_BURST : "{"
-        CLOSE_PATT_OR_BURST : "}"
+        open_patt_or_burst : "{"
+        close_patt_or_burst : "}"
 
-    CLOSE_PATTERN_LIST  : "}"
+    close_pattern_list  : "}"
 
-CLOSE_PATTERN_BURST_BLOCK : "}"
+close_pattern_burst_block : "}"
 

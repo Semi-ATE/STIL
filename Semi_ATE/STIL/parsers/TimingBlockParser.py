@@ -97,7 +97,7 @@ class TimingBlockParser:
             self.trace(func_name, t)
         self.curr_timing_domain = t.value
 
-    def b_timing__OPEN_TIMING_BLOCK(self, t):
+    def b_timing__open_timing_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
@@ -280,7 +280,7 @@ class TimingBlockParser:
         self.curr_wfe_count = 0
         self.curr_sig_type = ""
 
-    def b_timing__CLOSE_WFC_BLOCK(self, t):
+    def b_timing__close_wfc_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
@@ -289,7 +289,7 @@ class TimingBlockParser:
         self.curr_wfc_list = ""
         self.curr_events.clear()
 
-    def b_timing__CLOSE_TIMING_BLOCK(self, t):
+    def b_timing__close_timing_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)

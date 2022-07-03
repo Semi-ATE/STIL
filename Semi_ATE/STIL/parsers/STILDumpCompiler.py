@@ -412,7 +412,7 @@ class STILDumpCompiler(STILParser):
         vec_cmd = patt_cmd[-1]
         vec_cmd.add_cmd(cmd, value)
 
-    def b_signals__CLOSE_SIGNAL_BLOCK(self, t):
+    def b_signals__close_signal_block(self, t):
         if len(self.signals_order) > 0:
             for existing_signal in self.sig2type:
                 if existing_signal not in self.signals_order:
@@ -735,7 +735,7 @@ class STILDumpCompiler(STILParser):
         self.save_in_prev_cmd_proc(PattVecCmd.CMD_STOP, None)
 
 
-    def b_macrodefs__OPEN_MACRO_DEFS_BLOCK(self, t):
+    def b_macrodefs__open_macro_defs_block(self, t):
 
         if self.is_signal_block_defined == False:
             err_msg = "Expected Signal block before any MacroDefs block"
@@ -753,9 +753,9 @@ class STILDumpCompiler(STILParser):
             err_msg = "Expected PatternExec block before any MacroDefs block"
             raise Exception(err_msg)
 
-        super().b_macrodefs__OPEN_MACRO_DEFS_BLOCK(t)
+        super().b_macrodefs__open_macro_defs_block(t)
 
-    def b_procedures__OPEN_PROCEDURES_BLOCK(self, t):
+    def b_procedures__open_procedure_block(self, t):
 
         if self.is_signal_block_defined == False:
             err_msg = "Expected Signal block before any Procedures block"
@@ -774,7 +774,7 @@ class STILDumpCompiler(STILParser):
             raise Exception(err_msg)
 
 
-        super().b_procedures__OPEN_PROCEDURES_BLOCK(t)
+        super().b_procedures__open_procedure_block(t)
 
     def b_macrodefs__MACRO_NAME(self, t):
 

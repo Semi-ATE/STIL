@@ -3,13 +3,13 @@
 %import pattern_statements.shift_statement
 
 //procedures_block : "Procedures"       [PROCEDURES_DOMAIN_NAME] "{"                   (procedure_def)* "}" 
-  procedures_block : KEYWORD_PROCEDURES [PROCEDURES_DOMAIN_NAME] OPEN_PROCEDURES_BLOCK (procedure_def)* CLOSE_PROCEDURES_BLOCK
+  procedures_block : KEYWORD_PROCEDURES [PROCEDURES_DOMAIN_NAME] open_procedures_block (procedure_def)* close_procedures_block
   KEYWORD_PROCEDURES : "Procedures"
   
 PROCEDURES_DOMAIN_NAME : USER_DEFINED_NAME 
 
-OPEN_PROCEDURES_BLOCK   : "{"
-CLOSE_PROCEDURES_BLOCK  : "}"
+open_procedures_block   : "{"
+close_procedures_block  : "}"
 
 //procedure_def : procedure_name "{"       (pattern_statement | shift_statement)* "}"
   procedure_def : PROCEDURE_NAME open_proc (pattern_statement | shift_statement)* close_proc

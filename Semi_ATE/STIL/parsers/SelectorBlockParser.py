@@ -29,7 +29,7 @@ class SelectorBlockParser:
             
         self.curr_selector = t.value
 
-    def b_selector__OPEN_SELECTOR_BLOCK(self, t):
+    def b_selector__open_selector_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
@@ -50,7 +50,7 @@ class SelectorBlockParser:
         
         self.selector_var[key] = str(t[0])
 
-    def b_selector__CLOSE_SELECTOR_BLOCK(self, t):
+    def b_selector__close_selector_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)

@@ -5,16 +5,16 @@
 %import base.MEAS
 
 //selector_block : "Selector"       SELECTOR_DOMAIN_NAME "{"                 (var_selector)* "}" 
-  selector_block : KEYWORD_SELECTOR SELECTOR_DOMAIN_NAME OPEN_SELECTOR_BLOCK (var_selector)* CLOSE_SELECTOR_BLOCK
+  selector_block : KEYWORD_SELECTOR SELECTOR_DOMAIN_NAME open_selector_block (var_selector)* close_selector_block
 KEYWORD_SELECTOR : "Selector"
 
 SELECTOR_DOMAIN_NAME : USER_DEFINED_NAME
 
-OPEN_SELECTOR_BLOCK : "{"
+open_selector_block : "{"
 
     var_selector: variable_name  variable_select ";"
     
     variable_name   : USER_DEFINED_NAME
     variable_select : (MIN|TYP|MAX|MEAS)
  
-CLOSE_SELECTOR_BLOCK : "}"
+close_selector_block : "}"

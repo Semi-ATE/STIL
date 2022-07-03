@@ -26,8 +26,8 @@ LABEL : USER_DEFINED_NAME (" ")* ":"
 
 //v_stmt : ("V"         | "Vector")         vec_block
   v_stmt : (KEYWORD_V   | KEYWORD_VECTOR)   vec_block
-  KEYWORD_V: "V"
-  KEYWORD_VECTOR: "Vector"
+  KEYWORD_V.1: "V"
+  KEYWORD_VECTOR.1: "Vector"
     
 //c_stmt : ("C"      | "Condition")         vec_block
   c_stmt : (KEYWORD_C| KEYWORD_CONDITION)   vec_block
@@ -147,10 +147,10 @@ close_vector_block : "}"
 //  From 1450.1
     asc_stmt : "ActiveScanChains" (USER_DEFINED_NAME)* ";"
     
-annotation: KEYWORD_ANN OPEN_ANN_BLOCK (ANN_TEXT)* CLOSE_ANN_BLOCK
+annotation: KEYWORD_ANN open_ann_block (ANN_TEXT)* close_ann_block
 KEYWORD_ANN: "Ann"
     
-OPEN_ANN_BLOCK  : "{*"
+open_ann_block  : "{*"
 ANNO_TEXT        : ANN_TEXT
-CLOSE_ANN_BLOCK : "*}"
+close_ann_block : "*}"
 

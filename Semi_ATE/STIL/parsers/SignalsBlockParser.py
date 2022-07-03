@@ -31,7 +31,7 @@ class SignalsBlockParser:
         else:
             print(f'{head} token value "{t}" at line {t.line} column {t.column}')
 
-    def b_signals__OPEN_SIGNAL_BLOCK(self, t):
+    def b_signals__open_signal_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
@@ -80,7 +80,7 @@ class SignalsBlockParser:
     def b_signals__SIGNAL_END_STMT(self, t):
         self.curr_signal = ""
         
-    def b_signals__CLOSE_SIGNAL_ATTR_BLOCK(self, t):
+    def b_signals__close_signal_attr_block(self, t):
         self.curr_signal = ""        
 
     def b_signals__SIG_DEF_STATE_UP(self, t):
@@ -104,7 +104,7 @@ class SignalsBlockParser:
 
         self.sig2def_state[self.curr_signal] = "Z"
 
-    def b_signals__CLOSE_SIGNAL_BLOCK(self, t):
+    def b_signals__close_signal_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)

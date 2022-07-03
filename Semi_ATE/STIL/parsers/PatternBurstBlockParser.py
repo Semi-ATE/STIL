@@ -88,7 +88,7 @@ class PatternBurstBlockParser:
         self.patt_burst2proc_domain[self.curr_patt_burst] = global_domain
         self.patt_burst2sig_groups_domain[self.curr_patt_burst] = global_domain
 
-    def b_pattern_burst__OPEN_PATTERN_BURST_BLOCK(self, t):
+    def b_pattern_burst__open_pattern_burst_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
@@ -158,7 +158,7 @@ class PatternBurstBlockParser:
         self.patt_burst2proc_domain[self.curr_patt_burst] = t.value
         self.proc_domain2obj[t.value] = t
 
-    def b_pattern_burst__CLOSE_PATTERN_BURST_BLOCK(self, t):
+    def b_pattern_burst__close_pattern_burst_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)

@@ -6,11 +6,11 @@
 %import base.scan_type
 
 //signals_block : "Signals"       "{"               (signals_list | annotation)+ "}"
-  signals_block : KEYWORD_SIGNALS OPEN_SIGNAL_BLOCK (signals_list | annotation)+ CLOSE_SIGNAL_BLOCK
+  signals_block : KEYWORD_SIGNALS open_signal_block (signals_list | annotation)+ close_signal_block
 
 KEYWORD_SIGNALS: "Signals"
 
-OPEN_SIGNAL_BLOCK : "{"
+open_signal_block : "{"
 
     signals_list : SIGNAL_NAME SIGNAL_TYPE ( SIGNAL_END_STMT | signal_attributes)
     
@@ -27,9 +27,9 @@ OPEN_SIGNAL_BLOCK : "{"
     SIGNAL_END_STMT : ";"
     
 //  signal_attributes : "{"                    (termination | default_state | base | alignment | scan_in | scan_out | data_bit_count | wfcmap)* "}"
-    signal_attributes : OPEN_SIGNAL_ATTR_BLOCK (termination | default_state | base | alignment | scan_in | scan_out | data_bit_count | wfcmap)* CLOSE_SIGNAL_ATTR_BLOCK
+    signal_attributes : open_signal_attr_block (termination | default_state | base | alignment | scan_in | scan_out | data_bit_count | wfcmap)* close_signal_attr_block
 
-    OPEN_SIGNAL_ATTR_BLOCK : "{"
+    open_signal_attr_block : "{"
 
 //      termination     : "Termination"       ("TerminateHigh" | "TerminateLow" | "TerminateOff" | "TerminateUnknown") ";" 
         termination     : KEYWORD_TERMINATION ("TerminateHigh" | "TerminateLow" | "TerminateOff" | "TerminateUnknown") ";" 
@@ -63,28 +63,28 @@ OPEN_SIGNAL_BLOCK : "{"
         KEYWORD_DATABITCOUNT : "DataBitCount"
         
 //      wfcmap from IEEE 1450.1 Design
-        wfcmap  : KEYWORD_WFCMAP OPEN_WFCMAP_BLOCK (one2many | two2one)* CLOSE_WFCMAP_BLOCK 
+        wfcmap  : KEYWORD_WFCMAP open_wfcmap_block (one2many | two2one)* close_wfcmap_block
         KEYWORD_WFCMAP: "WFCMap"
     
         one2many : WFC "->" WFC_LIST ";"
         two2one : WFC (WFC) "->" WFC ";"
     
-        OPEN_WFCMAP_BLOCK : "{"
-        CLOSE_WFCMAP_BLOCK : "}"
+        open_wfcmap_block : "{"
+        close_wfcmap_block : "}"
 
 
-    CLOSE_SIGNAL_ATTR_BLOCK : "}"
+    close_signal_attr_block : "}"
     
     
-    annotation: KEYWORD_ANN OPEN_ANN_BLOCK (ANN_TEXT)* CLOSE_ANN_BLOCK
+    annotation: KEYWORD_ANN open_ann_block (ANN_TEXT)* close_ann_block
     KEYWORD_ANN: "Ann"
         
-    OPEN_ANN_BLOCK  : "{*"
+    open_ann_block  : "{*"
     ANNO_TEXT        : ANN_TEXT
-    CLOSE_ANN_BLOCK : "*}"
+    close_ann_block : "*}"
 
 
-CLOSE_SIGNAL_BLOCK : "}"
+close_signal_block : "}"
 
 
 

@@ -7,13 +7,13 @@
 %import base.annotation
 
 //signal_groups_block :  "SignalGroups"       [SIGNAL_GROUPS_DOMAIN_NAME] "{"                      (signal_groups_list | annotation)+ "}"
-  signal_groups_block :  KEYWORD_SIGNALGROUPS [SIGNAL_GROUPS_DOMAIN_NAME] OPEN_SIGNAL_GROUPS_BLOCK (signal_groups_list | annotation)+ CLOSE_SIGNAL_GROUPS_BLOCK
+  signal_groups_block :  KEYWORD_SIGNALGROUPS [SIGNAL_GROUPS_DOMAIN_NAME] open_signal_groups_block (signal_groups_list | annotation)+ close_signal_groups_block
 
 KEYWORD_SIGNALGROUPS : "SignalGroups"
 
 SIGNAL_GROUPS_DOMAIN_NAME : USER_DEFINED_NAME 
 
-OPEN_SIGNAL_GROUPS_BLOCK : "{" 
+open_signal_groups_block : "{" 
 
     // scan_type is common rule which can be find in the common.grammar file
     signal_groups_list : SIGNAL_GROUP_NAME "=" "'" SIGREF_NAME (sigref_expr)* "'" (scan_type | SIGNAL_LIST_END_STMT | signal_attributes) 
@@ -29,12 +29,12 @@ OPEN_SIGNAL_GROUPS_BLOCK : "{"
 
     SIGNAL_LIST_END_STMT : ";"
 
-CLOSE_SIGNAL_GROUPS_BLOCK : "}"
+close_signal_groups_block : "}"
 
 //  signal_attributes : "{"                    (termination | default_state | base | alignment | scan_in | scan_out | data_bit_count)* "}"
-    signal_attributes : OPEN_SIGNAL_ATTR_BLOCK (termination | default_state | base | alignment | scan_in | scan_out | data_bit_count | wfcmap)* CLOSE_SIGNAL_ATTR_BLOCK
+    signal_attributes : open_signal_attr_block (termination | default_state | base | alignment | scan_in | scan_out | data_bit_count | wfcmap)* close_signal_attr_block
 
-    OPEN_SIGNAL_ATTR_BLOCK : "{"
+    open_signal_attr_block : "{"
 
 //      termination     : "Termination"       ("TerminateHigh" | "TerminateLow" | "TerminateOff" | "TerminateUnknown") ";" 
         termination     : KEYWORD_TERMINATION ("TerminateHigh" | "TerminateLow" | "TerminateOff" | "TerminateUnknown") ";" 
@@ -68,13 +68,13 @@ CLOSE_SIGNAL_GROUPS_BLOCK : "}"
         KEYWORD_DATABITCOUNT : "DataBitCount"
 
 //      wfcmap from IEEE 1450.1 Design
-        wfcmap  : KEYWORD_WFCMAP OPEN_WFCMAP_BLOCK (one2many | two2one)* CLOSE_WFCMAP_BLOCK 
+        wfcmap  : KEYWORD_WFCMAP open_wfcmap_block (one2many | two2one)* close_wfcmap_block
         KEYWORD_WFCMAP: "WFCMap"
     
         one2many : WFC "->" WFC_LIST ";"
         two2one : WFC (WFC) "->" WFC ";"
 
-        OPEN_WFCMAP_BLOCK : "{"
-        CLOSE_WFCMAP_BLOCK : "}"
+        open_wfcmap_block : "{"
+        close_wfcmap_block : "}"
 
-    CLOSE_SIGNAL_ATTR_BLOCK : "}"
+    close_signal_attr_block : "}"

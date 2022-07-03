@@ -5,22 +5,22 @@
 %import base.user_keyword_stmt
 
 //scan_structures_block : "ScanStructures"    [SCAN_STRUCTURES_DOMAIN_NAME] "{"                        (scan_chains | scan_chain_groups)*  "}"
-  scan_structures_block : KEYWORD_SCAN_STRUCT [SCAN_STRUCTURES_DOMAIN_NAME] OPEN_SCAN_STRUCTURES_BLOCK (scan_chains | scan_chain_groups)*  CLOSE_SCAN_STRUCTURES_BLOCK
+  scan_structures_block : KEYWORD_SCAN_STRUCT [SCAN_STRUCTURES_DOMAIN_NAME] open_scan_structures_block (scan_chains | scan_chain_groups)*  close_scan_structures_block
 
 KEYWORD_SCAN_STRUCT : "ScanStructures" 
 
-OPEN_SCAN_STRUCTURES_BLOCK: "{" 
+open_scan_structures_block: "{" 
 
 SCAN_STRUCTURES_DOMAIN_NAME : USER_DEFINED_NAME 
 
 //  scan_chains : "ScanChain"       scan_chain_name "{"                   (scan_chain_items)+ "}"
-    scan_chains : KEYWORD_SCANCHAIN scan_chain_name OPEN_SCAN_CHAIN_BLOCK (scan_chain_items)+ "}"
+    scan_chains : KEYWORD_SCANCHAIN scan_chain_name open_scan_chain_block (scan_chain_items)+ close_scan_chain_block
     KEYWORD_SCANCHAIN : "ScanChain"
 
     scan_chain_name : USER_DEFINED_NAME 
                     
-    OPEN_SCAN_CHAIN_BLOCK : "{" 
-    CLOSE_SCAN_CHAIN_BLOCK : "}" 
+    open_scan_chain_block : "{" 
+    close_scan_chain_block : "}" 
     
         scan_chain_items : [          scan_enable
                                     | scan_length         
@@ -48,27 +48,27 @@ SCAN_STRUCTURES_DOMAIN_NAME : USER_DEFINED_NAME
         KEYWORD_SCAN_OUT_LENGTH : "ScanOutLength"
         
 //      scan_cell_type : "ScanCellType"         [USER_DEFINED_NAME] "{"                       (cell)+ "}"
-        scan_cell_type : KEYWORD_SCAN_CELL_TYPE [USER_DEFINED_NAME] OPEN_SCAN_CELL_TYPE (cell)+ CLOSE_SCAN_CELL_TYPE
+        scan_cell_type : KEYWORD_SCAN_CELL_TYPE [USER_DEFINED_NAME] open_scan_cell_type (cell)+ close_scan_cell_type
         KEYWORD_SCAN_CELL_TYPE : "ScanCellType"
         
-        OPEN_SCAN_CELL_TYPE : "{"
+        open_scan_cell_type : "{"
         
 //          cell : ["CellIn" | "CellOut"]                ["!"] USER_DEFINED_NAME ";" 
             cell : [KEYWORD_CELL_IN | KEYWORD_CELL_OUT]  ["!"] USER_DEFINED_NAME ";" 
             KEYWORD_CELL_IN : "CellIn"
             KEYWORD_CELL_OUT : "CellOut"
             
-        CLOSE_SCAN_CELL_TYPE: "}"
+        close_scan_cell_type: "}"
         
 //      scan_cells : "ScanCells"       (block_scan_cells | none_block_scan_cells)
         scan_cells : KEYWORD_SCAN_CELL (block_scan_cells | none_block_scan_cells)
         KEYWORD_SCAN_CELL : "ScanCells"
         
 //      block_scan_cells: "{"             (none_block_scan_cells)* "}"
-        block_scan_cells: OPEN_SCAN_CELLS (none_block_scan_cells)* "}"
-        OPEN_SCAN_CELLS : "{"
+        block_scan_cells: open_scan_cells (none_block_scan_cells)* close_scan_cells
+        open_scan_cells : "{"
             none_block_scan_cells:  ((USER_DEFINED_NAME | "!")* ";")
-        CLOSE_SCAN_CELLS : "}"
+        close_scan_cells : "}"
         
 //      scan_in             : "ScanIn"                  USER_DEFINED_NAME ";" 
         scan_in             : KEYWORD_SCAN_IN           USER_DEFINED_NAME ";" 
@@ -94,20 +94,20 @@ SCAN_STRUCTURES_DOMAIN_NAME : USER_DEFINED_NAME
 
 
 //  scan_chain_groups : "ScanChainGroups"   [USER_DEFINED_NAME] "{"                   (scan_chain_group_items)+ "}" 
-    scan_chain_groups : KEYWORD_SCAN_GROUPS [USER_DEFINED_NAME] OPEN_SCAN_CHAIN_GROUPS (scan_chain_group_items)+ CLOSE_SCAN_CHAIN_GROUPS 
+    scan_chain_groups : KEYWORD_SCAN_GROUPS [USER_DEFINED_NAME] open_scan_chain_groups (scan_chain_group_items)+ close_scan_chain_groups 
     KEYWORD_SCAN_GROUPS : "ScanChainGroups"
     
-    OPEN_SCAN_CHAIN_GROUPS : "{"
+    open_scan_chain_groups : "{"
     
 //      scan_chain_group_items : USER_DEFINED_NAME "{"           (scgi)+ "}"
-        scan_chain_group_items : USER_DEFINED_NAME OPEN_SCG_ITEM (scgi)+ CLOSE_SCG_ITEM 
+        scan_chain_group_items : USER_DEFINED_NAME open_scg_item (scgi)+ close_scg_item 
         
-        OPEN_SCG_ITEM : "{"
+        open_scg_item : "{"
         
         scgi : USER_DEFINED_NAME ";" 
         
-        CLOSE_SCG_ITEM : "}"
+        close_scg_item : "}"
     
-    CLOSE_SCAN_CHAIN_GROUPS : "}"
+    close_scan_chain_groups : "}"
 
-CLOSE_SCAN_STRUCTURES_BLOCK : "}" 
+close_scan_structures_block : "}" 

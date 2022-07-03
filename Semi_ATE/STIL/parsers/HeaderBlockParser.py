@@ -14,7 +14,7 @@ class HeaderBlockParser:
         else:
             print(f'{head} token value "{t}" at line {t.line} column {t.column}')
 
-    def b_header__OPEN_HEADER_BLOCK(self, t):
+    def b_header__open_header_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
@@ -34,7 +34,7 @@ class HeaderBlockParser:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
 
-    def b_header__OPEN_ANN_BLOCK(self, t):
+    def b_header__open_ann_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
@@ -44,12 +44,12 @@ class HeaderBlockParser:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
 
-    def b_header__CLOSE_ANN_BLOCK(self, t):
+    def b_header__close_ann_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
 
-    def b_header__CLOSE_HEADER_BLOCK(self, t):
+    def b_header__close_header_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)

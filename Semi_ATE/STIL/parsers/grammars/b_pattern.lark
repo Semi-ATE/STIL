@@ -4,14 +4,14 @@
 %import pattern_statements.label
 
 //pattern_block : "Pattern"         PATTERN_NAME "{"                (pattern_statement | time_unit_stmt)* "}" 
-  pattern_block : KEYWORD_PATTERN   PATTERN_NAME OPEN_PATTERN_BLOCK (pattern_statement | time_unit_stmt)* CLOSE_PATTERN_BLOCK 
+  pattern_block : KEYWORD_PATTERN   PATTERN_NAME open_pattern_block (pattern_statement | time_unit_stmt)* close_pattern_block 
   KEYWORD_PATTERN : "Pattern" 
 
 PATTERN_NAME : USER_DEFINED_NAME 
 
-OPEN_PATTERN_BLOCK : "{"
+open_pattern_block : "{"
  
     time_unit_stmt: "TimeUnit" TIME_EXPR ";"
 
-CLOSE_PATTERN_BLOCK: "}" 
+close_pattern_block: "}" 
 

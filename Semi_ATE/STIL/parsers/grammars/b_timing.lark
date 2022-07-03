@@ -5,21 +5,21 @@
 %import base.SIGNAL_NAME_TERMINAL
 
 //timing_block : "Timing"       [TIMING_DOMAIN_NAME] "{"               (waveform_table | annotation)+ "}"
-  timing_block : KEYWORD_TIMING [TIMING_DOMAIN_NAME] OPEN_TIMING_BLOCK (signal_groups | waveform_table | annotation)+ CLOSE_TIMING_BLOCK 
+  timing_block : KEYWORD_TIMING [TIMING_DOMAIN_NAME] open_timing_block (signal_groups | waveform_table | annotation)+ close_timing_block 
 KEYWORD_TIMING : "Timing"
 
 TIMING_DOMAIN_NAME : USER_DEFINED_NAME 
 
-OPEN_TIMING_BLOCK : "{" 
+open_timing_block : "{" 
 
     signal_groups : "SignalGroups" SIGNAL_GROUPS_DOMAIN ";"
     SIGNAL_GROUPS_DOMAIN : USER_DEFINED_NAME
 
 //  waveform_table : "WaveformTable" WFT_NAME "{"                       period waveforms "}"
-    waveform_table : "WaveformTable" WFT_NAME OPEN_WAVEFORM_TABLE_BLOCK period waveforms CLOSE_WAVEFORM_TABLE_BLOCK
+    waveform_table : "WaveformTable" WFT_NAME open_waveform_table_block period waveforms close_waveform_table_block
     KEYWORD_WAVEFORM_TABLE : "WaveformTable"
     
-    OPEN_WAVEFORM_TABLE_BLOCK : "{" 
+    open_waveform_table_block : "{" 
     
         WFT_NAME : USER_DEFINED_NAME 
         
@@ -28,21 +28,21 @@ OPEN_TIMING_BLOCK : "{"
         KEYWORD_PERIOD : "Period"
         
 //      waveforms : "Waveforms"       "{"                  (waveforms_list)+ "}"
-        waveforms : KEYWORD_WAVEFORMS OPEN_WAVEFORMS_BLOCK (waveforms_list)+ CLOSE_WAVEFORMS_BLOCK
+        waveforms : KEYWORD_WAVEFORMS open_waveforms_block (waveforms_list)+ close_waveforms_block
         KEYWORD_WAVEFORMS : "Waveforms"
         
-            OPEN_WAVEFORMS_BLOCK : "{" 
+            open_waveforms_block : "{" 
             
 //              waveforms_list : WF_SIGREF_EXPR "{"            WFC_LIST "{"              (time_offset)+  "}"              "}"
-                waveforms_list : WF_SIGREF_EXPR OPEN_WFC_BLOCK (WFC_LIST OPEN_WFCS_BLOCK  (time_offset)+  CLOSE_WFCS_BLOCK)* CLOSE_WFC_BLOCK
+                waveforms_list : WF_SIGREF_EXPR open_wfc_block (WFC_LIST open_wfcs_block  (time_offset)+  close_wfcs_block)* close_wfc_block
 
                 WF_SIGREF_EXPR : SIGNAL_NAME_TERMINAL 
 
-                OPEN_WFC_BLOCK : "{"
+                open_wfc_block : "{"
 
                     WFC_LIST   : ALPHA_NUM 
 
-                        OPEN_WFCS_BLOCK : "{"
+                        open_wfcs_block : "{"
 
                             time_offset: TIME_EXPR (EVENT | events) ";" 
                             events : EVENT ("/" EVENT)+
@@ -69,12 +69,12 @@ OPEN_TIMING_BLOCK : "{"
                                       | "LogicZ"            | "F" 
                                       | "Unknown"           | "?")
 
-                        CLOSE_WFCS_BLOCK : "}"
+                        close_wfcs_block : "}"
 
-                CLOSE_WFC_BLOCK : "}"
+                close_wfc_block : "}"
             
-            CLOSE_WAVEFORMS_BLOCK: "}" 
+            close_waveforms_block: "}" 
     
-    CLOSE_WAVEFORM_TABLE_BLOCK : "}" 
+    close_waveform_table_block : "}" 
 
-CLOSE_TIMING_BLOCK : "}" 
+close_timing_block : "}" 

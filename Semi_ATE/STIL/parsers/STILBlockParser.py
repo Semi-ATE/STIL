@@ -25,7 +25,7 @@ class STILBlockParser:
             err_msg += "expected 1.0, but the value is " + t
             raise Exception(err_msg)
 
-    def b_stil__OPEN_STIL_EXTENSION(self, t):
+    def b_stil__open_stil_extension(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)

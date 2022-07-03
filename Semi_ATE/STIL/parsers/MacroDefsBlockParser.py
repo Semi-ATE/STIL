@@ -103,7 +103,7 @@ class MacroDefsBlockParser:
             self.trace(func_name, t)
         self.curr_macro_domain = t.value
 
-    def b_macrodefs__OPEN_MACRO_DEFS_BLOCK(self, t):
+    def b_macrodefs__open_macro_defs_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
@@ -475,7 +475,7 @@ class MacroDefsBlockParser:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
 
-    def b_macrodefs__CLOSE_MACRO_DEFS_BLOCK(self, t):
+    def b_macrodefs__close_macro_defs_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)

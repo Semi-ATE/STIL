@@ -31,7 +31,7 @@ class SpecBlockParser:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
 
-    def b_spec__OPEN_SPEC_BLOCK(self, t):
+    def b_spec__open_spec_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
@@ -92,7 +92,7 @@ class SpecBlockParser:
 
         self.curr_category = 'None'
 
-    def b_spec__CLOSE_SPEC_BLOCK(self, t):
+    def b_spec__close_spec_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)

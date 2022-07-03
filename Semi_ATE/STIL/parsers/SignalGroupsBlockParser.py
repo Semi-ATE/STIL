@@ -42,7 +42,7 @@ class SignalGroupsBlockParser:
             self.trace(func_name, t)
         self.curr_sig_group_domain = t.value
 
-    def b_signal_groups__OPEN_SIGNAL_GROUPS_BLOCK(self, t):
+    def b_signal_groups__open_signal_groups_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
@@ -183,13 +183,13 @@ class SignalGroupsBlockParser:
             raise Exception(err_msg)
         self.curr_sig_group_name = None
 
-    def b_signal_groups__CLOSE_SIGNAL_ATTR_BLOCK(self, t):
+    def b_signal_groups__close_signal_attr_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)
         self.curr_sig_group_name = None
 
-    def b_signal_groups__CLOSE_SIGNAL_GROUPS_BLOCK(self, t):
+    def b_signal_groups__close_signal_groups_block(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]
             self.trace(func_name, t)

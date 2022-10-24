@@ -1,0 +1,128 @@
+    STIL 1.0;
+
+Signals {
+    si1 In;
+    si2 In;
+    so1 Out;
+    so2 Out;
+    sio1 InOut;
+    sio2 InOut;
+}
+
+SignalGroups { 
+    all = 'si1 + si2 + so1 + so2 + sio1 + sio2';
+}
+
+SignalGroups sg { 
+    si = 'si1 + si2';
+    so = 'so1 + so2';
+    sio = 'sio1 + sio2';
+    all = 'si + so + sio';
+}
+
+Timing { 
+  WaveformTable wft 
+  { Period '100ns';
+      Waveforms 
+      {
+        si1 {P {'10ns' D; '25ns' U; '50ns' D;}}
+        si2 {P {'10ns' D; '25ns' U; '50ns' D;}}
+        so1 {LHX {'10ns' L/H/x;}}
+        so2 {LHX {'10ns' L/H/x;}}
+        sio1 {P {'10ns' D; '25ns' U; '50ns' D;}}
+        sio1 {LHX {'10ns' L/H/x;}}
+        sio2 {P {'10ns' D; '25ns' U; '50ns' D;}}
+        sio2 {LHX {'10ns' L/H/x;}}
+      }
+  }
+}
+
+PatternBurst patt_burst{
+ PatList {pattern;}
+}
+
+PatternExec patt_exec {
+    PatternBurst patt_burst;
+}
+// testing issue #67 "Unexpected token" syntax error when the first char of label is capital V 
+Pattern pattern{
+        label: W wft;
+        Vector { all  = PPLLPL;}
+        V_label :
+			Vector { all  = PPLLPL;}
+        Vector_label :
+			Vector { all  = PPLLPL;}
+
+        W_label :
+			Vector { all  = PPLLPL;}
+        WaveformTable_label :
+			Vector { all  = PPLLPL;}
+
+        C_label :
+			Vector { all  = PPLLPL;}
+        Condition_label :
+			Vector { all  = PPLLPL;}
+
+        F_label :
+			Vector { all  = PPLLPL;}
+        Fixed_label :
+			Vector { all  = PPLLPL;}
+
+        Loop_label :
+			Vector { all  = PPLLPL;}
+
+        MatchLoop_label :
+			Vector { all  = PPLLPL;}
+
+        Macro_label :
+			Vector { all  = PPLLPL;}
+
+        Call_label :
+			Vector { all  = PPLLPL;}
+			
+        IddqTestPoint_label :
+			Vector { all  = PPLLPL;}
+
+        Stop_label :
+			Vector { all  = PPLLPL;}
+
+
+        "V" :
+			Vector { all  = PPLLPL;}
+        "Vector" :
+			Vector { all  = PPLLPL;}
+
+        "W" :
+			Vector { all  = PPLLPL;}
+        "WaveformTable" :
+			Vector { all  = PPLLPL;}
+
+        "C" :
+			Vector { all  = PPLLPL;}
+        "Condition":
+			Vector { all  = PPLLPL;}
+
+        "F":
+			Vector { all  = PPLLPL;}
+        "Fixed"    :
+			Vector { all  = PPLLPL;}
+
+        "Loop" :
+			Vector { all  = PPLLPL;}
+
+        "MatchLoop" :
+			Vector { all  = PPLLPL;}
+
+        "Macro" :
+			Vector { all  = PPLLPL;}
+
+        "Call" :
+			Vector { all  = PPLLPL;}
+			
+        "IddqTestPoint" :
+			Vector { all  = PPLLPL;}
+
+        "Stop" :
+			Vector { all  = PPLLPL;}
+}
+// PASS : WFT with label

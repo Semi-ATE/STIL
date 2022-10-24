@@ -89,6 +89,15 @@ class MacroDefsBlockParser:
         # List with signals wich have # as WFC. Signal name in full domain format -> domain::signal_name
         self.macro_sig_wfc_hash = []
 
+        self.keywords_in_macro_block = ["V", "Vector", 
+                                       "C", "Condition", 
+                                       "F", "Fixed",
+                                       "Loop", "MatchLoop", "Infinite",
+                                       "Macro", "Call", "BreakPoint", "Goto",
+                                       "Stop", "IDDQTestPoint", "IddqTestPoint",
+                                       "ScanChain","ActiveScanChains", "Shift"
+                                       ]
+
     def trace(self, func_name, t):
         head = f"{__name__}:{func_name}"
 
@@ -208,6 +217,9 @@ class MacroDefsBlockParser:
         if label_strip.startswith('"') == False and label_strip.endswith('"') == False:
             label_split = label_strip.split(" ")
             label = label_split[0].strip()
+            if label in self.keywords_in_macro_block:
+                err_msg = f"Label '{label}' is a reserved keyword !"
+                raise Exception(err_msg)
         else:
             label = label_strip
 

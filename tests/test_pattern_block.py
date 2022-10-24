@@ -983,6 +983,15 @@ def test_sem_ok_wft():
     parser.parse_semantic()
     assert parser.err_line == -1
     assert parser.err_col == -1
+
+def test_sem_ok_labels():
+    stil_file = get_stil_file("sem_ok_labels.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == -1
+    assert parser.err_col == -1
     
 def test_sem_err_wfc_1():
     stil_file = get_stil_file("sem_err_wfc_1.stil")
@@ -1036,6 +1045,168 @@ def test_sem_err_label_2():
     parser.parse_syntax()
     parser.parse_semantic()
     assert parser.err_line == 53
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_1():
+    stil_file = get_stil_file("sem_err_label_kw_1.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_2():
+    stil_file = get_stil_file("sem_err_label_kw_2.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_3():
+    stil_file = get_stil_file("sem_err_label_kw_3.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_4():
+    stil_file = get_stil_file("sem_err_label_kw_4.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_5():
+    stil_file = get_stil_file("sem_err_label_kw_5.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_6():
+    stil_file = get_stil_file("sem_err_label_kw_6.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_7():
+    stil_file = get_stil_file("sem_err_label_kw_7.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_8():
+    stil_file = get_stil_file("sem_err_label_kw_8.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_9():
+    stil_file = get_stil_file("sem_err_label_kw_9.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_10():
+    stil_file = get_stil_file("sem_err_label_kw_10.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_11():
+    stil_file = get_stil_file("sem_err_label_kw_11.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_12():
+    stil_file = get_stil_file("sem_err_label_kw_12.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_13():
+    stil_file = get_stil_file("sem_err_label_kw_13.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_14():
+    stil_file = get_stil_file("sem_err_label_kw_14.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_15():
+    stil_file = get_stil_file("sem_err_label_kw_15.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_16():
+    stil_file = get_stil_file("sem_err_label_kw_16.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_17():
+    stil_file = get_stil_file("sem_err_label_kw_17.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
+    assert parser.err_col == 9
+
+def test_sem_err_label_kw_18():
+    stil_file = get_stil_file("sem_err_label_kw_18.stil")
+
+    parser = STILParser(stil_file)
+    parser.parse_syntax()
+    parser.parse_semantic()
+    assert parser.err_line == 51
     assert parser.err_col == 9
 
 def test_sem_err_signal():

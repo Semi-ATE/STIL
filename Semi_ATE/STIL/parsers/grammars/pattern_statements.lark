@@ -22,7 +22,7 @@ UK_BLOCK_VALUE: /[a-zA-Z0-9=!@#$%^&*\" ]+/
 
 close_uk_block : "}"
 
-LABEL : USER_DEFINED_NAME (" ")* ":"
+LABEL.1 : USER_DEFINED_NAME (" ")* ":"
 
 //v_stmt : ("V"         | "Vector")         vec_block
   v_stmt : (KEYWORD_V   | KEYWORD_VECTOR)   vec_block

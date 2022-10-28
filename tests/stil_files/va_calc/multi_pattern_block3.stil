@@ -57,18 +57,15 @@ Procedures proc_domain{
 
 Pattern patt1{
     W wft;
-    V {sig1 = 1; sig2 = X;}
-    Macro macro; 
+    V {sig1 = 1; sig2 = X;} 
     V {sig1 = Z; sig2 = X;}
 }
 
 Pattern patt2{
     W wft;
     V {sig1 = 2; sig2 = X;}
-    Macro macro;
     V {sig1 = Z; sig2 = X;}
     V {sig1 = Z; sig2 = X;}
-    Call proc;
     V {sig1 = Z; sig2 = X;}
 }
 

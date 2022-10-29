@@ -182,7 +182,6 @@ class ProceduresBlockParser:
                     err_msg = f"Wafeform Table named '{wft_name}' from '{td}' timing domain is not defined !"
                     raise Exception(err_msg)
 
-
     def b_procedures__pattern_statements__KEYWORD_CONDITION(self, t):
         if self.debug:
             func_name = inspect.stack()[0][3]

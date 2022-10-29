@@ -51,19 +51,19 @@ def test_multi_pattern_block():
     assert compiler.err_col == -1
 
 def test_va_calc_no_macro_proc():
-    vac = VACounter("stil_files/va_calc/multi_pattern_block3.stil")
+    vac = VACounter("tests/stil_files/va_calc/multi_pattern_block3.stil")
     vac.analise()
     result = vac.eof()
     assert result == {'patt1': [(7, 60), (8, 61)], 'patt2': [(3, 66), (4, 67), (5, 68), (6, 69)], 'patt3': [(0, 74), (1, 75), (2, 76)]}
     
 def test_va_calc_with_macro_proc_simple():
-    vac = VACounter("stil_files/va_calc/multi_pattern_block.stil")
+    vac = VACounter("tests/stil_files/va_calc/multi_pattern_block.stil")
     vac.analise()
     result = vac.eof()
     assert result == {'patt1': [(13, 60), (17, 62)], 'patt2': [(3, 67), (7, 69), (8, 70), (12, 72)], 'patt3': [(0, 77), (1, 78), (2, 79)]}
 
 def test_va_calc_with_macro_proc_multiple():
-    vac = VACounter("stil_files/va_calc/multi_pattern_block2.stil")
+    vac = VACounter("tests/stil_files/va_calc/multi_pattern_block2.stil")
     vac.analise()
     result = vac.eof()
     assert result == {'patt1': [(10, 60), (14, 62)], 'patt2': [(3, 67), (4, 68), (5, 69), (9, 71)], 'patt3': [(0, 76), (1, 77), (2, 78)]}

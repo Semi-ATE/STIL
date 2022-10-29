@@ -164,6 +164,16 @@ class PatternBlockParser:
                         td = DomainUtils.get_domain(time_domain, True)
                         err_msg = f"Wafeform Table named '{wft_name}' from '{td}' timing domain is not defined !"
                         raise Exception(err_msg)
+    
+    def b_pattern__pattern_statements__CALL_PROC_NAME(self, t):
+        if self.debug:
+            func_name = inspect.stack()[0][3]
+            self.trace(func_name, t)        
+
+    def b_pattern__pattern_statements__CALL_MACRO_NAME(self, t):
+        if self.debug:
+            func_name = inspect.stack()[0][3]
+            self.trace(func_name, t)        
 
     def b_pattern__pattern_statements__KEYWORD_V(self, t):
         if self.debug:

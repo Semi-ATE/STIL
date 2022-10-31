@@ -65,7 +65,6 @@ Pattern patt1{
 Pattern patt2{
     W wft;
     V {sig1 = 2; sig2 = X;}
-    Macro macro;
     V {sig1 = Z; sig2 = X;}
     V {sig1 = Z; sig2 = X;}
     Call proc;

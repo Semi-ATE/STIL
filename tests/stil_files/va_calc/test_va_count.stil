@@ -1,0 +1,66 @@
+STIL 1.0;
+Signals{
+    sig1 In;
+    sig2 Out;
+}
+SignalGroups{
+    all = 'sig1 + sig2';
+}
+Timing {
+    WaveformTable wft{
+        Period '100ns';
+             Waveforms {
+                 sig1 { 01 { '0ns' D/U; '25ns' U/D; }}
+                 sig2 { LHX { '0ns' L/H/X; '25ns' H; }}
+             }
+    }
+}
+PatternBurst pb1{
+    Procedures proc_domain;
+    MacroDefs macro_domain1;
+    PatList {patt1;}
+}
+PatternBurst pb2{
+    PatList {patt;}
+}
+PatternExec pe1{
+    PatternBurst pb1;
+}
+PatternExec {
+    PatternBurst pb2;
+}
+MacroDefs macro_domain1{
+    macro{
+                W wft;
+                V {all = 0X;}               // counter = 1
+                Shift {V {all = ##;}}      //counter = 2
+    V {all = 1X;}                //counter = 3
+    }//-> macro2va[“macro_domain1::macro”] = 3; //counter = 0
+}
+MacroDefs macro_domain2{
+    macro{
+                W wft;
+                V {all = 0X;}                
+    }
+}
+Procedures proc_domain{
+    proc{
+                W wft;
+                V {all = 0X;}                
+                Shift {V {all = ##;}}
+                V {all = 1X;}
+    }
+}
+Pattern patt{
+    V{ all = 0X;} // VA = 6
+    //Call proc;    // proc contains 3 VA
+    V{ all = 0X;} // VA = 10
+}
+Pattern patt1{
+    W wft;
+    V{ all = ZX;} // VA = 0
+    V{ all = ZX;} // VA = 1
+    Macro macro; // macro contains 3 VA
+    V{ all = ZX;} // VA = 5
+V{ all = ZX;} // VA = 6
+}

@@ -52,24 +52,24 @@ class VACounter(STILParser):
 
     def b_pattern_exec__open_pattern_exec_block(self, t):
         super().b_pattern_exec__open_pattern_exec_block(t)
-        print("Open PE")
+        if self.debug:  print("STIL.lsp.VACount Open PE")
         self.patt_exec_order.append(self.curr_patt_exec)  
         self.va_count = 0  
 #########################################################################168
     def b_pattern__pattern_statements__CALL_PROC_NAME(self, t):
         super().b_pattern__pattern_statements__CALL_PROC_NAME(t)
         self.proc_calls[self.curr_pattern] = (t.value, t.line)
-        print(f"CALL_PROC_NAME:{self.proc_calls}")
+        if self.debug:  print(f"STIL.lsp.VACount CALL_PROC_NAME:{self.proc_calls}")
 
     def b_pattern__pattern_statements__CALL_MACRO_NAME(self, t):
         super().b_pattern__pattern_statements__CALL_MACRO_NAME(t)
         self.macro_calls[self.curr_pattern] = (t.value, t.line)
-        print(f"CALL_MACRO_NAME:{self.macro_calls}")
+        if self.debug:  print(f"STIL.lsp.VACount CALL_MACRO_NAME:{self.macro_calls}")
 
 ##########################################################################
     def b_pattern__pattern_statements__KEYWORD_VECTOR(self, t):
         super().b_pattern__pattern_statements__KEYWORD_VECTOR(t)
-        print(f"KEYWORD_VECTOR VACounter:{self.va_count}, Line:{t.line}")
+        if self.debug:  print(f"STIL.lsp.VACount KEYWORD_VECTOR VACounter:{self.va_count}, Line:{t.line}")
         if self.curr_pattern in self.patt_va_list:
             v = self.patt_va_list[self.curr_pattern]
             v.append((self.va_count, t.line))
@@ -81,7 +81,7 @@ class VACounter(STILParser):
 
     def b_pattern__pattern_statements__KEYWORD_V(self, t):
         super().b_pattern__pattern_statements__KEYWORD_V(t)
-        print(f"KEYWORD_V VACounter:{self.va_count}, Line:{t.line}")
+        if self.debug:  print(f"STIL.lsp.VACount KEYWORD_V VACounter:{self.va_count}, Line:{t.line}")
         if self.curr_pattern in self.patt_va_list:
             v = self.patt_va_list[self.curr_pattern]
             v.append((self.va_count, t.line))
@@ -92,10 +92,10 @@ class VACounter(STILParser):
 
     def analise(self):
         if self.enable_trace:
-            print("\nSyntax parsing is in progress...")
+            if self.debug:  print("\nSyntax parsing is in progress...")
         self.parse_syntax()
         if self.enable_trace:
-            print("Semantic analisys is in progress...")
+            if self.debug:  print("Semantic analisys is in progress...")
         self.parse_semantic()
         if self.err_line != -1:
         	print(f"Error on line {self.err_line}, column {self.err_col}")
@@ -105,7 +105,7 @@ class VACounter(STILParser):
     def eof(self):
         # at the end of the file:
         if self.enable_trace:
-            print("Dump compilation is in progress...")
+            if self.debug:  print("Dump compilation is in progress...")
         try:
             vc = 0
 
@@ -147,22 +147,19 @@ class VACounter(STILParser):
                                 if patt == call and lst[1] > self.proc_calls[call][1] and self.proc_calls[call][0] not in passed_calls:
                                     non_countable_vas += call2va[self.proc_calls[call][0]]
                                     passed_calls.append(self.proc_calls[call][0])
-                                    print(non_countable_vas)
 
                             for call in self.macro_calls:
                                 if patt == call and lst[1] > self.macro_calls[call][1] and self.macro_calls[call][0] not in passed_macros:
                                     non_countable_vas += call2va[self.macro_calls[call][0]]
                                     passed_macros.append(self.macro_calls[call][0])
-                                    print(non_countable_vas)
 
                             lst[0]+=non_countable_vas        
                             self.patt_va_list[patt][v] = tuple(lst)
-                            print(tuple(lst))
                             passed_va += 1
                             
 
-            print(self.patt_va_list)
-            print(f"time:{time.time()-s1}")
+            if self.debug:  print(f"STIL.lsp.VACount Pattern VA List: {self.patt_va_list}")
+            if self.debug:  print(f"STIL.lsp.VACount time:{time.time()-s1}")
 
         except STILDumpCompilerException as e:
             print(e.msg)
@@ -172,7 +169,6 @@ class VACounter(STILParser):
 
 def main():
     test = VACounter("../../../tests/stil_files/va_calc/multi_pattern_block.stil")
-    print(test)
     test.analise()
     
 if __name__ == "__main__":

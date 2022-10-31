@@ -52,6 +52,15 @@ class PatternBlockParser:
         # dict key   is the label name of the goto statement
         # dict value is the goto label object
         self.goto_label_obj = {}
+        
+        self.keywords_in_patt_block = ["V", "Vector", 
+                                       "C", "Condition", 
+                                       "F", "Fixed",
+                                       "Loop", "MatchLoop", "Infinite",
+                                       "Macro", "Call", "BreakPoint", "Goto",
+                                       "Stop", "IDDQTestPoint", "IddqTestPoint",
+                                       "ScanChain","ActiveScanChains"
+                                       ]
 
     def trace(self, func_name, t):
         head = f"{__name__}:{func_name}"
@@ -202,6 +211,10 @@ class PatternBlockParser:
         if label_strip.startswith('"') == False and label_strip.endswith('"') == False:
             label_split = label_strip.split(" ")
             label = label_split[0].strip()
+            if label in self.keywords_in_patt_block:
+                err_msg = f"Label '{label}' is a reserved keyword !"
+                raise Exception(err_msg)
+                
         else:
             label = label_strip
             

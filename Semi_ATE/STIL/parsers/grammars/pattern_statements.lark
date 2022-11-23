@@ -18,7 +18,7 @@ uk_block_stmt 	: USER_KEYWORD_NAME (USER_KEYWORD_VALUE)* open_uk_block (UK_BLOCK
 
 open_uk_block : "{"
 
-UK_BLOCK_VALUE: /[a-zA-Z0-9=!@#$%^&*\" ]+/
+UK_BLOCK_VALUE: /[a-zA-Z0-9=_!@#$%^&*\" ]+/
 
 close_uk_block : "}"
 

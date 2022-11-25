@@ -168,7 +168,7 @@ class VACounter(STILParser):
         return self.patt_va_list    
 
 def main():
-    test = VACounter("../../../tests/stil_files/va_calc/multi_pattern_block.stil")
+    test = VACounter("../../../tests/stil_files/va_calc/multi_pattern_block.stil", debug=True)
     test.analise()
     
 if __name__ == "__main__":
